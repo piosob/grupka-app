@@ -1,0 +1,14 @@
+{
+    "editor.formatOnSave": true,
+
+    // Domyślny formatter
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+    // Specyficzne ustawienia dla Astro
+    "[astro]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+
+    // ESLint walidacja
+    "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "astro"]
+}

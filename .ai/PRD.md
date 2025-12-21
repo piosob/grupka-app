@@ -1,0 +1,169 @@
+# Dokument wymagań produktu (PRD) - Grupka (MVP)
+
+## 1. Przegląd produktu
+
+**Grupka (MVP)** to aplikacja webowa typu SSR (Server Side Rendering), zaprojektowana zgodnie z filozofią **Mobile First**, służąca do samoorganizacji rodziców w grupach przedszkolnych i szkolnych. Jej głównym celem jest uporządkowanie komunikacji dotyczącej urodzin i prezentów, przy jednoczesnym poszanowaniu prywatności użytkowników i minimalizacji powiadomień.
+
+Projekt kładzie nacisk na doskonałe działanie na urządzeniach mobilnych, minimalizację danych osobowych (brak nazwisk) oraz asynchroniczny model komunikacji. Technologicznie aplikacja opiera się na Astro 5, React 19, Tailwind 4 i Supabase. Kluczowe funkcjonalności to: tymczasowe kody zaproszeń, rola administratora z możliwością kontaktu mailowego, ukryte wątki dla gości oraz asystent AI wspierający tworzenie list prezentowych w trybie edycji.
+
+## 2. Problem użytkownika
+
+Rodzice korzystający z obecnych rozwiązań (np. WhatsApp, Messenger) napotykają następujące trudności:
+
+- **Chaos informacyjny:** Ważne informacje o urodzinach i zbiórkach giną w potoku codziennych wiadomości na czacie.
+- **Brak dyskrecji:** Trudność w zorganizowaniu składki na prezent, gdy rodzic dziecka jest w tej samej grupie czatowej.
+- **Anonimowość administratora:** W dużych grupach rodzice często nie wiedzą, kto zarządza grupą i do kogo zgłosić problem (np. błędnie dodane dziecko).
+- **Bezpieczeństwo grupy:** Ryzyko przebywania w grupie osób nieuprawnionych ("martwe dusze") ze względu na stałe linki zaproszeniowe.
+- **Trudności z prezentami:** Brak pomysłów na spersonalizowane prezenty i problem z redagowaniem list życzeń.
+
+## 3. Wymagania funkcjonalne
+
+### 3.1 Interfejs i UX (Mobile First)
+
+- Interfejs zaprojektowany priorytetowo pod ekrany dotykowe smartfonów (duże strefy kliknięcia, nawigacja dostosowana do obsługi kciukiem).
+- Pełna responsywność (RWD) zapewniająca poprawny wygląd na desktopie, traktowana jako drugorzędna.
+- Kluczowe informacje (np. kody, przyciski akcji) muszą być czytelne bez konieczności powiększania ekranu.
+
+### 3.2 Zarządzanie Grupami i Bezpieczeństwo
+
+- **Role w grupie:** Rozróżnienie na Administratora (Twórcę) i Członka.
+- **Kontakt z Adminem:** Adres email Administratora jest dostępny dla członków grupy jako "kanał awaryjny" (domyślnie ukryty, widoczny po kliknięciu).
+- **Kody czasowe:** Dołączanie do grupy wymaga kodu ważnego tylko przez **60 minut**, generowanego na żądanie przez Administratora.
+- **Moderacja:** Administrator ma prawo usuwać członków z grupy.
+
+### 3.3 Profile Dzieci i AI
+
+- Identyfikacja dziecka wyłącznie poprzez "Nazwę wyświetlaną" (np. "Staś od Kasi").
+- Funkcja **Magic Wand** dostępna w formularzu edycji/dodawania profilu.
+- Model działania AI: Rodzic wpisuje notatkę -> AI generuje sugestie -> Rodzic weryfikuje i poprawia tekst -> Rodzic zapisuje zmiany.
+
+### 3.4 Wydarzenia
+
+- Tworzenie wydarzeń prywatnych z możliwością selekcji gości (checkboxy + przycisk "Zaznacz wszystkich").
+- **Ukryty wątek:** Tablica komentarzy dla gości, technicznie niewidoczna dla organizatora (zabezpieczenie RLS).
+- **Pasywny wskaźnik aktualizacji:** Badge informujący o zmianie w wydarzeniu (widoczny przez 8h od edycji).
+
+## 4. Granice produktu
+
+### W zakresie (In-Scope)
+
+- Aplikacja webowa zoptymalizowana pod mobile.
+- Uwierzytelnianie email/hasło (Supabase Auth).
+- Zarządzanie członkami grupy (Kick, Invite - 60 min).
+- Edycja profilu wspierana przez OpenRouter (AI).
+- Mechanizm kontaktu z administratorem (reveal email).
+
+### Poza zakresem (Out-of-Scope)
+
+- Natywna aplikacja mobilna (iOS/Android).
+- Powiadomienia Push.
+- Wewnętrzny system czatu 1:1.
+- Rola Nauczyciela.
+- Upload zdjęć i plików.
+- Automatyczne wysyłanie maili przez kliknięcie (mailto).
+
+## 5. Historyjki użytkowników
+
+### Uwierzytelnianie
+
+**ID: US-001**
+**Tytuł:** Rejestracja i logowanie (Mobile)
+**Opis:** Jako użytkownik korzystający ze smartfona, chcę wygodnie zarejestrować się i zalogować, aby uzyskać dostęp do aplikacji.
+**Kryteria akceptacji:**
+
+- Formularze są responsywne, a klawiatura ekranowa nie zasłania przycisków akcji.
+- Walidacja błędów jest czytelna na małym ekranie.
+- Poprawne logowanie przekierowuje do listy grup.
+
+### Zarządzanie Grupami (Administrator)
+
+**ID: US-002**
+**Tytuł:** Utworzenie grupy i zgoda na kontakt
+**Opis:** Jako rodzic chcę utworzyć nową grupę i zostać jej administratorem, będąc świadomym, że mój email będzie dostępny dla innych rodziców w celach organizacyjnych jako "kanał awaryjny" (domyślnie ukryty, widoczny po kliknięciu).
+**Kryteria akceptacji:**
+
+- Podczas tworzenia grupy wyświetlana jest informacja (w formie tekstu pomocniczego): "Twój adres email będzie widoczny dla członków grupy, aby ułatwić im kontakt z Tobą w sprawach organizacyjnych jako "kanał awaryjny" (domyślnie ukryty, widoczny po kliknięciu)".
+- Twórca grupy automatycznie otrzymuje uprawnienia Administratora.
+- Przy nazwisku Administratora na liście członków widoczne jest wyróżnienie (np. ikona korony/admina).
+
+**ID: US-003**
+**Tytuł:** Generowanie bezpiecznego kodu zaproszenia
+**Opis:** Jako Administrator chcę wygenerować kod zaproszenia ważny tylko przez 60 minut, aby bezpiecznie zaprosić rodziców i zminimalizować ryzyko dostępu osób niepowołanych.
+**Kryteria akceptacji:**
+
+- Admin ma dostęp do przycisku "Generuj kod".
+- Kod wyświetla się z licznikiem czasu lub godziną wygaśnięcia (60 min).
+- Po upływie czasu kod staje się nieważny.
+
+**ID: US-004**
+**Tytuł:** Usuwanie członków (Moderacja)
+**Opis:** Jako Administrator chcę usunąć z grupy użytkownika, który dołączył przez pomyłkę, aby dbać o porządek i bezpieczeństwo danych.
+**Kryteria akceptacji:**
+
+- Admin widzi opcję usunięcia przy każdym członku grupy.
+- Usunięcie jest natychmiastowe i skuteczne (użytkownik traci dostęp do widoku grupy).
+
+### Zarządzanie Grupami (Członek)
+
+**ID: US-005**
+**Tytuł:** Kontakt z Administratorem
+**Opis:** Jako członek grupy chcę sprawdzić adres email administratora, aby móc się z nim skontaktować w przypadku problemów (np. pomyłka w profilu), ale nie chcę, by ten email "świecił" publicznie przez cały czas.
+**Kryteria akceptacji:**
+
+- Na liście członków przy Administratorze znajduje się przycisk/link "Pokaż kontakt".
+- Adres email jest domyślnie ukryty (zagwiazdkowany lub niewidoczny).
+- Po kliknięciu w przycisk, pełny adres email administratora zostaje wyświetlony, umożliwiając jego skopiowanie.
+
+### Profile Dzieci i AI
+
+**ID: US-006**
+**Tytuł:** Wsparcie AI przy edycji opisu (Magic Wand)
+**Opis:** Jako rodzic edytujący profil dziecka, chcę, aby AI zamieniło moje hasłowe notatki w ładną listę pomysłów, którą mogę zweryfikować przed zapisaniem.
+**Kryteria akceptacji:**
+
+- W trybie edycji profilu dostępne jest pole notatki i przycisk "Magic Wand".
+- Kliknięcie przycisku wysyła treść do AI i nadpisuje pole formularza wygenerowaną propozycją.
+- Użytkownik ma pełną możliwość edycji tekstu zwróconego przez AI (może usuwać, dopisywać).
+- Zmiany zapisują się w bazie tylko po ręcznym kliknięciu "Zapisz".
+
+### Wydarzenia i Bezpieczeństwo Danych
+
+**ID: US-007**
+**Tytuł:** Tworzenie wydarzenia i masowy wybór gości
+**Opis:** Jako organizator chcę zaprosić większość grupy na urodziny, mogąc zaznaczyć wszystkich jednym kliknięciem, a potem ewentualnie odznaczyć pojedyncze osoby.
+**Kryteria akceptacji:**
+
+- Formularz zawiera listę dzieci z checkboxami.
+- Dostępny jest przycisk "Zaznacz wszystkich" / "Odznacz wszystkich".
+- Layout listy jest wygodny do obsługi dotykiem (odpowiednie odstępy).
+
+**ID: US-008**
+**Tytuł:** Bezpieczeństwo ukrytego wątku (RLS)
+**Opis:** Jako organizator wydarzenia, system musi uniemożliwić mi dostęp do komentarzy gości, aby niespodzianka nie została zepsuta.
+**Kryteria akceptacji:**
+
+- Organizator nie widzi sekcji komentarzy w swoim wydarzeniu.
+- Polityka Row Level Security (RLS) w bazie danych blokuje zapytania `SELECT` do tabeli `event_comments` wykonywane przez autora wydarzenia.
+- Test bezpieczeństwa potwierdza brak dostępu do tych danych.
+
+**ID: US-009**
+**Tytuł:** Ukryty wątek dla gości
+**Opis:** Jako gość chcę dyskutować z innymi rodzicami w ukrytym wątku, aby ustalić prezent.
+**Kryteria akceptacji:**
+
+- Goście widzą sekcję komentarzy.
+- Nowe komentarze pojawiają się po przeładowaniu strony.
+- Autor komentarza jest podpisany nazwą swojego dziecka (np. "Mama Adasia").
+
+## 6. Metryki sukcesu
+
+### Metryki Techniczne
+
+- **Mobile Performance:** Lighthouse Score > 90 dla kategorii Performance i Accessibility na mobile.
+- **Bezpieczeństwo:** 100% zablokowanych prób dostępu organizatora do ukrytego wątku w testach automatycznych.
+
+### Metryki UX i Adopcji
+
+- **Adopcja AI:** % profili dzieci, które zostały zapisane po użyciu funkcji "Magic Wand".
+- **Bezpieczeństwo Grup:** Średnia liczba wygenerowanych kodów na grupę (świadczy o aktywnym zarządzaniu dostępem).
+- **Retencja:** % użytkowników powracających do aplikacji w ciągu 30 dni od rejestracji.
