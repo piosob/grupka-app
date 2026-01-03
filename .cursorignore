@@ -1,0 +1,11 @@
+dist/
+node_modules/
+.astro/
+.env
+.env.local
+.env.*.local
+.env.keys
+.env.production
+.DS_Store
+.idea/
+.vscode/

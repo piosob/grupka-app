@@ -6,6 +6,20 @@
 
 Projekt kładzie nacisk na doskonałe działanie na urządzeniach mobilnych, minimalizację danych osobowych (brak nazwisk) oraz asynchroniczny model komunikacji. Technologicznie aplikacja opiera się na Astro 5, React 19, Tailwind 4 i Supabase. Kluczowe funkcjonalności to: tymczasowe kody zaproszeń, rola administratora z możliwością kontaktu mailowego, ukryte wątki dla gości oraz asystent AI wspierający tworzenie list prezentowych w trybie edycji.
 
+## 1.1 Doświadczenie niezalogowanego użytkownika
+
+Niech pierwsze wrażenie po wejściu na stronę będzie jasnym wyjaśnieniem celu aplikacji: krótki hero z przyjaznym powitaniem, prostym hasłem (np. „Witaj rodzicu! Utwórz grupę przedszkolną i żłobkową i zorganizuj urodziny bez chaosu”) i listą powodów, dla których warto przejść dalej. Sekcja powinna podkreślać:
+
+- co to jest Grupka (mobile-first hub dla rodziców, który ogranicza powiadomienia i chroni prywatność),
+- jak działa asynchroniczna komunikacja (ograniczenie chatowych powiadomień, aktualności zamiast ciągłych wiadomości),
+- główne wartości (tymczasowe kody, ukryte wątki, AI wspierające opisy dzieci).
+
+Poniżej hero proponujemy krótki przegląd „Jak to działa” – trzy kolumny prezentujące: tworzenie bezpiecznej grupy (wymagane logowanie), zapraszanie rodziców przez kod 60 min, oraz akceptowanie sugestii AI przy opisie dziecka. Na tym etapie gość może także zobaczyć przykładową kartę wydarzenia albo poniżej komentarze gości (jako wizualną zapowiedź ukrytego wątku) bez dostępu do danych.
+
+Call to action na stronie głównej musi być czytelny: dwa przyciski (zaloguj / zarejestruj) oraz wyjaśnienie, że tworzenie grupy i zarządzanie członkami wymaga zalogowania. Tekst przy CTA ma za zadanie powiedzieć, że aby utworzyć grupę należy się zalogować lub założyć konto – to zabezpieczenie zgodne z polityką bezpieczeństwa.
+
+W stopce sekcji warto jeszcze raz przypomnieć o możliwości kontaktu z administratorem (pokazanie emaila po kliknięciu) i o pokazaniu „kanału awaryjnego”, aby pokazać, że jesteśmy przygotowani na wątpliwości nowych rodziców.
+
 ## 2. Problem użytkownika
 
 Rodzice korzystający z obecnych rozwiązań (np. WhatsApp, Messenger) napotykają następujące trudności:
@@ -74,6 +88,19 @@ Rodzice korzystający z obecnych rozwiązań (np. WhatsApp, Messenger) napotykaj
 - Formularze są responsywne, a klawiatura ekranowa nie zasłania przycisków akcji.
 - Walidacja błędów jest czytelna na małym ekranie.
 - Poprawne logowanie przekierowuje do listy grup.
+- Przycisk logowania lub rejestracji albo wylogowania powinien być widoczny w na górze ekranu (na desktop w prawyn górnym rogu ekranu).
+- Przycisk wylogowania powinien być widoczny tylko po zalogowaniu.b
+- Logowanie i rejestracja powinny odbywać sie na dedykowanych stronach logowania i rejestracji, a nie na stronie głównej.
+- Strona logowania powinna zawierać:
+    - Pola do wprowadzenia adresu email i hasła.
+    - Przycisk logowania.
+    - Link do strony rejestracji.
+    - Link do strony resetowania hasła.
+- Strona rejestracji powinna zawierać:
+    - Pola do wprowadzenia adresu email, hasła i powtórzenia hasła.
+    - Przycisk rejestracji.
+    - Link do strony logowania.
+- Odzyskiwanie hasła powinno odbywać się poprzez wysłanie emaila z linkiem do resetowania hasła.
 
 ### Zarządzanie Grupami (Administrator)
 
