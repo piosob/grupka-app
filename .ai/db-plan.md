@@ -2,14 +2,14 @@
 
 ## 1. Struktura Tabel
 
-**profiles** (Profil publiczny użytkownika)
+**1. profiles** (Profil publiczny użytkownika)
 _Rozszerzenie tabeli systemowej `auth.users` w Supabase._
 
 - `id`: **UUID PRIMARY KEY** – referencja do `auth.users(id)`, `ON DELETE CASCADE`.
 - `email`: **TEXT** – kopia adresu email (opcjonalnie, do szybkiego odczytu).
 - `created_at`: **TIMESTAMPTZ NOT NULL** – domyślnie `NOW()`.
 
-**groups** (Grupy przedszkolne/szkolne)
+**2. groups** (Grupy przedszkolne/szkolne)
 _Główna jednostka organizacyjna (Tenant)._
 
 - `id`: **UUID PRIMARY KEY** – domyślnie `uuid_generate_v4()`.
@@ -17,7 +17,7 @@ _Główna jednostka organizacyjna (Tenant)._
 - `created_by`: **UUID** – FK -> `profiles(id)`, `ON DELETE SET NULL` (twórca grupy).
 - `created_at`: **TIMESTAMPTZ NOT NULL** – domyślnie `NOW()`.
 
-**group_members** (Członkowie grup)
+**3. group_members** (Członkowie grup)
 _Tabela łącząca (Pivot) określająca przynależność i uprawnienia._
 
 - `group_id`: **UUID** – FK -> `groups(id)`, `ON DELETE CASCADE`.
@@ -26,7 +26,7 @@ _Tabela łącząca (Pivot) określająca przynależność i uprawnienia._
 - `joined_at`: **TIMESTAMPTZ NOT NULL** – domyślnie `NOW()`.
 - _PK_: Kompozytowy klucz główny `(group_id, user_id)`.
 
-**group_invites** (Zaproszenia)
+**4. group_invites** (Zaproszenia)
 _Tymczasowe kody dostępu do grup._
 
 - `code`: **VARCHAR(10) PRIMARY KEY** – unikalny kod alfanumeryczny.
@@ -35,18 +35,18 @@ _Tymczasowe kody dostępu do grup._
 - `expires_at`: **TIMESTAMPTZ NOT NULL** – czas wygaśnięcia (60 min).
 - `created_at`: **TIMESTAMPTZ NOT NULL** – domyślnie `NOW()`.
 
-**children** (Dzieci)
+**5. children** (Dzieci)
 _Profile dzieci przypisane do konkretnej grupy._
 
 - `id`: **UUID PRIMARY KEY** – domyślnie `uuid_generate_v4()`.
 - `group_id`: **UUID NOT NULL** – FK -> `groups(id)`, `ON DELETE CASCADE`.
 - `parent_id`: **UUID NOT NULL** – FK -> `profiles(id)`, `ON DELETE CASCADE` (rodzic).
-- `display_name`: **VARCHAR(50) NOT NULL** – imię/przydomek (np. "Staś").
+- `display_name`: **VARCHAR(50) NOT NULL** – imię/przydomek (np. "Krzyś").
 - `bio`: **VARCHAR(1000)** – opis zainteresowań (wspierany przez AI).
 - `birth_date`: **DATE** – data urodzin (opcjonalnie, format YYYY-MM-DD).
 - `created_at`: **TIMESTAMPTZ NOT NULL** – domyślnie `NOW()`.
 
-**events** (Wydarzenia)
+**6. events** (Wydarzenia)
 _Urodziny lub zbiórki organizowane w ramach grupy._
 
 - `id`: **UUID PRIMARY KEY** – domyślnie `uuid_generate_v4()`.
@@ -59,7 +59,7 @@ _Urodziny lub zbiórki organizowane w ramach grupy._
 - `created_at`: **TIMESTAMPTZ NOT NULL** – domyślnie `NOW()`.
 - `updated_at`: **TIMESTAMPTZ NOT NULL** – domyślnie `NOW()`.
 
-**event_guests** (Goście wydarzenia)
+**7. event_guests** (Goście wydarzenia)
 _Lista zaproszonych dzieci (nie rodziców)._
 
 - `event_id`: **UUID** – FK -> `events(id)`, `ON DELETE CASCADE`.
@@ -67,7 +67,7 @@ _Lista zaproszonych dzieci (nie rodziców)._
 - `created_at`: **TIMESTAMPTZ NOT NULL** – domyślnie `NOW()`.
 - _PK_: Kompozytowy klucz główny `(event_id, child_id)`.
 
-**event_comments** (Komentarze / Niespodzianka)
+**8. event_comments** (Komentarze / Niespodzianka)
 _Wątek dyskusyjny z blokadą widoczności dla organizatora._
 
 - `id`: **UUID PRIMARY KEY** – domyślnie `uuid_generate_v4()`.
@@ -76,7 +76,7 @@ _Wątek dyskusyjny z blokadą widoczności dla organizatora._
 - `content`: **VARCHAR(2000) NOT NULL** – treść (min. 1 znak).
 - `created_at`: **TIMESTAMPTZ NOT NULL** – domyślnie `NOW()`.
 
-**ai_usage_logs** (Logi AI)
+**9. ai_usage_logs** (Logi AI)
 _Techniczny rejestr zużycia tokenów (tylko do odczytu dla adminów systemu)._
 
 - `id`: **UUID PRIMARY KEY** – domyślnie `uuid_generate_v4()`.
