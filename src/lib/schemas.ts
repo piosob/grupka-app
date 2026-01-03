@@ -68,12 +68,12 @@ export type ApiErrorResponse = z.infer<typeof ApiErrorResponseSchema>;
  * Combines group data with membership info and computed counts
  */
 export const GroupListItemDTOSchema = z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
     name: z.string().min(3).max(100),
     role: z.enum(['admin', 'member']),
     memberCount: z.int().min(0),
-    createdAt: z.string().datetime(),
-    joinedAt: z.string().datetime(),
+    createdAt: z.iso.datetime(),
+    joinedAt: z.iso.datetime(),
 });
 
 export type GroupListItemDTO = z.infer<typeof GroupListItemDTOSchema>;
@@ -93,10 +93,10 @@ export type CreateGroupCommand = z.infer<typeof CreateGroupCommandSchema>;
  * Used in: POST /api/groups
  */
 export const CreateGroupResponseDTOSchema = z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
     name: z.string().min(3).max(100),
     role: z.enum(['admin', 'member']),
-    createdAt: z.string().datetime(),
+    createdAt: z.iso.datetime(),
 });
 
 export type CreateGroupResponseDTO = z.infer<typeof CreateGroupResponseDTOSchema>;
@@ -106,14 +106,14 @@ export type CreateGroupResponseDTO = z.infer<typeof CreateGroupResponseDTOSchema
  * Used in: GET /api/groups/:groupId
  */
 export const GroupDetailDTOSchema = z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
     name: z.string().min(3).max(100),
     role: z.enum(['admin', 'member']),
     memberCount: z.int().min(0),
     childrenCount: z.int().min(0),
     upcomingEventsCount: z.int().min(0),
-    createdBy: z.string().uuid(),
-    createdAt: z.string().datetime(),
+    createdBy: z.uuid(),
+    createdAt: z.iso.datetime(),
 });
 
 export type GroupDetailDTO = z.infer<typeof GroupDetailDTOSchema>;
@@ -133,9 +133,9 @@ export type UpdateGroupCommand = z.infer<typeof UpdateGroupCommandSchema>;
  * Used in: PATCH /api/groups/:groupId
  */
 export const UpdateGroupResponseDTOSchema = z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
     name: z.string().min(3).max(100),
-    updatedAt: z.string().datetime(),
+    updatedAt: z.iso.datetime(),
 });
 
 export type UpdateGroupResponseDTO = z.infer<typeof UpdateGroupResponseDTOSchema>;
@@ -150,9 +150,9 @@ export type UpdateGroupResponseDTO = z.infer<typeof UpdateGroupResponseDTOSchema
  * Combines member info with their children's names
  */
 export const GroupMemberDTOSchema = z.object({
-    userId: z.string().uuid(),
+    userId: z.uuid(),
     role: z.enum(['admin', 'member']),
-    joinedAt: z.string().datetime(),
+    joinedAt: z.iso.datetime(),
     childrenNames: z.array(z.string()),
 });
 
@@ -164,7 +164,7 @@ export type GroupMemberDTO = z.infer<typeof GroupMemberDTOSchema>;
  * Reveals admin's email for emergency contact
  */
 export const AdminContactDTOSchema = z.object({
-    userId: z.string().uuid(),
+    userId: z.uuid(),
     email: z.string().email(),
     childrenNames: z.array(z.string()),
 });
@@ -181,9 +181,9 @@ export type AdminContactDTO = z.infer<typeof AdminContactDTOSchema>;
  */
 export const GroupInviteDTOSchema = z.object({
     code: z.string().max(10),
-    groupId: z.string().uuid(),
-    expiresAt: z.string().datetime(),
-    createdAt: z.string().datetime(),
+    groupId: z.uuid(),
+    expiresAt: z.iso.datetime(),
+    createdAt: z.iso.datetime(),
 });
 
 export type GroupInviteDTO = z.infer<typeof GroupInviteDTOSchema>;
@@ -194,8 +194,8 @@ export type GroupInviteDTO = z.infer<typeof GroupInviteDTOSchema>;
  */
 export const GroupInviteListItemDTOSchema = z.object({
     code: z.string().max(10),
-    expiresAt: z.string().datetime(),
-    createdAt: z.string().datetime(),
+    expiresAt: z.iso.datetime(),
+    createdAt: z.iso.datetime(),
 });
 
 export type GroupInviteListItemDTO = z.infer<typeof GroupInviteListItemDTOSchema>;
@@ -215,10 +215,10 @@ export type JoinGroupCommand = z.infer<typeof JoinGroupCommandSchema>;
  * Used in: POST /api/invites/join
  */
 export const JoinGroupResponseDTOSchema = z.object({
-    groupId: z.string().uuid(),
+    groupId: z.uuid(),
     groupName: z.string().min(3).max(100),
     role: z.enum(['admin', 'member']),
-    joinedAt: z.string().datetime(),
+    joinedAt: z.iso.datetime(),
 });
 
 export type JoinGroupResponseDTO = z.infer<typeof JoinGroupResponseDTOSchema>;
@@ -232,13 +232,13 @@ export type JoinGroupResponseDTO = z.infer<typeof JoinGroupResponseDTOSchema>;
  * Used in: GET /api/groups/:groupId/children
  */
 export const ChildListItemDTOSchema = z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
     displayName: z.string().min(1).max(50),
     bio: z.string().max(1000).nullable(),
-    birthDate: z.string().date().nullable(),
-    parentId: z.string().uuid(),
+    birthDate: z.iso.date().nullable(),
+    parentId: z.uuid(),
     isOwner: z.boolean(),
-    createdAt: z.string().datetime(),
+    createdAt: z.iso.datetime(),
 });
 
 export type ChildListItemDTO = z.infer<typeof ChildListItemDTOSchema>;
@@ -250,7 +250,7 @@ export type ChildListItemDTO = z.infer<typeof ChildListItemDTOSchema>;
 export const CreateChildCommandSchema = z.object({
     displayName: z.string().min(1).max(50),
     bio: z.string().max(1000).optional(),
-    birthDate: z.string().date().optional(),
+    birthDate: z.iso.date().optional(),
 });
 
 export type CreateChildCommand = z.infer<typeof CreateChildCommandSchema>;
@@ -260,13 +260,13 @@ export type CreateChildCommand = z.infer<typeof CreateChildCommandSchema>;
  * Used in: POST /api/groups/:groupId/children
  */
 export const CreateChildResponseDTOSchema = z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
     displayName: z.string().min(1).max(50),
     bio: z.string().max(1000).nullable(),
-    birthDate: z.string().date().nullable(),
-    groupId: z.string().uuid(),
-    parentId: z.string().uuid(),
-    createdAt: z.string().datetime(),
+    birthDate: z.iso.date().nullable(),
+    groupId: z.uuid(),
+    parentId: z.uuid(),
+    createdAt: z.iso.datetime(),
 });
 
 export type CreateChildResponseDTO = z.infer<typeof CreateChildResponseDTOSchema>;
@@ -276,14 +276,14 @@ export type CreateChildResponseDTO = z.infer<typeof CreateChildResponseDTOSchema
  * Used in: GET /api/children/:childId
  */
 export const ChildDetailDTOSchema = z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
     displayName: z.string().min(1).max(50),
     bio: z.string().max(1000).nullable(),
-    birthDate: z.string().date().nullable(),
-    groupId: z.string().uuid(),
-    parentId: z.string().uuid(),
+    birthDate: z.iso.date().nullable(),
+    groupId: z.uuid(),
+    parentId: z.uuid(),
     isOwner: z.boolean(),
-    createdAt: z.string().datetime(),
+    createdAt: z.iso.datetime(),
 });
 
 export type ChildDetailDTO = z.infer<typeof ChildDetailDTOSchema>;
@@ -295,7 +295,7 @@ export type ChildDetailDTO = z.infer<typeof ChildDetailDTOSchema>;
 export const UpdateChildCommandSchema = z.object({
     displayName: z.string().min(1).max(50).optional(),
     bio: z.string().max(1000).optional(),
-    birthDate: z.string().date().nullable().optional(),
+    birthDate: z.iso.date().nullable().optional(),
 });
 
 export type UpdateChildCommand = z.infer<typeof UpdateChildCommandSchema>;
@@ -305,11 +305,11 @@ export type UpdateChildCommand = z.infer<typeof UpdateChildCommandSchema>;
  * Used in: PATCH /api/children/:childId
  */
 export const UpdateChildResponseDTOSchema = z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
     displayName: z.string().min(1).max(50),
     bio: z.string().max(1000).nullable(),
-    birthDate: z.string().date().nullable(),
-    updatedAt: z.string().datetime(),
+    birthDate: z.iso.date().nullable(),
+    updatedAt: z.iso.datetime(),
 });
 
 export type UpdateChildResponseDTO = z.infer<typeof UpdateChildResponseDTOSchema>;
@@ -323,18 +323,18 @@ export type UpdateChildResponseDTO = z.infer<typeof UpdateChildResponseDTOSchema
  * Used in: GET /api/groups/:groupId/events
  */
 export const EventListItemDTOSchema = z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
     title: z.string().min(1).max(100),
-    eventDate: z.string().date(),
+    eventDate: z.iso.date(),
     description: z.string().nullable(),
-    childId: z.string().uuid().nullable(),
+    childId: z.uuid().nullable(),
     childName: z.string().nullable(),
-    organizerId: z.string().uuid(),
+    organizerId: z.uuid(),
     isOrganizer: z.boolean(),
     guestCount: z.int().min(0),
     hasNewUpdates: z.boolean(),
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
+    createdAt: z.iso.datetime(),
+    updatedAt: z.iso.datetime(),
 });
 
 export type EventListItemDTO = z.infer<typeof EventListItemDTOSchema>;
@@ -345,10 +345,10 @@ export type EventListItemDTO = z.infer<typeof EventListItemDTOSchema>;
  */
 export const CreateEventCommandSchema = z.object({
     title: z.string().min(1).max(100),
-    eventDate: z.string().date(),
+    eventDate: z.iso.date(),
     description: z.string().optional(),
-    childId: z.string().uuid().optional(),
-    guestChildIds: z.array(z.string().uuid()).optional(),
+    childId: z.uuid().optional(),
+    guestChildIds: z.array(z.uuid()).optional(),
 });
 
 export type CreateEventCommand = z.infer<typeof CreateEventCommandSchema>;
@@ -358,14 +358,14 @@ export type CreateEventCommand = z.infer<typeof CreateEventCommandSchema>;
  * Used in: POST /api/groups/:groupId/events
  */
 export const CreateEventResponseDTOSchema = z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
     title: z.string().min(1).max(100),
-    eventDate: z.string().date(),
+    eventDate: z.iso.date(),
     description: z.string().nullable(),
-    childId: z.string().uuid().nullable(),
-    organizerId: z.string().uuid(),
+    childId: z.uuid().nullable(),
+    organizerId: z.uuid(),
     guestCount: z.int().min(0),
-    createdAt: z.string().datetime(),
+    createdAt: z.iso.datetime(),
 });
 
 export type CreateEventResponseDTO = z.infer<typeof CreateEventResponseDTOSchema>;
@@ -375,7 +375,7 @@ export type CreateEventResponseDTO = z.infer<typeof CreateEventResponseDTOSchema
  * Used in: GET /api/events/:eventId (nested)
  */
 export const EventGuestDTOSchema = z.object({
-    childId: z.string().uuid(),
+    childId: z.uuid(),
     displayName: z.string().min(1).max(50),
 });
 
@@ -386,20 +386,20 @@ export type EventGuestDTO = z.infer<typeof EventGuestDTOSchema>;
  * Used in: GET /api/events/:eventId
  */
 export const EventDetailDTOSchema = z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
     title: z.string().min(1).max(100),
-    eventDate: z.string().date(),
+    eventDate: z.iso.date(),
     description: z.string().nullable(),
-    childId: z.string().uuid().nullable(),
+    childId: z.uuid().nullable(),
     childName: z.string().nullable(),
     childBio: z.string().nullable(),
-    organizerId: z.string().uuid(),
+    organizerId: z.uuid(),
     isOrganizer: z.boolean(),
-    groupId: z.string().uuid(),
+    groupId: z.uuid(),
     guests: z.array(EventGuestDTOSchema),
     hasNewUpdates: z.boolean(),
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
+    createdAt: z.iso.datetime(),
+    updatedAt: z.iso.datetime(),
 });
 
 export type EventDetailDTO = z.infer<typeof EventDetailDTOSchema>;
@@ -410,9 +410,9 @@ export type EventDetailDTO = z.infer<typeof EventDetailDTOSchema>;
  */
 export const UpdateEventCommandSchema = z.object({
     title: z.string().min(1).max(100).optional(),
-    eventDate: z.string().date().optional(),
+    eventDate: z.iso.date().optional(),
     description: z.string().optional(),
-    guestChildIds: z.array(z.string().uuid()).optional(),
+    guestChildIds: z.array(z.uuid()).optional(),
 });
 
 export type UpdateEventCommand = z.infer<typeof UpdateEventCommandSchema>;
@@ -422,10 +422,10 @@ export type UpdateEventCommand = z.infer<typeof UpdateEventCommandSchema>;
  * Used in: PATCH /api/events/:eventId
  */
 export const UpdateEventResponseDTOSchema = z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
     title: z.string().min(1).max(100),
-    eventDate: z.string().date(),
-    updatedAt: z.string().datetime(),
+    eventDate: z.iso.date(),
+    updatedAt: z.iso.datetime(),
 });
 
 export type UpdateEventResponseDTO = z.infer<typeof UpdateEventResponseDTOSchema>;
@@ -440,11 +440,11 @@ export type UpdateEventResponseDTO = z.infer<typeof UpdateEventResponseDTOSchema
  * Note: Hidden from event organizers (surprise protection)
  */
 export const EventCommentDTOSchema = z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
     content: z.string().min(1).max(2000),
-    authorId: z.string().uuid(),
+    authorId: z.uuid(),
     authorLabel: z.string(),
-    createdAt: z.string().datetime(),
+    createdAt: z.iso.datetime(),
 });
 
 export type EventCommentDTO = z.infer<typeof EventCommentDTOSchema>;
