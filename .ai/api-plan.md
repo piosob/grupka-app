@@ -66,7 +66,7 @@ List all groups the current user is a member of.
 
 ---
 
-#### POST /api/groups
+#### POST /api/groups DONE
 
 Create a new group. The creator automatically becomes an admin.
 
