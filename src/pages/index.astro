@@ -1,13 +1,9 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import { SUPABASE_URL, SUPABASE_KEY } from 'astro:env/server';
-import Layout from '../layouts/Layout.astro';
-console.log(SUPABASE_URL, SUPABASE_KEY);
-console.log('Hello World');
+import MainLayout from '../layouts/MainLayout.astro';
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
-<Layout>
-    <Welcome />
-</Layout>
+<MainLayout title="Strona Główna">
+    <h1>Hello World</h1>
+</MainLayout>
