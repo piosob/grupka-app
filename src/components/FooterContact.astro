@@ -1,0 +1,19 @@
+---
+import type { ContactInfo } from '../types/landingPage';
+
+interface Props {
+    contact: ContactInfo;
+}
+
+const { contact } = Astro.props;
+---
+
+<footer class="py-8 px-8 bg-gray-800 text-gray-300 text-center">
+    <p class="mb-4">{contact.label}</p>
+    <details class="inline-block">
+        <summary class="cursor-pointer hover:text-white">Pokaż email administratora</summary>
+        <p class="mt-2 text-white">{contact.email}</p>
+        <p class="text-sm text-gray-400">{contact.note}</p>
+    </details>
+</footer>
+

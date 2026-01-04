@@ -1,0 +1,27 @@
+---
+import type { HeroContent, CTAButton } from '../types/landingPage';
+import { Button } from '@/components/ui/button';
+
+interface Props {
+    content: HeroContent;
+}
+
+const { content } = Astro.props;
+---
+
+<header
+    class="flex flex-col items-center justify-center text-center p-8 bg-gray-900 text-white min-h-screen"
+>
+    <h1 class="text-5xl font-bold mb-4">{content.title}</h1>
+    <p class="text-xl mb-6">{content.subtitle}</p>
+    <p class="text-lg mb-8 max-w-2xl">{content.description}</p>
+    <div class="flex gap-4">
+        {
+            content.ctaButtons.map((button) => (
+                <a href={button.href}>
+                    <Button variant={button.variant || 'default'}>{button.label}</Button>
+                </a>
+            ))
+        }
+    </div>
+</header>

@@ -1,0 +1,28 @@
+---
+import type { TimelineStep } from '../types/landingPage';
+
+interface Props {
+    steps: TimelineStep[];
+}
+
+const { steps } = Astro.props;
+---
+
+<section class="py-16 px-8 bg-gray-900 text-white">
+    <h2 class="text-4xl font-bold text-center mb-12">Jak to działa?</h2>
+    <div class="max-w-4xl mx-auto relative">
+        <ol class="relative border-l border-gray-700">
+            {steps.map((step) => (
+                <li class="mb-10 ml-6">
+                    <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-900 rounded-full -left-3 ring-8 ring-gray-900">
+                        {step.id}
+                    </span>
+                    <h3 class="flex items-center mb-1 text-lg font-semibold text-white">{step.title}</h3>
+                    <p class="mb-4 text-base font-normal text-gray-400">{step.description}</p>
+                    {step.hint && <p class="text-sm text-gray-500">{step.hint}</p>}
+                </li>
+            ))}
+        </ol>
+    </div>
+</section>
+

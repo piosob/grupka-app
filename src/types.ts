@@ -71,6 +71,17 @@ export type {
     EventsQueryParams,
 } from './lib/schemas';
 
+export type {
+    CTAButton,
+    HeroContent,
+    FeatureItem,
+    TimelineStep,
+    HiddenComment,
+    EventPreview,
+    ContactInfo,
+    LandingPageProps,
+} from './types/landingPage';
+
 // ============================================================================
 // Generic Response Wrappers (Type-level only)
 // ============================================================================

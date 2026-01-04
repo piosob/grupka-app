@@ -1,9 +1,32 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import LandingHero from '../components/LandingHero.astro';
+import FeaturesGrid from '../components/FeaturesGrid.astro';
+import HowItWorksTimeline from '../components/HowItWorksTimeline.astro';
+import EventPreviewSection from '../components/EventPreviewSection.astro';
+import CTASection from '../components/CTASection.astro';
+import FooterContact from '../components/FooterContact.astro';
+
+import {
+    heroContent,
+    features,
+    howItWorksSteps,
+    eventPreview,
+    ctaSectionButtons,
+    footerContact,
+} from '../lib/landingPageData';
+
+export const prerender = true;
 ---
 
 <MainLayout title="Strona Główna">
-    <h1>Hello World</h1>
+    <LandingHero content={heroContent} />
+    <FeaturesGrid features={features} />
+    <HowItWorksTimeline steps={howItWorksSteps} />
+    <EventPreviewSection event={eventPreview} />
+    <CTASection
+        ctaButtons={ctaSectionButtons}
+        helperText="Zaloguj się lub utwórz konto, aby zacząć organizować urodziny i prezenty dla dzieci w Twojej grupie."
+    />
+    <FooterContact contact={footerContact} />
 </MainLayout>

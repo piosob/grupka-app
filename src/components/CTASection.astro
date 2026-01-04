@@ -1,0 +1,25 @@
+---
+import type { CTAButton } from '../types/landingPage';
+import { Button } from '@/components/ui/button';
+
+interface Props {
+    ctaButtons: CTAButton[];
+    helperText?: string;
+}
+
+const { ctaButtons, helperText } = Astro.props;
+---
+
+<section class="py-16 px-8 bg-gray-900 text-white text-center">
+    <h2 class="text-4xl font-bold mb-6">Dołącz do Grupki już dziś!</h2>
+    {helperText && <p class="text-xl mb-8 max-w-2xl mx-auto">{helperText}</p>}
+    <div class="flex gap-4 justify-center">
+        {
+            ctaButtons.map((button) => (
+                <a href={button.href}>
+                    <Button variant={button.variant || 'default'}>{button.label}</Button>
+                </a>
+            ))
+        }
+    </div>
+</section>
