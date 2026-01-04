@@ -11,13 +11,13 @@
 ### Zarządzanie Stanem i Integracja API
 
 4. **Strategia stanu**: Hybrydowe podejście - Astro SSR dla initial load, React Query dla cache i synchronizacji, Context API dla globalnego UI state. **BRAK realtime w MVP**, **BRAK Redux**.
-5. **Context grupy**: URL-based - aktywna grupa to ta w URL, brak globalnego state. **Last visited group w localStorage jako nice-to-have, w MVP odpuszczamy**.
+5. **Context grupy**: URL-based - aktywna grupa to ta w URL, brak globalnego state.
 6. **Autentykacja**: Middleware-based protection z Supabase Auth, zgodnie z auth-spec.md - PKCE flow, session w cookies.
 
 ### Komponenty i Formularze
 
-7. **Magic Wand**: **Jeden textarea "Co lubi dziecko?"** (nie dwa pola), po kliknięciu Magic Wand AI poprawia treść w miejscu. Rate limit indicator, localStorage dla drafts.
-8. **Kod zaproszenia flow**: **Prosty, bez deep linków** - Admin generuje kod → wysyła WhatsApp/SMS → Nowy użytkownik wpisuje kod na `/join` → Dołącza. Brak maili z linkami w MVP.
+7. **Magic Wand**: **Jeden textarea "Co lubi dziecko?"** , po kliknięciu Magic Wand AI poprawia treść w miejscu. Rate limit indicator, localStorage dla drafts.
+8. **Kod zaproszenia flow**: **Prosty, bez deep linków** - Admin generuje kod → wysyła Messenger/SMS → Nowy użytkownik wpisuje kod na `/join` → Dołącza. Brak maili z linkami w MVP.
 9. **Hidden thread**: Trójwarstwowa ochrona - RLS w DB, API 403, Frontend nie renderuje dla organizatora.
 10. **Selekcja gości**: Checkboxy z "Zaznacz wszystkich", search dla >10 dzieci, large touch targets (48px+), alfabetyczne section headers.
 
@@ -58,7 +58,7 @@
 
 #### Landing Page (niezalogowani)
 
-- **Statyczna Astro SSR**: Hero (value proposition) + Features (3 kolumny) + How it works (3 kroki) + Footer.
+- **Statyczna Astro SSR**: Hero (value proposition) + Features (3 kolumny) + How it works (3 kroki) + Footer. Widzialne elementy w języku polskim.
 - **Zero JavaScript**: Instant load, Lighthouse >95, obrazy WebP z lazy loading.
 - **CTAs**: "Zaloguj się" / "Załóż konto" prominent.
 
