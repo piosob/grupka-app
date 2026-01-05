@@ -9,10 +9,10 @@ import type {
 } from '../types/landingPage';
 
 export const heroContent: HeroContent = {
-    title: 'Witaj rodzicu! Zorganizuj grupę z Grupka.',
+    title: '👋 Witaj rodzicu! Zorganizuj grupę przedszkolną i żłobkową z aplikacją Grupka.',
     subtitle: 'Uprość komunikację o urodzinach i prezentach.',
     description:
-        'Mobile-first, prywatność, asynchroniczna komunikacja i pomoc AI. Grupka to narzędzie dla współczesnych rodziców.',
+        'Koniec z chaosem na czatach 🌀, brakiem dyskrecji 🤫 i „martwymi duszami” 👻 w grupie. Bezpieczne, tymczasowe zaproszenia 🛡️, widoczny kontakt do admina ☎️, ukryte wątki o prezentach 🎁 i listy życzeń z AI ✨ wszystko porządkują.',
     ctaButtons: [
         { label: 'Zaloguj się', href: '/login' },
         { label: 'Załóż konto', href: '/register', variant: 'secondary' },
@@ -23,7 +23,7 @@ export const features: FeatureItem[] = [
     {
         title: 'Mobile-first hub',
         description:
-            'Dostęp do wszystkich informacji o grupie zawsze pod ręką, na każdym urządzeniu.',
+            'Koniec z chaosem informacyjnym! Wszystkie ważne informacje o grupie zawsze pod ręką, na każdym urządzeniu.',
         accent: '📱',
     },
     {
@@ -45,8 +45,14 @@ export const features: FeatureItem[] = [
     },
     {
         title: 'Ukryte wątki gości',
-        description: 'Dyskutuj o prezentach w spokoju, z dala od ciekawskich oczu dzieci.',
+        description: 'Dyskutuj o prezentach w spokoju, z dala od zainteresowania organizatora.',
         accent: '🕵️‍♀️',
+    },
+    {
+        title: 'Wydarzenia bez stresu',
+        description:
+            'Precyzyjnie zaproś tylko wybrane osoby na urodziny. Koniec z domysłami o prezentach – lista życzeń z pomocą AI! Bez niezręcznych sytuacji w szatni. 🎉',
+        accent: '🥳',
     },
 ];
 
@@ -55,21 +61,21 @@ export const howItWorksSteps: TimelineStep[] = [
         id: 1,
         title: 'Bezpieczne logowanie i tworzenie grupy',
         description:
-            'Zaloguj się bezpiecznie i stwórz swoją pierwszą grupę. Wszystkie Twoje dane są chronione.',
+            'Zaloguj się bezpiecznie i stwórz swoją pierwszą grupę. Wszystkie Twoje dane są chronione. 🔒',
         hint: 'Krok 1',
     },
     {
         id: 2,
         title: 'Zaproszenia z kodem 60 min',
         description:
-            'Wygeneruj tymczasowy kod zaproszenia, ważny tylko 60 minut, aby zaprosić innych rodziców.',
+            'Zadbaj o bezpieczeństwo grupy! Wygeneruj tymczasowy kod zaproszenia, ważny tylko 60 minut, aby bezpiecznie zaprosić innych rodziców i uniknąć niepowołanych osób. 🛡️',
         hint: 'Krok 2',
     },
     {
         id: 3,
         title: 'AI Magic Wand w akcji',
         description:
-            'Skorzystaj z AI do stworzenia idealnej listy prezentów, uwzględniając preferencje i budżet.',
+            'Skorzystaj z AI do stworzenia idealnej listy prezentów, uwzględniając preferencje i budżet. ✨🎁',
         hint: 'Krok 3',
     },
 ];
@@ -100,5 +106,5 @@ export const ctaSectionButtons: CTAButton[] = [
 export const footerContact: ContactInfo = {
     label: 'Potrzebujesz pomocy?',
     email: 'admin@grupka.app',
-    note: 'Nasz zespół wsparcia jest do Twojej dyspozycji.',
+    note: 'Masz problem z grupą lub potrzebujesz wsparcia? Nasz zespół jest do Twojej dyspozycji. Kontakt z administratorem grupy również będzie dla Ciebie dostępny.',
 };

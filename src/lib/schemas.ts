@@ -504,3 +504,61 @@ export const EventsQueryParamsSchema = PaginationParamsSchema.extend({
 });
 
 export type EventsQueryParams = z.infer<typeof EventsQueryParamsSchema>;
+
+// ============================================================================
+// Authentication Schemas
+// ============================================================================
+
+/**
+ * Login command schema
+ * Used in: Astro Action login
+ */
+export const LoginCommandSchema = z.object({
+    email: z.string().email('Nieprawidłowy format adresu email'),
+    password: z.string().min(1, 'Hasło jest wymagane'),
+});
+
+export type LoginCommand = z.infer<typeof LoginCommandSchema>;
+
+/**
+ * Register command schema
+ * Used in: Astro Action register
+ */
+export const RegisterCommandSchema = z
+    .object({
+        email: z.string().email('Nieprawidłowy format adresu email'),
+        password: z.string().min(8, 'Hasło musi mieć co najmniej 8 znaków'),
+        confirmPassword: z.string().min(8, 'Hasło musi mieć co najmniej 8 znaków'),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: 'Hasła muszą być identyczne',
+        path: ['confirmPassword'],
+    });
+
+export type RegisterCommand = z.infer<typeof RegisterCommandSchema>;
+
+/**
+ * Request password reset command schema
+ * Used in: Astro Action requestPasswordReset
+ */
+export const RequestPasswordResetCommandSchema = z.object({
+    email: z.string().email('Nieprawidłowy format adresu email'),
+});
+
+export type RequestPasswordResetCommand = z.infer<typeof RequestPasswordResetCommandSchema>;
+
+/**
+ * Update password command schema
+ * Used in: Astro Action updatePassword
+ */
+export const UpdatePasswordCommandSchema = z
+    .object({
+        password: z.string().min(8, 'Hasło musi mieć co najmniej 8 znaków'),
+        confirmPassword: z.string().min(8, 'Hasło musi mieć co najmniej 8 znaków'),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: 'Hasła muszą być identyczne',
+        path: ['confirmPassword'],
+    });
+
+export type UpdatePasswordCommand = z.infer<typeof UpdatePasswordCommandSchema>;

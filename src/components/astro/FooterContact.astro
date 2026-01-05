@@ -1,5 +1,5 @@
 ---
-import type { ContactInfo } from '../types/landingPage';
+import type { ContactInfo } from '../../types/landingPage';
 
 interface Props {
     contact: ContactInfo;
@@ -16,4 +16,3 @@ const { contact } = Astro.props;
         <p class="text-sm text-gray-400">{contact.note}</p>
     </details>
 </footer>
-

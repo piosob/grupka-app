@@ -26,6 +26,7 @@
         "@radix-ui/react-separator": "^1.1.8",
         "@radix-ui/react-slot": "^1.2.4",
         "@reduxjs/toolkit": "^2.11.2",
+        "@supabase/ssr": "^0.8.0",
         "@supabase/supabase-js": "^2.89.0",
         "@tailwindcss/vite": "^4.1.18",
         "@types/react": "^19.2.7",

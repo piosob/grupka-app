@@ -2,6 +2,8 @@
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 import { Toaster } from '../components/ui/sonner';
+import Logo from '@/components/astro/Logo.astro';
+import { UserNav } from '../components/react/UserNav';
 
 interface Props {
     title: string;
@@ -9,6 +11,7 @@ interface Props {
 }
 
 const { title, groupId } = Astro.props;
+const user = Astro.locals.user;
 ---
 
 <!doctype html>
@@ -26,9 +29,8 @@ const { title, groupId } = Astro.props;
             <!-- Top Bar -->
             <header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                 <div class="container mx-auto flex h-14 items-center">
-                    <!-- Logo/Brand -->
-                    <a href="/" class="mr-4 flex items-center">
-                        <span class="font-bold">Grupka</span>
+                                      <a href="/" class="mr-4 flex items-center">
+                        <Logo />
                     </a>
                     {groupId && (
                         <!-- GroupSwitcher (center/left) - dropdown z listą grup -->
@@ -39,8 +41,7 @@ const { title, groupId } = Astro.props;
                     )}
                     <!-- Profile Menu (right) - avatar + dropdown -->
                     <nav class="flex items-center space-x-2 ml-auto">
-                        <!-- Placeholder for Profile Dropdown -->
-                        <span class="text-sm">Profile</span>
+                        <UserNav userEmail={user?.email} client:load />
                     </nav>
                 </div>
             </header>
