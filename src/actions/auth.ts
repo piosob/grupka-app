@@ -71,7 +71,7 @@ export const logout = defineAction({
         const authService = createAuthService(supabase);
 
         const result = await authService.logout();
-
+        console.log('result of logout action', result);
         if (!result.success) {
             throw new Error(result.error || 'Nie udało się wylogować');
         }

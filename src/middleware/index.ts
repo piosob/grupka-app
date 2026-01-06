@@ -16,7 +16,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
                     .map((cookie) => ({ name: cookie.name, value: cookie.value as string })); // Type assertion;
             },
             setAll(cookiesToSet) {
-                cookiesToSet.forEach(({ name, value }) => context.cookies.set(name, value));
+                cookiesToSet.forEach(({ name, value, options }) =>
+                    context.cookies.set(name, value, options)
+                );
             },
         },
     });

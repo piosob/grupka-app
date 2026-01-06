@@ -17,7 +17,7 @@ interface UserNavProps {
 
 export function UserNav({ userEmail }: UserNavProps) {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
-
+    console.log('userEmail', userEmail);
     const handleLogout = async () => {
         setIsLoggingOut(true);
 
@@ -95,4 +95,3 @@ export function UserNav({ userEmail }: UserNavProps) {
         </DropdownMenu>
     );
 }
-
