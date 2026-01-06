@@ -175,7 +175,7 @@ function CreateChildForm() {
 // Example 7: Extending schemas for custom validation
 // ============================================================================
 
-import { z } from 'zod';
+import { z } from 'astro/zod';
 
 // You can extend existing schemas with additional validation
 const CreateGroupWithCustomValidation = CreateGroupCommandSchema.extend({

@@ -1,26 +1,29 @@
 import { defineAction } from 'astro:actions';
-import { z, type ZodType } from 'zod';
+import { z } from 'astro/zod';
 import {
     LoginCommandSchema,
     RegisterCommandSchema,
     RequestPasswordResetCommandSchema,
     UpdatePasswordCommandSchema,
 } from '../lib/schemas';
+import type { LoginCommand } from '../lib/schemas';
+
 import { createAuthService } from '../lib/services/auth.service';
 
 /**
  * Login action
- * Authenticates user with email and password
+ * Authenticates user with email and passwordpac
  */
 export const login = defineAction({
     accept: 'form',
-    input: LoginCommandSchema as any,
+    input: LoginCommandSchema,
     handler: async (input, context) => {
+        console.log('input of login action', input);
         const supabase = context.locals.supabase;
         const authService = createAuthService(supabase);
 
         const result = await authService.login(input.email, input.password);
-        console.log(result);
+        console.log('result of login action', result);
         if (!result.success) {
             throw new Error(result.error || 'Nie udało się zalogować');
         }
@@ -38,7 +41,7 @@ export const login = defineAction({
  */
 export const register = defineAction({
     accept: 'form',
-    input: RegisterCommandSchema as any,
+    input: RegisterCommandSchema,
     handler: async (input, context) => {
         const supabase = context.locals.supabase;
         const authService = createAuthService(supabase);
@@ -62,7 +65,7 @@ export const register = defineAction({
  */
 export const logout = defineAction({
     accept: 'form',
-    input: z.object({}) as any,
+    input: z.object({}),
     handler: async (input, context) => {
         const supabase = context.locals.supabase;
         const authService = createAuthService(supabase);
@@ -85,7 +88,7 @@ export const logout = defineAction({
  */
 export const requestPasswordReset = defineAction({
     accept: 'form',
-    input: RequestPasswordResetCommandSchema as any,
+    input: RequestPasswordResetCommandSchema,
     handler: async (input, context) => {
         const supabase = context.locals.supabase;
         const authService = createAuthService(supabase);
@@ -110,7 +113,7 @@ export const requestPasswordReset = defineAction({
  */
 export const updatePassword = defineAction({
     accept: 'form',
-    input: UpdatePasswordCommandSchema as any,
+    input: UpdatePasswordCommandSchema,
     handler: async (input, context) => {
         const supabase = context.locals.supabase;
         const authService = createAuthService(supabase);

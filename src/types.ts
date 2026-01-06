@@ -100,3 +100,11 @@ export interface PaginatedResponse<T> {
 export interface SingleResponse<T> {
     data: T;
 }
+
+/** Minimal shape for server action responses rendered by Astro pages */
+export interface ServerActionResult<T = unknown> {
+    data?: T;
+    error?: {
+        message?: string;
+    };
+}

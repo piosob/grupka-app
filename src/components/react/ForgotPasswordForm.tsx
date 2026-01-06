@@ -1,43 +1,16 @@
-import { useState } from 'react';
-import { actions } from 'astro:actions';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 
-export function ForgotPasswordForm() {
-    const [email, setEmail] = useState('');
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+interface ForgotPasswordFormProps {
+    action: string;
+    error?: string;
+    successMessage?: string;
+}
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
-        setSuccess(false);
-        setIsLoading(true);
-
-        try {
-            const formData = new FormData();
-            formData.append('email', email);
-
-            const { data, error: actionError } = await actions.auth.requestPasswordReset(formData);
-
-            if (actionError) {
-                setError(actionError.message);
-                setIsLoading(false);
-                return;
-            }
-
-            setSuccess(true);
-            setIsLoading(false);
-        } catch (err) {
-            setError('Wystąpił nieoczekiwany błąd');
-            setIsLoading(false);
-        }
-    };
-
-    if (success) {
+export function ForgotPasswordForm({ action, error, successMessage }: ForgotPasswordFormProps) {
+    if (successMessage) {
         return (
             <Card className="w-full max-w-md mx-auto">
                 <CardHeader>
@@ -46,13 +19,7 @@ export function ForgotPasswordForm() {
                 <CardContent>
                     <div className="space-y-4">
                         <div className="text-sm text-green-600 bg-green-50 p-4 rounded-md">
-                            <p>
-                                Jeśli konto z tym adresem email istnieje, wysłaliśmy link do
-                                resetowania hasła.
-                            </p>
-                            <p className="mt-2">
-                                Sprawdź swoją skrzynkę email i postępuj zgodnie z instrukcjami.
-                            </p>
+                            <p>{successMessage}</p>
                         </div>
                         <div className="text-center">
                             <a
@@ -77,26 +44,30 @@ export function ForgotPasswordForm() {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form method="POST" action={action} className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
                         <Input
                             id="email"
+                            name="email"
                             type="email"
+                            autoComplete="email"
                             placeholder="twoj@email.pl"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
                             required
-                            disabled={isLoading}
                         />
                     </div>
 
                     {error && (
-                        <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">{error}</div>
+                        <div
+                            className="text-sm text-red-600 bg-red-50 p-3 rounded-md"
+                            role="status"
+                        >
+                            {error}
+                        </div>
                     )}
 
-                    <Button type="submit" className="w-full" disabled={isLoading}>
-                        {isLoading ? 'Wysyłanie...' : 'Wyślij link resetujący'}
+                    <Button type="submit" className="w-full">
+                        Wyślij link resetujący
                     </Button>
 
                     <div className="text-center text-sm">

@@ -126,3 +126,4 @@ Brak integracji z API — wszystkie dane są statyczne i zapisane po stronie ser
 9. FooterContact: wykorzystać `<details>`/`<summary>` do odkrycia emaila i dodać dostępność (aria).
 10. Przetestować responsywność na mobile, minimalizować JS, sprawdzić Lighthouse, zadbać o SEO/semantic.
 
+

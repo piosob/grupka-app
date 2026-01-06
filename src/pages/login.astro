@@ -1,9 +1,15 @@
 ---
+export const prerender = false;
 import AuthLayout from '../layouts/AuthLayout.astro';
 import { LoginForm } from '../components/react/LoginForm';
 import Logo from '../components/astro/Logo.astro';
+import { actions } from 'astro:actions';
+import type { ServerActionResult } from '../types';
 
 // If user is already logged in, middleware will redirect to /groups
+const actionResult = Astro.getActionResult(actions.auth.login);
+console.log('actionResult of login', actionResult);
+const loginError = actionResult?.error?.message;
 ---
 
 <AuthLayout title="Logowanie">
@@ -17,5 +23,5 @@ import Logo from '../components/astro/Logo.astro';
         </p>
     </div>
 
-    <LoginForm client:load />
+    <LoginForm action={actions.auth.login} error={loginError} />
 </AuthLayout>
