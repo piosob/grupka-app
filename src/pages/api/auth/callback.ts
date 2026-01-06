@@ -45,7 +45,7 @@ export const GET: APIRoute = async ({ url, locals, redirect, cookies }) => {
         }
 
         // Email confirmation or regular login - redirect to groups
-        return redirect('/groups');
+        return redirect('/dashboard');
     } catch (err) {
         console.error('Auth callback exception:', err);
         return redirect('/login?error=unexpected_error');

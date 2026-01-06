@@ -6,7 +6,7 @@ import Logo from '../components/astro/Logo.astro';
 import { actions } from 'astro:actions';
 import type { ServerActionResult } from '../types';
 
-// If user is already logged in, middleware will redirect to /groups
+// If user is already logged in, middleware will redirect to /dashboard
 const actionResult = Astro.getActionResult(actions.auth.login);
 if (actionResult && !actionResult.error) {
     return Astro.redirect(`/dashboard`);

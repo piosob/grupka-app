@@ -5,7 +5,7 @@ const supabaseUrl = import.meta.env.SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.SUPABASE_KEY;
 
 // Protected paths that require authentication
-const protectedPaths = ['/groups', '/profile'];
+const protectedPaths = ['/dashboard', '/profile', '/groups'];
 
 export const onRequest = defineMiddleware(async (context, next) => {
     const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
@@ -40,12 +40,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
         return context.redirect('/login');
     }
 
-    // If user is logged in and tries to access auth pages, redirect to groups
+    // If user is logged in and tries to access auth pages, redirect to dashboard
     const authPages = ['/login', '/register', '/forgot-password'];
     const isAuthPage = authPages.some((path) => context.url.pathname === path);
 
     if (isAuthPage && user) {
-        return context.redirect('/groups');
+        return context.redirect('/dashboard');
     }
 
     return next();

@@ -1,5 +1,6 @@
 ---
-
+const user = Astro.locals.user;
+const href = user ? '/dashboard' : '/';
 ---
 
-<a href="/" class="text-2xl brand-text p-2 rounded-md"> Grupka </a>
+<a href={href} class="text-2xl brand-text p-2 rounded-md"> Grupka </a>

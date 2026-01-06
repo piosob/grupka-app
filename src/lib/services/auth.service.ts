@@ -47,7 +47,7 @@ export class AuthService {
 
             return {
                 success: true,
-                redirectTo: '/groups',
+                redirectTo: '/dashboard',
             };
         } catch (err) {
             console.error('Login error:', err);

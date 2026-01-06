@@ -119,6 +119,12 @@
     }
     body {
         @apply bg-background text-foreground;
+        scrollbar-gutter: stable;
+    }
+
+    /* Prevent Radix UI from adding padding-right when scrollbar-gutter is used */
+    body[data-scroll-locked] {
+        padding-right: 0 !important;
     }
 }
 

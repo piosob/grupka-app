@@ -29,7 +29,7 @@ export const login = defineAction({
 
         return {
             success: true,
-            redirectTo: result.redirectTo || '/groups',
+            redirectTo: result.redirectTo || '/dashboard',
         };
     },
 });
