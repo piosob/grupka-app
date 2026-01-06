@@ -352,6 +352,7 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 **API Endpoints:**
 
 - `GET /api/groups` → GroupListItemDTO[]
+- `POST /api/groups` → CreateGroupCommand → CreateGroupResponseDTO
 
 ---
 

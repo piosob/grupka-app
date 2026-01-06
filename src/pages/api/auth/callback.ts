@@ -51,4 +51,3 @@ export const GET: APIRoute = async ({ url, locals, redirect, cookies }) => {
         return redirect('/login?error=unexpected_error');
     }
 };
-

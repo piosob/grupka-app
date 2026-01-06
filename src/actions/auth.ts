@@ -18,12 +18,11 @@ export const login = defineAction({
     accept: 'form',
     input: LoginCommandSchema,
     handler: async (input, context) => {
-        console.log('input of login action', input);
         const supabase = context.locals.supabase;
         const authService = createAuthService(supabase);
 
         const result = await authService.login(input.email, input.password);
-        console.log('result of login action', result);
+
         if (!result.success) {
             throw new Error(result.error || 'Nie udało się zalogować');
         }
@@ -71,7 +70,6 @@ export const logout = defineAction({
         const authService = createAuthService(supabase);
 
         const result = await authService.logout();
-        console.log('result of logout action', result);
         if (!result.success) {
             throw new Error(result.error || 'Nie udało się wylogować');
         }

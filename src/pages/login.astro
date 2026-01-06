@@ -9,7 +9,7 @@ import type { ServerActionResult } from '../types';
 // If user is already logged in, middleware will redirect to /groups
 const actionResult = Astro.getActionResult(actions.auth.login);
 if (actionResult && !actionResult.error) {
-    return Astro.redirect(`/groups`);
+    return Astro.redirect(`/dashboard`);
 }
 const loginError = actionResult?.error?.message;
 ---
