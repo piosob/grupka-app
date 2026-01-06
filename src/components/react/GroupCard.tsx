@@ -14,7 +14,7 @@ export function GroupCard({ group }: GroupCardProps) {
         <Card className="group overflow-hidden border-2 hover:border-primary/50 transition-all duration-300">
             <CardContent className="p-0">
                 <a
-                    href={`/groups/${group.id}/events`}
+                    href={`/groups/${group.id}`}
                     className="flex items-center justify-between p-5 w-full text-left"
                 >
                     <div className="space-y-2">

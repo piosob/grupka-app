@@ -14,10 +14,48 @@ import type {
     JoinGroupCommand,
     JoinGroupResponseDTO,
     PaginationParams,
+    EventListItemDTO,
 } from '../schemas';
-import type { PaginatedResponse } from '../../types';
+import type { GroupEntity, EventEntity, ChildEntity, PaginatedResponse } from '../../types';
 
 type TypedSupabaseClient = SupabaseClient<Database>;
+
+/**
+ * Internal helper types for database query results with joins/aggregations
+ */
+interface GroupWithCounts extends Omit<GroupEntity, 'created_by'> {
+    created_by: string; // We know it's not null for an existing group
+    members: { count: number }[];
+    children: { count: number }[];
+    events: { count: number }[];
+}
+
+interface EventWithDetails extends EventEntity {
+    child: { display_name: string } | null;
+    guests: { count: number }[];
+}
+
+interface GroupListItemQueryResult {
+    role: Database['public']['Enums']['group_role'];
+    joined_at: string;
+    group: {
+        id: string;
+        name: string;
+        created_at: string;
+        members: { count: number }[];
+    };
+}
+
+interface GroupMemberQueryResult {
+    user_id: string;
+    role: Database['public']['Enums']['group_role'];
+    joined_at: string;
+    profile: {
+        children: {
+            display_name: string;
+        }[];
+    } | null;
+}
 
 /**
  * Service for managing group operations.
@@ -135,7 +173,9 @@ export class GroupsService {
         }
 
         // Map database response to DTO format
-        const mappedData: GroupListItemDTO[] = (data || []).map((item: any) => ({
+        const mappedData: GroupListItemDTO[] = (
+            (data as unknown as GroupListItemQueryResult[]) || []
+        ).map((item) => ({
             id: item.group.id,
             name: item.group.name,
             role: item.role,
@@ -156,15 +196,16 @@ export class GroupsService {
     }
 
     /**
-     * Retrieves detailed information about a specific group.
+     * Retrieves detailed information about a specific group for the Group Hub.
      *
      * @param userId - ID of the authenticated user
      * @param groupId - ID of the group to retrieve
-     * @returns Group details including counts and user role
+     * @returns Group details including counts, user role, admin info, next event and user's children
      * @throws Error if group not found or user is not a member
      */
     async getGroupDetail(userId: string, groupId: string): Promise<GroupDetailDTO> {
-        const { data, error } = await this.supabase
+        // 1. Fetch group membership and basic group info
+        const { data: membership, error: membershipError } = await this.supabase
             .from('group_members')
             .select(
                 `
@@ -184,23 +225,96 @@ export class GroupsService {
             .eq('user_id', userId)
             .single();
 
-        if (error || !data) {
+        if (membershipError || !membership) {
             throw new Error('Group not found or access denied');
         }
 
-        const group = data.group as any;
+        // Cast joined data to our helper interface
+        const group = membership.group as unknown as GroupWithCounts;
+
+        // 2. Fetch additional data in parallel
+        const [adminInfo, nextEventData, myChildrenData] = await Promise.all([
+            // Fetch admin's children names (admin is the one who created the group)
+            this.supabase
+                .from('children')
+                .select('display_name')
+                .eq('group_id', groupId)
+                .eq('parent_id', group.created_by),
+
+            // Fetch nearest upcoming event
+            this.supabase
+                .from('events')
+                .select(
+                    `
+					*,
+					child:children(display_name),
+					guests:event_guests(count)
+				`
+                )
+                .eq('group_id', groupId)
+                .gte('event_date', new Date().toISOString().split('T')[0])
+                .order('event_date', { ascending: true })
+                .limit(1)
+                .maybeSingle(),
+
+            // Fetch user's children in this group
+            this.supabase
+                .from('children')
+                .select('*')
+                .eq('group_id', groupId)
+                .eq('parent_id', userId)
+                .order('display_name', { ascending: true }),
+        ]);
+
+        // Process admin name (comma separated children names)
+        const adminName = adminInfo.data?.map((c) => c.display_name).join(', ') || null;
+
+        // Process next event
+        let nextEvent: EventListItemDTO | null = null;
+        if (nextEventData.data) {
+            const e = nextEventData.data as unknown as EventWithDetails;
+            nextEvent = {
+                id: e.id,
+                title: e.title,
+                eventDate: e.event_date,
+                description: e.description,
+                childId: e.child_id,
+                childName: e.child?.display_name || null,
+                organizerId: e.organizer_id,
+                isOrganizer: e.organizer_id === userId,
+                guestCount: e.guests?.[0]?.count ?? 0,
+                hasNewUpdates: new Date(e.updated_at) > new Date(Date.now() - 8 * 60 * 60 * 1000),
+                createdAt: e.created_at,
+                updatedAt: e.updated_at,
+            };
+        }
+
+        // Process my children
+        const myChildren: ChildListItemDTO[] = (myChildrenData.data || []).map(
+            (c: ChildEntity) => ({
+                id: c.id,
+                displayName: c.display_name,
+                bio: c.bio,
+                birthDate: c.birth_date,
+                parentId: c.parent_id,
+                isOwner: true,
+                createdAt: c.created_at,
+            })
+        );
 
         return {
             id: group.id,
             name: group.name,
-            role: data.role as 'admin' | 'member',
+            role: membership.role as 'admin' | 'member',
             memberCount: group.members?.[0]?.count ?? 0,
             childrenCount: group.children?.[0]?.count ?? 0,
-            // upcomingEventsCount logic: for now returning total events
-            // TODO: Filter events by date if needed in the query
+            // TODO: In a real app, upcomingEventsCount should be filtered by date in the query
             upcomingEventsCount: group.events?.[0]?.count ?? 0,
             createdBy: group.created_by,
             createdAt: group.created_at,
+            adminName,
+            nextEvent,
+            myChildren,
         };
     }
 
@@ -252,11 +366,13 @@ export class GroupsService {
             throw new Error(`Failed to fetch members: ${error.message}`);
         }
 
-        const mappedData: GroupMemberDTO[] = (data || []).map((item: any) => ({
+        const mappedData: GroupMemberDTO[] = (
+            (data as unknown as GroupMemberQueryResult[]) || []
+        ).map((item) => ({
             userId: item.user_id,
             role: item.role,
             joinedAt: item.joined_at,
-            childrenNames: item.profile?.children?.map((c: any) => c.display_name) || [],
+            childrenNames: item.profile?.children?.map((c) => c.display_name) || [],
         }));
 
         return {
@@ -305,7 +421,7 @@ export class GroupsService {
             throw new Error(`Failed to fetch children: ${error.message}`);
         }
 
-        const mappedData: ChildListItemDTO[] = (data || []).map((item: any) => ({
+        const mappedData: ChildListItemDTO[] = (data || []).map((item) => ({
             id: item.id,
             displayName: item.display_name,
             bio: item.bio,
@@ -351,7 +467,7 @@ export class GroupsService {
             throw new Error('Forbidden: Only group admins can update group settings');
         }
 
-        const updateData: any = {};
+        const updateData: Partial<Database['public']['Tables']['groups']['Update']> = {};
         if (command.name) updateData.name = command.name.trim();
 
         const { data, error } = await this.supabase
@@ -545,7 +661,7 @@ export class GroupsService {
         }
 
         const groupId = invite.group_id;
-        const groupName = (invite as any).groups.name;
+        const groupName = (invite as unknown as { groups: { name: string } }).groups.name;
 
         // 2. Check if already a member
         const { data: existingMember } = await this.supabase

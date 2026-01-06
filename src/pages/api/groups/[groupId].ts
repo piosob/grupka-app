@@ -6,13 +6,14 @@ import { createGroupsService } from '../../../lib/services/groups.service';
 /**
  * GET /api/groups/:groupId
  *
- * Retrieves detailed information about a specific group.
+ * Retrieves detailed information about a specific group for the Group Hub view.
+ * Includes admin info, next event, and user's children in this group.
  *
  * Path Parameters:
  * - groupId (uuid): The ID of the group
  *
  * Responses:
- * - 200 OK: Successfully retrieved details
+ * - 200 OK: Successfully retrieved details (GroupDetailDTO)
  * - 401 Unauthorized: Missing or invalid authentication token
  * - 403 Forbidden: User is not a member of the group
  * - 404 Not Found: Group does not exist

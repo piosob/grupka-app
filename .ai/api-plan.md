@@ -104,7 +104,7 @@ Create a new group. The creator automatically becomes an admin.
 
 #### GET /api/groups/:groupId
 
-Get group details.
+Get group details (Group Hub summary).
 
 **Path Parameters:**
 | Parameter | Type | Description |
@@ -123,7 +123,33 @@ Get group details.
         "childrenCount": 18,
         "upcomingEventsCount": 3,
         "createdBy": "uuid",
-        "createdAt": "2025-01-15T10:30:00Z"
+        "createdAt": "2025-01-15T10:30:00Z",
+        "adminName": "Staś, Ania",
+        "nextEvent": {
+            "id": "uuid",
+            "title": "Urodziny Stasia",
+            "eventDate": "2025-05-15",
+            "description": "Zapraszamy na urodziny!",
+            "childId": "uuid",
+            "childName": "Staś",
+            "organizerId": "uuid",
+            "isOrganizer": true,
+            "guestCount": 12,
+            "hasNewUpdates": true,
+            "createdAt": "2025-01-15T10:30:00Z",
+            "updatedAt": "2025-01-15T10:30:00Z"
+        },
+        "myChildren": [
+            {
+                "id": "uuid",
+                "displayName": "Staś",
+                "bio": "Loves dinosaurs...",
+                "birthDate": "2019-05-15",
+                "parentId": "uuid",
+                "isOwner": true,
+                "createdAt": "2025-01-15T10:30:00Z"
+            }
+        ]
     }
 }
 ```
@@ -1020,6 +1046,15 @@ export async function onRequest({ request, locals }, next) {
 3. Check user is not already a member
 4. Insert into `group_members` with `role = 'member'`
 5. Delete or keep invite code (configurable)
+
+#### Group Hub Details (GET /api/groups/:groupId)
+
+1. Verify user is a member of the group
+2. Fetch basic group info and counts (members, children, events)
+3. Fetch admin identification (imiona dzieci administratora)
+4. Fetch nearest upcoming event for the group
+5. Fetch user's children belonging to this group
+6. Return aggregated response for the Hub view
 
 #### Admin Contact Reveal (US-005)
 

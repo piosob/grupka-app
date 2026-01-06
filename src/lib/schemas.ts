@@ -102,23 +102,6 @@ export const CreateGroupResponseDTOSchema = z.object({
 export type CreateGroupResponseDTO = z.infer<typeof CreateGroupResponseDTOSchema>;
 
 /**
- * Detailed group information
- * Used in: GET /api/groups/:groupId
- */
-export const GroupDetailDTOSchema = z.object({
-    id: z.string().uuid(),
-    name: z.string().min(3).max(100),
-    role: z.enum(['admin', 'member']),
-    memberCount: z.number().int().min(0),
-    childrenCount: z.number().int().min(0),
-    upcomingEventsCount: z.number().int().min(0),
-    createdBy: z.string().uuid(),
-    createdAt: z.string().datetime(),
-});
-
-export type GroupDetailDTO = z.infer<typeof GroupDetailDTOSchema>;
-
-/**
  * Command for updating a group
  * Used in: PATCH /api/groups/:groupId
  */
@@ -131,7 +114,7 @@ export type UpdateGroupCommand = z.infer<typeof UpdateGroupCommandSchema>;
 /**
  * Response after updating a group
  * Used in: PATCH /api/groups/:groupId
- */
+ * */
 export const UpdateGroupResponseDTOSchema = z.object({
     id: z.string().uuid(),
     name: z.string().min(3).max(100),
@@ -429,6 +412,26 @@ export const UpdateEventResponseDTOSchema = z.object({
 });
 
 export type UpdateEventResponseDTO = z.infer<typeof UpdateEventResponseDTOSchema>;
+
+/**
+ * Detailed group information
+ * Used in: GET /api/groups/:groupId (Group Hub)
+ */
+export const GroupDetailDTOSchema = z.object({
+    id: z.string().uuid(),
+    name: z.string().min(3).max(100),
+    role: z.enum(['admin', 'member']),
+    memberCount: z.number().int().min(0),
+    childrenCount: z.number().int().min(0),
+    upcomingEventsCount: z.number().int().min(0),
+    createdBy: z.string().uuid(),
+    createdAt: z.string().datetime(),
+    adminName: z.string().nullable(),
+    nextEvent: EventListItemDTOSchema.nullable(),
+    myChildren: z.array(ChildListItemDTOSchema),
+});
+
+export type GroupDetailDTO = z.infer<typeof GroupDetailDTOSchema>;
 
 // ============================================================================
 // Event Comments DTOs & Commands

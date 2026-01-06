@@ -59,11 +59,12 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 
 **Group context routes** (`/groups/:groupId/`):
 
-- `events` - Lista wydarzeń
+- `/` - Hub Grupy (Strona startowa grupy, skróty i kontakt z adminem)
+- `events` - Pełna lista wydarzeń
 - `events/new` - Tworzenie wydarzenia
 - `events/:eventId` - Szczegóły wydarzenia + komentarze (dla gości)
 - `events/:eventId/edit` - Edycja wydarzenia (organizator)
-- `children` - Lista dzieci w grupie
+- `children` - Pełna lista dzieci w grupie
 - `children/new` - Dodawanie dziecka
 - `children/:childId` - Szczegóły dziecka
 - `children/:childId/edit` - Edycja dziecka (Magic Wand)
@@ -322,7 +323,7 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
     - Rola (Admin/Członek)
     - Stats: X dzieci, Y członków, Z nadchodzących wydarzeń
     - Data dołączenia
-    - CTA "Przejdź do grupy" → `/groups/:groupId/events`
+    - CTA "Przejdź do grupy" → `/groups/:groupId` (Hub Grupy)
 
 **Kluczowe komponenty:**
 
@@ -403,7 +404,53 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 
 ---
 
-### 2.8. Lista Wydarzeń
+### 2.8. Hub Grupy (Strona startowa grupy)
+
+**Ścieżka:** `/groups/:groupId`
+
+**Główny cel:**
+
+- **Glanceable Hub**: Centralny punkt styku po wejściu do grupy, pokazujący "co się dzieje" bez konieczności nawigowania głębiej.
+- Szybki podgląd najważniejszych informacji (nadchodzące urodziny, Twoje dziecko).
+- Jasna ścieżka kontaktu z administratorem grupy.
+- Główny punkt rozbiegowy do sekcji Wydarzeń, Dzieci i Członków.
+
+**Kluczowe informacje:**
+
+- Nazwa grupy i Twoja rola (Admin/Członek).
+- **Sekcja Administratora**: Imię/ksywka admina + przycisk "Pokaż kontakt" (reveal email).
+- **Nadchodzące Wydarzenia**: Skrót 1-2 najbliższych urodzin/wydarzeń.
+- **Twoje Dzieci**: Szybki podgląd profili Twoich dzieci w tej grupie z opcją edycji.
+- **Statystyki grupy**: Liczniki dzieci, członków i aktywnych wydarzeń.
+
+**Kluczowe komponenty:**
+
+- MainLayout (z nawigacją górną i dolną).
+- GroupHub (React):
+    - **Nagłówek Grupy**: Tytuł, badge roli, info o adminie.
+    - **Launchpad (Aktywne kafle)**:
+        - **Kafel 🎂 Wydarzenia**: Pokazuje najbliższe wydarzenie. Kliknięcie prowadzi do `/events`.
+        - **Kafel 👶 Dzieci**: Pokazuje liczbę dzieci i listę Twoich dzieci. Kliknięcie prowadzi do `/children`.
+        - **Kafel 👥 Członkowie**: Pokazuje liczbę rodziców. Kliknięcie prowadzi do `/members`.
+    - **Admin Actions Section** (tylko dla admina):
+        - Przycisk "Generuj kod zaproszenia" (z informacją o ważności 60 min).
+        - Przycisk "Ustawienia grupy".
+
+**Względy UX/Dostępność/Bezpieczeństwo:**
+
+- Mobile First: kafle o dużym polu dotyku (min 48px)
+- Hierarchia informacji: administrator na górze jako "kanał awaryjny"
+- Szybki dostęp do edycji własnego dziecka (częsty use case)
+- RLS: tylko członkowie grupy mają dostęp do Hubu
+
+**API Endpoints:**
+
+- `GET /api/groups/:groupId` → GroupDetailDTO
+- `GET /api/groups/:groupId/summary` → GroupSummaryDTO (nadchodzące wydarzenia, statystyki)
+
+---
+
+### 2.9. Lista Wydarzeń
 
 **Ścieżka:** `/groups/:groupId/events`
 
@@ -1243,10 +1290,11 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
     - Click "Utwórz grupę"
     - System: tworzy grupę + członkostwo z role=admin
 
-5. **Lista Wydarzeń - Empty** (`/groups/:groupId/events`)
+5. **Hub Grupy (Strona startowa grupy)** (`/groups/:groupId`)
     - Redirect automatyczny po utworzeniu
-    - Widzi empty state + modal/toast: "Wygeneruj kod aby zaprosić członków"
-    - Click "Później" lub zamyka modal
+    - Widzi Hub grupy z podsumowaniem (nadchodzące urodziny, Twoje dziecko, Admin)
+    - Widzi kafel "Wydarzenia" z info: "Wygeneruj kod aby zaprosić członków" (jeśli admin)
+    - Click "Później" lub zamyka modal zaproszenia (jeśli wyskoczył)
     - Decyzja: najpierw doda swoje dziecko
 
 6. **Navigation** - Bottom nav → "Dzieci"
@@ -1327,10 +1375,10 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
     - Click "Dołącz"
     - System: waliduje kod, dodaje do grupy jako member
 
-6. **Lista Wydarzeń** (`/groups/:groupId/events`)
+6. **Hub Grupy** (`/groups/:groupId`)
     - Redirect automatyczny po dołączeniu
     - Toast: "Dołączyłeś do grupy Przedszkole Słoneczko!"
-    - Widzi istniejące wydarzenia (jeśli są)
+    - Widzi skrót nadchodzących wydarzeń i statystyki grupy
     - Decyzja: doda swoje dziecko
 
 7. **Navigation** - Bottom nav → "Dzieci"
