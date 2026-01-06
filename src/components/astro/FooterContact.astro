@@ -1,11 +1,9 @@
 ---
-import type { ContactInfo } from '../../types/landingPage';
-
-interface Props {
-    contact: ContactInfo;
-}
-
-const { contact } = Astro.props;
+const contact = {
+    label: 'Potrzebujesz pomocy?',
+    email: 'admin@grupka.app',
+    note: 'Masz problem z grupą lub potrzebujesz wsparcia? Nasz zespół jest do Twojej dyspozycji. Kontakt z administratorem grupy również będzie dla Ciebie dostępny.',
+};
 ---
 
 <footer class="py-8 px-8 bg-gray-800 text-gray-300 text-center">

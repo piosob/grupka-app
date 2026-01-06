@@ -1,11 +1,46 @@
 ---
-import type { FeatureItem } from '../../types/landingPage';
-
-interface Props {
-    features: FeatureItem[];
-}
-
-const { features } = Astro.props;
+const features = [
+    {
+        title: 'Hub z innymi rodzicami',
+        description:
+            'Koniec z chaosem informacyjnym! Wszystkie ważne informacje o grupie zawsze pod ręką, na każdym urządzeniu.',
+        accent: '📱',
+    },
+    {
+        title: 'Ograniczone powiadomienia',
+        description:
+            'Ważne informacje docierają do Ciebie tylko wtedy, gdy jest to naprawdę istotne.',
+        accent: '🔕',
+    },
+    {
+        title: 'Prywatność przede wszystkim',
+        description: 'Dziel się tylko tym, co chcesz. Bez imion i zbędnych danych osobowych.',
+        accent: '🔒',
+    },
+    {
+        title: 'Popraw za pomocą AI',
+        description:
+            'Tworzenie list prezentów nigdy nie było tak proste i przyjemne. Nasz asystent AI Ci pomoże.',
+        accent: '✨',
+    },
+    {
+        title: 'Ukryte wątki gości',
+        description: 'Dyskutuj o prezentach w spokoju, z dala od zainteresowania organizatora.',
+        accent: '🕵️‍♀️',
+    },
+    {
+        title: 'Wydarzenia bez stresu',
+        description:
+            'Precyzyjnie zaproś tylko wybrane osoby na urodziny. Koniec z domysłami o prezentach – lista życzeń z pomocą AI! Bez niezręcznych sytuacji w szatni. 🎉',
+        accent: '🥳',
+    },
+    {
+        title: 'Bezpłatny dostęp',
+        description:
+            'Korzystaj z aplikacji bezpłatnie. Żadnych subskrypcji ani opłat na start dla rodziców.',
+        accent: '🎁',
+    },
+];
 ---
 
 <section class="py-16 px-8 bg-gray-800 text-white">

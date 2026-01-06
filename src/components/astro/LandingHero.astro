@@ -1,27 +1,118 @@
 ---
-import type { HeroContent, CTAButton } from '../../types/landingPage';
 import { Button } from '@/components/ui/button';
 
-interface Props {
-    content: HeroContent;
-}
+// Wyciągamy pytania z opisu
+const questions = [
+    'Masz dosyć umawiania zdarzeń przez komunikatory?',
+    'Ważne informacje giną w tonie wiadomości?',
+    'Męczy Cię scrollowanie w poszukiwaniu szczegółów?',
+];
 
-const { content } = Astro.props;
+const title = '👋 Witaj rodzicu!';
+const subtitle =
+    'Zorganizuj grupę przedszkolną i żłobkową z aplikacją <span class="brand-text">Grupka</span>';
+
+const ctaButtons = [
+    { label: 'Zaloguj się', href: '/login' },
+    { label: 'Załóż konto', href: '/register', variant: 'secondary' as const },
+];
 ---
 
 <header
-    class="flex flex-col items-center justify-center text-center p-8 bg-gray-900 text-white min-h-screen"
+    class="relative flex flex-col items-center justify-center text-center px-6 py-16 md:py-24 bg-gray-950 text-white min-h-[90vh] overflow-hidden"
 >
-    <h1 class="text-5xl font-bold mb-4">{content.title}</h1>
-    <p class="text-xl mb-6">{content.subtitle}</p>
-    <p class="text-lg mb-8 max-w-2xl">{content.description}</p>
-    <div class="flex gap-4">
-        {
-            content.ctaButtons.map((button) => (
-                <a href={button.href}>
-                    <Button variant={button.variant || 'default'}>{button.label}</Button>
-                </a>
-            ))
-        }
+    <!-- Background Decor -->
+    <div
+        class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full overflow-hidden pointer-events-none opacity-20"
+    >
+        <div
+            class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-600 blur-[120px] rounded-full"
+        >
+        </div>
+        <div
+            class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-pink-600 blur-[120px] rounded-full"
+        >
+        </div>
+    </div>
+
+    <div class="relative z-10 max-w-4xl mx-auto">
+        <h1 class="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">
+            {title}
+        </h1>
+
+        <p class="text-xl md:text-3xl font-medium mb-12 text-gray-200" set:html={subtitle} />
+
+        <!-- Problem Section: Questions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+            {
+                questions.map((q) => (
+                    <div class="bg-white/5 backdrop-blur-sm border border-white/10 p-4 rounded-xl text-gray-400 italic text-sm md:text-base flex items-center justify-center">
+                        {q}
+                    </div>
+                ))
+            }
+        </div>
+
+        <!-- The Hook & Solution -->
+        <div class="mb-12 space-y-6">
+            <h2
+                class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"
+            >
+                <span class="brand-text">Grupka</span> rozwiązuje te problemy.
+            </h2>
+
+            <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+                Zapomnij o chaosie na czatach i braku dyskrecji. Postaw na spokój i porządek.
+            </p>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto pt-4">
+                <div class="flex flex-col items-center gap-2">
+                    <span class="text-2xl">🛡️</span>
+                    <span class="text-xs uppercase tracking-wider font-semibold text-gray-400"
+                        >Bezpieczne kody</span
+                    >
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <span class="text-2xl">☎️</span>
+                    <span class="text-xs uppercase tracking-wider font-semibold text-gray-400"
+                        >Kontakt z adminem</span
+                    >
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <span class="text-2xl">🎁</span>
+                    <span class="text-xs uppercase tracking-wider font-semibold text-gray-400"
+                        >Ukryte wątki</span
+                    >
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <span class="text-2xl">✨</span>
+                    <span class="text-xs uppercase tracking-wider font-semibold text-gray-400"
+                        >Wsparcie AI</span
+                    >
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-4 items-center">
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                {
+                    ctaButtons.map((button) => (
+                        <a href={button.href} class="w-full sm:w-auto">
+                            <Button
+                                variant={button.variant || 'default'}
+                                size="lg"
+                                className={`w-full sm:w-auto px-8 py-6 text-lg rounded-full transition-transform hover:scale-105 ${button.variant === 'secondary' ? 'bg-white text-gray-950 hover:bg-gray-200' : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'}`}
+                            >
+                                {button.label}
+                            </Button>
+                        </a>
+                    ))
+                }
+            </div>
+            <p class="text-sm text-gray-400 mt-2 flex items-center gap-2">
+                <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                Darmowa dla rodziców. Bez ukrytych kosztów.
+            </p>
+        </div>
     </div>
 </header>

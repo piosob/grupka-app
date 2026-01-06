@@ -1,11 +1,27 @@
 ---
-import type { TimelineStep } from '../../types/landingPage';
-
-interface Props {
-    steps: TimelineStep[];
-}
-
-const { steps } = Astro.props;
+const steps = [
+    {
+        id: 1,
+        title: 'Bezpieczne logowanie i tworzenie grupy',
+        description:
+            'Zaloguj się bezpiecznie i stwórz swoją pierwszą grupę. Wszystkie Twoje dane are chronione. 🔒',
+        hint: 'Krok 1',
+    },
+    {
+        id: 2,
+        title: 'Zaproszenia z kodem 60 min',
+        description:
+            'Zadbaj o bezpieczeństwo grupy! Wygeneruj tymczasowy kod zaproszenia, ważny tylko 60 minut, aby bezpiecznie zaprosić innych rodziców i uniknąć niepowołanych osób. 🛡️',
+        hint: 'Krok 2',
+    },
+    {
+        id: 3,
+        title: 'Popraw za pomocą AI',
+        description:
+            'Skorzystaj z AI do stworzenia idealnej listy prezentów, uwzględniając preferencje i budżet. ✨🎁',
+        hint: 'Krok 3',
+    },
+];
 ---
 
 <section class="py-16 px-8 bg-gray-900 text-white">

@@ -1,13 +1,23 @@
 ---
-import type { EventPreview } from '../../types/landingPage';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-interface Props {
-    event: EventPreview;
-}
+const hiddenComments = [
+    {
+        authorLabel: 'Rodzic Ania',
+        text: 'Może byśmy się zrzucili na jakąś większą zabawkę edukacyjną?',
+    },
+    { authorLabel: 'Rodzic Tomek', text: 'Świetny pomysł! Janek wspominał o klockach LEGO Duplo.' },
+    { authorLabel: 'Rodzic Kasia', text: 'Ja mogę zamówić tort. Ktoś ma preferencje smakowe?' },
+];
 
-const { event } = Astro.props;
+const event = {
+    title: 'Urodziny Janka',
+    dateLabel: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString('pl-PL'),
+    summary: 'Janek kończy 5 lat i marzy o nowych klockach. Zapraszamy do wspólnego świętowania!',
+    hiddenThreadLabel: 'Ukryty wątek gości',
+    comments: hiddenComments,
+};
 ---
 
 <section class="py-16 px-8 bg-gray-800 text-white">

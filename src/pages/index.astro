@@ -6,25 +6,13 @@ import FooterContact from '@/components/astro/FooterContact.astro';
 import HowItWorksTimeline from '@/components/astro/HowItWorksTimeline.astro';
 import LandingHero from '@/components/astro/LandingHero.astro';
 import MainLayout from '../layouts/MainLayout.astro';
-
-import {
-    heroContent,
-    features,
-    howItWorksSteps,
-    eventPreview,
-    ctaSectionButtons,
-    footerContact,
-} from '../lib/landingPageData';
 ---
 
 <MainLayout title="Strona Główna">
-    <LandingHero content={heroContent} />
-    <FeaturesGrid features={features} />
-    <HowItWorksTimeline steps={howItWorksSteps} />
-    <EventPreviewSection event={eventPreview} />
-    <CTASection
-        ctaButtons={ctaSectionButtons}
-        helperText="Zaloguj się lub utwórz konto, aby zacząć organizować urodziny i prezenty dla dzieci w Twojej grupie."
-    />
-    <FooterContact contact={footerContact} />
+    <LandingHero />
+    <FeaturesGrid />
+    <HowItWorksTimeline />
+    <EventPreviewSection />
+    <CTASection />
+    <FooterContact />
 </MainLayout>
