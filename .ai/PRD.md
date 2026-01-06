@@ -4,7 +4,7 @@
 
 **Grupka (MVP)** to aplikacja webowa typu SSR (Server Side Rendering), zaprojektowana zgodnie z filozofią **Mobile First**, służąca do samoorganizacji rodziców w grupach przedszkolnych i szkolnych. Jej głównym celem jest uporządkowanie komunikacji dotyczącej urodzin i prezentów, przy jednoczesnym poszanowaniu prywatności użytkowników i minimalizacji powiadomień.
 
-Projekt kładzie nacisk na doskonałe działanie na urządzeniach mobilnych, minimalizację danych osobowych (brak nazwisk) oraz asynchroniczny model komunikacji. Technologicznie aplikacja opiera się na Astro 5, React 19, Tailwind 4 i Supabase. Kluczowe funkcjonalności to: tymczasowe kody zaproszeń, rola administratora z możliwością kontaktu mailowego, ukryte wątki dla gości oraz asystent AI wspierający tworzenie list prezentowych w trybie edycji.
+Projekt kładzie nacisk na doskonałe działanie na urządzeniach mobilnych, minimalizację danych osobowych (brak nazwisk) oraz asynchroniczny model komunikacji. Technologicznie aplikacja opiera się na Astro 5, React 19, TanStack Query, Tailwind 4 i Supabase. Kluczowe funkcjonalności to: tymczasowe kody zaproszeń, rola administratora z możliwością kontaktu mailowego, ukryte wątki dla gości oraz asystent AI wspierający tworzenie list prezentowych w trybie edycji.
 
 ## 1.1 Doświadczenie niezalogowanego użytkownika
 

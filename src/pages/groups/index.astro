@@ -1,5 +1,6 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
+import { DashboardContainer } from '../../components/react/DashboardContainer';
 
 // User must be authenticated to access this page (protected by middleware)
 const user = Astro.locals.user;
@@ -16,15 +17,7 @@ export const prerender = false;
         <div class="max-w-4xl mx-auto">
             <h1 class="text-3xl font-bold mb-6">Moje grupy</h1>
 
-            <div class="bg-card rounded-lg border p-8 text-center">
-                <p class="text-muted-foreground mb-4">
-                    Strona grup będzie wkrótce dostępna.
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Jesteś zalogowany jako: <strong>{user.email}</strong>
-                </p>
-            </div>
+            <DashboardContainer client:load />
         </div>
     </div>
 </MainLayout>
-
