@@ -32,13 +32,13 @@ Authentication is handled by Supabase Auth SDK on the client side. The API uses 
 
 List all groups the current user is a member of.
 
-**Query Parameters:**
+**Query Parameters (`PaginationParams`):**
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `limit` | integer | No | Max results (default: 20, max: 100) |
 | `offset` | integer | No | Pagination offset (default: 0) |
 
-**Response (200 OK):**
+**Response (200 OK - `PaginatedResponse<GroupListItemDTO>`):**
 
 ```json
 {
@@ -70,7 +70,7 @@ List all groups the current user is a member of.
 
 Create a new group. The creator automatically becomes an admin.
 
-**Request Body:**
+**Request Body (`CreateGroupCommand`):**
 
 ```json
 {
@@ -82,7 +82,7 @@ Create a new group. The creator automatically becomes an admin.
 
 - `name`: Required, string, 3-100 characters
 
-**Response (201 Created):**
+**Response (201 Created - `SingleResponse<CreateGroupResponseDTO>`):**
 
 ```json
 {
@@ -111,7 +111,7 @@ Get group details.
 |-----------|------|-------------|
 | `groupId` | uuid | Group ID |
 
-**Response (200 OK):**
+**Response (200 OK - `SingleResponse<GroupDetailDTO>`):**
 
 ```json
 {
@@ -140,7 +140,7 @@ Get group details.
 
 Update group settings. Admin only.
 
-**Request Body:**
+**Request Body (`UpdateGroupCommand`):**
 
 ```json
 {
@@ -152,7 +152,7 @@ Update group settings. Admin only.
 
 - `name`: Optional, string, 3-100 characters
 
-**Response (200 OK):**
+**Response (200 OK - `SingleResponse<UpdateGroupResponseDTO>`):**
 
 ```json
 {
@@ -193,13 +193,13 @@ Delete a group. Admin only. Cascades to all related data.
 
 List all members of a group.
 
-**Query Parameters:**
+**Query Parameters (`PaginationParams`):**
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `limit` | integer | No | Max results (default: 50, max: 100) |
 | `offset` | integer | No | Pagination offset (default: 0) |
 
-**Response (200 OK):**
+**Response (200 OK - `PaginatedResponse<GroupMemberDTO>`):**
 
 ```json
 {
@@ -231,7 +231,7 @@ List all members of a group.
 
 Get admin's email address (reveal feature for emergency contact).
 
-**Response (200 OK):**
+**Response (200 OK - `SingleResponse<AdminContactDTO>`):**
 
 ```json
 {
@@ -272,7 +272,7 @@ Remove a member from the group. Admin only, or self-removal (leave group).
 
 Generate a new invite code. Admin only.
 
-**Response (201 Created):**
+**Response (201 Created - `SingleResponse<GroupInviteDTO>`):**
 
 ```json
 {
@@ -297,7 +297,7 @@ Generate a new invite code. Admin only.
 
 List active invite codes. Admin only.
 
-**Response (200 OK):**
+**Response (200 OK - `PaginatedResponse<GroupInviteListItemDTO>`):**
 
 ```json
 {
@@ -307,7 +307,12 @@ List active invite codes. Admin only.
             "expiresAt": "2025-01-15T11:30:00Z",
             "createdAt": "2025-01-15T10:30:00Z"
         }
-    ]
+    ],
+    "pagination": {
+        "total": 1,
+        "limit": 20,
+        "offset": 0
+    }
 }
 ```
 
@@ -337,7 +342,7 @@ Revoke an invite code. Admin only.
 
 Join a group using an invite code.
 
-**Request Body:**
+**Request Body (`JoinGroupCommand`):**
 
 ```json
 {
@@ -349,7 +354,7 @@ Join a group using an invite code.
 
 - `code`: Required, string, max 10 characters
 
-**Response (200 OK):**
+**Response (200 OK - `SingleResponse<JoinGroupResponseDTO>`):**
 
 ```json
 {
@@ -377,13 +382,13 @@ Join a group using an invite code.
 
 List all children in a group.
 
-**Query Parameters:**
+**Query Parameters (`PaginationParams`):**
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `limit` | integer | No | Max results (default: 50, max: 100) |
 | `offset` | integer | No | Pagination offset (default: 0) |
 
-**Response (200 OK):**
+**Response (200 OK - `PaginatedResponse<ChildListItemDTO>`):**
 
 ```json
 {
@@ -418,7 +423,7 @@ List all children in a group.
 
 Add a child to the group.
 
-**Request Body:**
+**Request Body (`CreateChildCommand`):**
 
 ```json
 {
@@ -434,7 +439,7 @@ Add a child to the group.
 - `bio`: Optional, string, max 1000 characters
 - `birthDate`: Optional, date (YYYY-MM-DD format)
 
-**Response (201 Created):**
+**Response (201 Created - `SingleResponse<CreateChildResponseDTO>`):**
 
 ```json
 {
@@ -463,7 +468,7 @@ Add a child to the group.
 
 Get child details.
 
-**Response (200 OK):**
+**Response (200 OK - `SingleResponse<ChildDetailDTO>`):**
 
 ```json
 {
@@ -492,7 +497,7 @@ Get child details.
 
 Update child profile. Parent only.
 
-**Request Body:**
+**Request Body (`UpdateChildCommand`):**
 
 ```json
 {
@@ -508,7 +513,7 @@ Update child profile. Parent only.
 - `bio`: Optional, string, max 1000 characters
 - `birthDate`: Optional, date (YYYY-MM-DD format) or null to clear
 
-**Response (200 OK):**
+**Response (200 OK - `SingleResponse<UpdateChildResponseDTO>`):**
 
 ```json
 {
@@ -551,7 +556,7 @@ Delete child profile. Parent only.
 
 List events in a group.
 
-**Query Parameters:**
+**Query Parameters (`EventsQueryParams`):**
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `limit` | integer | No | Max results (default: 20, max: 100) |
@@ -560,7 +565,7 @@ List events in a group.
 | `sortBy` | string | No | Sort field: `eventDate`, `createdAt` (default: `eventDate`) |
 | `sortOrder` | string | No | Sort order: `asc`, `desc` (default: `asc`) |
 
-**Response (200 OK):**
+**Response (200 OK - `PaginatedResponse<EventListItemDTO>`):**
 
 ```json
 {
@@ -604,7 +609,7 @@ List events in a group.
 
 Create a new event.
 
-**Request Body:**
+**Request Body (`CreateEventCommand`):**
 
 ```json
 {
@@ -624,7 +629,7 @@ Create a new event.
 - `childId`: Optional, uuid (birthday child)
 - `guestChildIds`: Optional, array of uuids (must be children in the same group)
 
-**Response (201 Created):**
+**Response (201 Created - `SingleResponse<CreateEventResponseDTO>`):**
 
 ```json
 {
@@ -654,7 +659,7 @@ Create a new event.
 
 Get event details.
 
-**Response (200 OK):**
+**Response (200 OK - `SingleResponse<EventDetailDTO>`):**
 
 ```json
 {
@@ -698,7 +703,7 @@ Get event details.
 
 Update event. Organizer only.
 
-**Request Body:**
+**Request Body (`UpdateEventCommand`):**
 
 ```json
 {
@@ -716,7 +721,7 @@ Update event. Organizer only.
 - `description`: Optional, text
 - `guestChildIds`: Optional, array of uuids (replaces entire guest list)
 
-**Response (200 OK):**
+**Response (200 OK - `SingleResponse<UpdateEventResponseDTO>`):**
 
 ```json
 {
@@ -758,13 +763,13 @@ Delete event. Organizer only.
 
 List comments in an event's hidden thread. **Not accessible to event organizer** (RLS enforced).
 
-**Query Parameters:**
+**Query Parameters (`PaginationParams`):**
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `limit` | integer | No | Max results (default: 50, max: 100) |
 | `offset` | integer | No | Pagination offset (default: 0) |
 
-**Response (200 OK):**
+**Response (200 OK - `PaginatedResponse<EventCommentDTO>`):**
 
 ```json
 {
@@ -801,7 +806,7 @@ List comments in an event's hidden thread. **Not accessible to event organizer**
 
 Add a comment to the hidden thread. **Not accessible to event organizer** (RLS enforced).
 
-**Request Body:**
+**Request Body (`CreateEventCommentCommand`):**
 
 ```json
 {
@@ -813,7 +818,7 @@ Add a comment to the hidden thread. **Not accessible to event organizer** (RLS e
 
 - `content`: Required, string, 1-2000 characters
 
-**Response (201 Created):**
+**Response (201 Created - `SingleResponse<EventCommentDTO>`):**
 
 ```json
 {
@@ -856,7 +861,7 @@ Delete own comment. Author only.
 
 Transform rough notes into a formatted gift ideas list for a child's bio.
 
-**Request Body:**
+**Request Body (`MagicWandCommand`):**
 
 ```json
 {
@@ -870,7 +875,7 @@ Transform rough notes into a formatted gift ideas list for a child's bio.
 - `notes`: Required, string, 1-1000 characters
 - `childDisplayName`: Optional, string (for personalization)
 
-**Response (200 OK):**
+**Response (200 OK - `SingleResponse<MagicWandResponseDTO>`):**
 
 ```json
 {
