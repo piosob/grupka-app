@@ -1,16 +1,39 @@
-
 ---
-import InviteContainer from '../../components/react/InviteContainer';
-import MainLayout from '../../layouts/MainLayout.astro';
-
-interface Props {
-  groupId: string;
-}
+import MainLayout from '../../../layouts/MainLayout.astro';
+import { InviteContainer } from '../../../components/react/invite/InviteContainer';
 
 const { groupId } = Astro.params;
+
+if (!groupId) {
+    return Astro.redirect('/dashboard');
+}
+
+// Check if user is admin of this group
+const supabase = Astro.locals.supabase;
+const user = Astro.locals.user;
+
+if (!user) {
+    return Astro.redirect('/login');
+}
+
+try {
+    const membership = await supabase
+        .from('group_members')
+        .select('role')
+        .eq('group_id', groupId)
+        .eq('user_id', user.id)
+        .single();
+
+    if (membership.error || membership.data?.role !== 'admin') {
+        // If not admin, redirect to group hub
+        return Astro.redirect(`/groups/${groupId}`);
+    }
+} catch (error) {
+    console.error('Error checking admin status:', error);
+    return Astro.redirect('/dashboard');
+}
 ---
 
-<MainLayout title="Zaproszenia do Grupy">
-  <InviteContainer groupId={groupId} client:load />
+<MainLayout title="Zaproszenia" groupId={groupId}>
+    <InviteContainer groupId={groupId} client:load />
 </MainLayout>
-

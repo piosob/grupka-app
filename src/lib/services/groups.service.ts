@@ -590,6 +590,22 @@ export class GroupsService {
             throw new Error('Forbidden: Only group admins can generate invite codes');
         }
 
+        // Rate limit: max 5 codes per hour per group
+        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+        const { count: recentInvitesCount, error: countError } = await this.supabase
+            .from('group_invites')
+            .select('*', { count: 'exact', head: true })
+            .eq('group_id', groupId)
+            .gte('created_at', oneHourAgo);
+
+        if (countError) {
+            throw new Error(`Failed to check invite limit: ${countError.message}`);
+        }
+
+        if (recentInvitesCount !== null && recentInvitesCount >= 5) {
+            throw new Error('Rate limit exceeded: Max 5 invite codes per hour');
+        }
+
         // Generate random 8-character alphanumeric code
         const code = Math.random().toString(36).substring(2, 10).toUpperCase();
         const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 60 minutes from now

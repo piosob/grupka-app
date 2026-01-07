@@ -1,4 +1,5 @@
 import type { Tables, Enums } from './db/database.types';
+import type { GroupInviteListItemDTO } from './lib/schemas';
 
 // ============================================================================
 // Base Entity Types (derived from database)
@@ -70,6 +71,20 @@ export type {
     PaginationParams,
     EventsQueryParams,
 } from './lib/schemas';
+
+// ============================================================================
+// View Models
+// ============================================================================
+
+/**
+ * View model for displaying invite codes with dynamic countdown
+ */
+export interface GroupInviteViewModel extends GroupInviteListItemDTO {
+    remainingSeconds: number;
+    isExpired: boolean;
+    countdownText: string;
+    countdownColor: 'green' | 'yellow' | 'red';
+}
 
 // ============================================================================
 // Generic Response Wrappers (Type-level only)

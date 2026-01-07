@@ -1013,12 +1013,15 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 
 - Generowanie tymczasowych kodów zaproszenia (60 min)
 - Wyświetlenie aktywnych kodów z countdown
+- Live update co 10 sekund
+- Auto-remove z UI po wygaśnięciu kodu
+- Możliwość usunięcia kodu
 - Łatwe kopiowanie i udostępnianie kodu
 
 **Kluczowe informacje:**
 
 - Aktywne kody z czasem wygaśnięcia
-- Countdown timer (real-time)
+- Countdown timer - live update co 10 sekund
 - Opcje kopiowania i udostępniania
 
 **Kluczowe komponenty:**
@@ -1038,10 +1041,6 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
                 - Button "Kopiuj kod" (clipboard + haptic + toast)
                 - Button "Udostępnij" (native Share API jeśli dostępne, fallback do copy)
                 - Button "Usuń kod" (destructive, small, text-only)
-            - QR code (opcjonalnie - collapsible):
-                - Accordion "Pokaż QR kod"
-                - QR code image (generated client-side)
-                - Helper text: "Zeskanuj w aplikacji mobilnej"
 - Empty state (brak aktywnych kodów):
     - "Brak aktywnych kodów"
     - "Wygeneruj kod aby zaprosić członków"
@@ -1052,16 +1051,14 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 **Względy UX/Dostępność/Bezpieczeństwo:**
 
 - 403 jeśli nie-admin
-- Countdown live update (useEffect z setInterval 1s)
+- Countdown live update (useEffect z setInterval 10s)
 - Auto-refresh list po wygaśnięciu kodu (remove z UI)
-- Code formatted dla readability: "ABC123XY" → "ABC-123-XY"
 - Native Share API (mobile): share text "Dołącz do grupy [nazwa] w Grupka! Kod: ABC123XY"
 - Clipboard API z fallback (execCommand)
 - Haptic feedback (navigator.vibrate) przy copy
-- QR code generation: qrcode.react library
 - Security: codes są cryptographically random (backend)
-- Rate limiting: max 5 kodów na godzinę (prevent spam)
-- Deleted codes: soft delete lub hard delete (API decision)
+- Rate limiting: max 5 kodów na godzinę (admin)
+- Deleted codes: hard delete
 
 **API Endpoints:**
 
