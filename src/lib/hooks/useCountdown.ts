@@ -33,7 +33,7 @@ export const useCountdown = (expiresAt: string): CountdownResult => {
         let countdownColor: 'green' | 'yellow' | 'red' = 'green';
         if (minutes < 10) {
             countdownColor = 'red';
-        } else if (minutes < 30) {
+        } else if (minutes < 20) {
             countdownColor = 'yellow';
         }
 

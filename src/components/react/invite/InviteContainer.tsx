@@ -50,6 +50,7 @@ function InviteContent({ groupId }: InviteContainerProps) {
                 <InviteCodeGenerator
                     onGenerateInvite={() => generateInvite()}
                     isGenerating={isGeneratingInvite}
+                    disabled={invites.length > 0}
                 />
             </section>
 

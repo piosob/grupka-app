@@ -590,6 +590,18 @@ export class GroupsService {
             throw new Error('Forbidden: Only group admins can generate invite codes');
         }
 
+        // Check if there is already an active invite for this group
+        const { data: activeInvite, error: activeInviteError } = await this.supabase
+            .from('group_invites')
+            .select('code')
+            .eq('group_id', groupId)
+            .gt('expires_at', new Date().toISOString())
+            .maybeSingle();
+
+        if (activeInvite) {
+            throw new Error('Active invite code already exists for this group');
+        }
+
         // Rate limit: max 5 codes per hour per group
         const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
         const { count: recentInvitesCount, error: countError } = await this.supabase
@@ -608,7 +620,7 @@ export class GroupsService {
 
         // Generate random 8-character alphanumeric code
         const code = Math.random().toString(36).substring(2, 10).toUpperCase();
-        const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 60 minutes from now
+        const expiresAt = new Date(Date.now() + 30 * 60 * 1000).toISOString(); // 30 minutes from now
 
         const { data, error } = await this.supabase
             .from('group_invites')

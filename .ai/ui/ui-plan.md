@@ -10,7 +10,7 @@ Grupka MVP to aplikacja webowa typu SSR (Server Side Rendering) zaprojektowana z
 - **Hybrydowe podejście technicze**: Astro 5 SSR dla initial load + React 19 dla interaktywności
 - **Minimalizacja danych osobowych**: Brak nazwisk, opcjonalne daty urodzenia, ukryte emaile
 - **Asynchroniczny model komunikacji**: Brak realtime w MVP, polling/manual refresh
-- **Bezpieczeństwo przez projektowanie**: Hidden thread (RLS), tymczasowe kody (60 min), email privacy
+- **Bezpieczeństwo przez projektowanie**: Hidden thread (RLS), tymczasowe kody (30 min), email privacy
 
 ### Architektura techniczna UI
 
@@ -433,7 +433,7 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
         - **Kafel 👶 Dzieci**: Pokazuje łączną liczbę dzieci w grupie. Kliknięcie prowadzi do `/children`.
         - **Kafel 👥 Członkowie**: Pokazuje liczbę rodziców. Kliknięcie prowadzi do `/members`.
     - **Admin Actions Section** (tylko dla admina):
-        - Przycisk "Generuj kod zaproszenia" (z informacją o ważności 60 min).
+        - Przycisk "Generuj kod zaproszenia" (z informacją o ważności 30 min).
         - Przycisk "Ustawienia grupy".
 
 **Względy UX/Dostępność/Bezpieczeństwo:**
@@ -1011,8 +1011,9 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 
 **Główny cel:**
 
-- Generowanie tymczasowych kodów zaproszenia (60 min)
-- Wyświetlenie aktywnych kodów z countdown
+- Generowanie tymczasowych kodów zaproszenia (30 min)
+- Tylko jeden aktywny kod na grupę w tym samym czasie
+- Wyświetlenie aktywnego kodu z countdown
 - Live update co 10 sekund
 - Auto-remove z UI po wygaśnięciu kodu
 - Możliwość usunięcia kodu
@@ -1020,7 +1021,7 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 
 **Kluczowe informacje:**
 
-- Aktywne kody z czasem wygaśnięcia
+- Aktywny kod z czasem wygaśnięcia
 - Countdown timer - live update co 10 sekund
 - Opcje kopiowania i udostępniania
 
@@ -1029,14 +1030,14 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 - MainLayout z back button
 - Page header:
     - Heading "Kody zaproszenia"
-    - Helper text: "Kod ważny 60 minut dla bezpieczeństwa grupy"
-    - Button "Generuj nowy kod" (primary, large)
+    - Helper text: "Kod ważny 30 minut dla bezpieczeństwa grupy"
+    - Button "Generuj nowy kod" (primary, large, disabled jeśli istnieje aktywny kod)
 - Active codes list (jeśli są):
     - Dla każdego kodu:
         - Card:
             - Code display (large, monospace): "ABC-123-XY" (formatted)
-            - Countdown timer: "Wygasa za: 45 min 23 sek" (live update co 1s)
-                - Color: green (>30min), yellow (10-30min), red (<10min)
+            - Countdown timer: "Wygasa za: 25 min 23 sek" (live update co 1s)
+                - Color: green (>20min), yellow (10-20min), red (<10min)
             - Action buttons:
                 - Button "Kopiuj kod" (clipboard + haptic + toast)
                 - Button "Udostępnij" (native Share API jeśli dostępne, fallback do copy)
@@ -1046,7 +1047,7 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
     - "Wygeneruj kod aby zaprosić członków"
 - Toast notifications:
     - Success: "Kod wygenerowany!", "Kod skopiowany!", "Kod usunięty"
-    - Error: "Nie udało się wygenerować kodu"
+    - Error: "Nie udało się wygenerować kodu", "Aktywny kod już istnieje"
 
 **Względy UX/Dostępność/Bezpieczeństwo:**
 
@@ -1059,12 +1060,7 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 - Security: codes są cryptographically random (backend)
 - Rate limiting: max 5 kodów na godzinę (admin)
 - Deleted codes: hard delete
-
-**API Endpoints:**
-
-- `GET /api/groups/:groupId/invites` → GroupInviteListItemDTO[] (admin only)
-- `POST /api/groups/:groupId/invites` → GroupInviteDTO (admin only)
-- `DELETE /api/groups/:groupId/invites/:code` (admin only)
+- Expiry: 30 minutes TTL
 
 ---
 
@@ -2489,7 +2485,7 @@ CTA: Focused textarea (auto-focus)
 
 **Expiry:**
 
-- 60 minutes TTL (minimalizuje window of attack)
+- 30 minutes TTL (minimalizuje window of attack)
 - Auto-cleanup expired codes (backend cron)
 
 **Rate Limiting:**
@@ -2635,9 +2631,10 @@ CTA: Focused textarea (auto-focus)
 
 **Kryteria spełnione:**
 ✓ Przycisk "Generuj kod" (admin only)
-✓ Kod z countdown "Wygasa za: 45 min 23 sek"
-✓ Kod automatycznie invaliduje po 60 min
+✓ Kod z countdown "Wygasa za: 25 min 23 sek"
+✓ Kod automatycznie invaliduje po 30 min
 ✓ Kolor countdown: green/yellow/red based on time
+✓ Tylko jeden aktywny kod na grupę (przycisk wyłączony jeśli kod istnieje)
 
 ---
 
@@ -2760,7 +2757,7 @@ Architektura UI dla Grupka MVP została zaprojektowana z myślą o:
 
 1. **Mobile First**: Wszystkie widoki priorytetowo pod smartfony, touch-friendly targets, bottom navigation w thumb zone
 
-2. **Bezpieczeństwo**: Hidden thread protection (3 warstwy), email privacy (reveal na żądanie), tymczasowe kody (60 min), RLS enforcement
+2. **Bezpieczeństwo**: Hidden thread protection (3 warstwy), email privacy (reveal na żądanie), tymczasowe kody (30 min), RLS enforcement
 
 3. **Prywatność**: Minimalizacja danych osobowych, brak nazwisk, opcjonalne daty, transparentność o ujawnieniu emaila admina
 
@@ -2776,7 +2773,7 @@ Architektura UI dla Grupka MVP została zaprojektowana z myślą o:
 
 **Kluczowe User Flows:**
 
-- Admin: Rejestracja → Utwórz grupę → Dodaj dziecko (Magic Wand) → Wygeneruj kod → Utwórz wydarzenie
+- Admin: Rejestracja → Utwórz grupę → Dodaj dziecko (Magic Wand) → Wygeneruj kod (30 min) → Utwórz wydarzenie
 - Member: Rejestracja → Dołącz (kod) → Dodaj dziecko → Komentuj w wydarzeniu (hidden thread)
 - Organizator: Utwórz wydarzenie → Wybierz gości → Nie widzi komentarzy (surprise protection)
 - Gość: Zobacz wydarzenie → Bio dziecka (inspiracja) → Komentuj → Koordynacja prezentu

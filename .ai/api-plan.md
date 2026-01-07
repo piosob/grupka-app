@@ -7,7 +7,7 @@
 | 1 Auth           | `auth.users`, `profiles`    | Authentication via Supabase Auth SDK           |
 | 2 Groups         | `groups`                    | Preschool/school parent groups (tenants)       |
 | 3 Group Members  | `group_members`, `profiles` | User membership and roles in groups            |
-| 4 Group Invites  | `group_invites`             | Temporary invitation codes (60 min TTL)        |
+| 4 Group Invites  | `group_invites`             | Temporary invitation codes (30 min TTL)        |
 | 5 Children       | `children`                  | Child profiles within groups                   |
 | 6 Events         | `events`                    | Birthday parties and fundraisers               |
 | 7 Event Guests   | `event_guests`              | Children invited to events                     |
@@ -1022,7 +1022,7 @@ export async function onRequest({ request, locals }, next) {
 | Field       | Rules                                     |
 | ----------- | ----------------------------------------- |
 | `code`      | Auto-generated, 8 alphanumeric characters |
-| `expiresAt` | Auto-set to 60 minutes from creation      |
+| `expiresAt` | Auto-set to 30 minutes from creation      |
 
 ### 4.2 Business Logic Implementation
 
@@ -1035,9 +1035,10 @@ export async function onRequest({ request, locals }, next) {
 #### Invite Code Generation (US-003)
 
 1. Verify user is admin of group
-2. Generate cryptographically random 8-character code
-3. Set `expires_at = NOW() + INTERVAL '60 minutes'`
-4. Return code with expiration time
+2. Check if there is already an active (not expired) invite for the group
+3. Generate random 8-character code
+4. Set `expires_at = NOW() + INTERVAL '30 minutes'`
+5. Return code with expiration time
 
 #### Join via Invite (US-003)
 

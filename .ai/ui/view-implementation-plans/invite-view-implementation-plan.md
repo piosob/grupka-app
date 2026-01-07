@@ -2,7 +2,7 @@
 
 ## 1. Przegląd
 
-Widok Generowania Kodów Zaproszenia umożliwia administratorom grupy tworzenie tymczasowych (60-minutowych) kodów zaproszeń, przeglądanie aktywnych kodów z dynamicznym licznikiem czasu, kopiowanie ich, udostępnianie oraz usuwanie. Celem widoku jest zapewnienie bezpiecznego i wygodnego sposobu zapraszania nowych członków do grupy.
+Widok Generowania Kodów Zaproszenia umożliwia administratorom grupy tworzenie tymczasowych (30-minutowych) kodów zaproszeń, przeglądanie aktywnego kodu z dynamicznym licznikiem czasu, kopiowanie go, udostępnianie oraz usuwanie. Celem widoku jest zapewnienie bezpiecznego i wygodnego sposobu zapraszania nowych członków do grupy. W danym momencie dla grupy może istnieć tylko jeden aktywny kod zaproszenia.
 
 ## 2. Routing widoku
 
@@ -64,7 +64,7 @@ InviteView (Astro Page)
 
 ### InviteCodeGenerator (React Component)
 
-- **Opis komponentu:** Zawiera przycisk "Generuj nowy kod", który po kliknięciu wywołuje funkcję generowania kodu. Obsługuje stan ładowania przycisku.
+- **Opis komponentu:** Zawiera przycisk "Generuj nowy kod", który po kliknięciu wywołuje funkcję generowania kodu. Obsługuje stan ładowania przycisku oraz stan wyłączenia (disabled), gdy aktywny kod już istnieje.
 - **Główne elementy:** Komponent `Button` ze Shadcn/ui.
 - **Obsługiwane interakcje:** `onClick` wywołuje prop `onGenerateInvite`.
 - **Obsługiwana walidacja:** Brak (walidacja dostępu admina po stronie API).
@@ -72,6 +72,7 @@ InviteView (Astro Page)
 - **Propsy:**
     - `onGenerateInvite: () => void`
     - `isGenerating: boolean`
+    - `disabled: boolean` (true, jeśli `invites.length > 0`)
 
 ### ActiveInviteCodeList (React Component)
 
@@ -137,8 +138,8 @@ InviteView (Astro Page)
     - `createdAt: string` (z `GroupInviteListItemDTO`)
     - `remainingSeconds: number` - Obliczony czas pozostały do wygaśnięcia w sekundach.
     - `isExpired: boolean` - Flaga wskazująca, czy kod wygasł.
-    - `countdownText: string` - Sformatowany tekst countdownu, np. "Wygasa za: 45 min 23 sek".
-    - `countdownColor: 'green' | 'yellow' | 'red'` - Kolor dla wyświetlanego countdownu (zielony >30min, żółty 10-30min, czerwony <10min).
+    - `countdownText: string` - Sformatowany tekst countdownu, np. "Wygasa za: 25 min 23 sek".
+    - `countdownColor: 'green' | 'yellow' | 'red'` - Kolor dla wyświetlanego countdownu (zielony >20min, żółty 10-20min, czerwony <10min).
 
 ## 6. Zarządzanie stanem
 
@@ -154,7 +155,7 @@ Zarządzanie stanem będzie odbywać się głównie w komponencie `InviteContain
 - **`useCountdown(expiresAt: string)` (Custom Hook):**
     - Będzie używany w komponencie `InviteCodeCard` do zarządzania dynamicznym odliczaniem czasu.
     - `remainingSeconds` będzie aktualizowany co sekundę za pomocą `setInterval`.
-    - Hook będzie obliczał `countdownText` i `countdownColor` oraz flagę `isExpired`.
+    - Hook będzie obliczał `countdownText` i `countdownColor` (zielony >20min, żółty 10-20min, czerwony <10min) oraz flagę `isExpired`.
     - Automatycznie usunie kartę kodu z listy, gdy `isExpired` stanie się `true` (na poziomie `ActiveInviteCodeList`).
 
 ## 7. Integracja API
@@ -200,8 +201,11 @@ Integracja z API będzie realizowana za pomocą TanStack Query w customowym hook
     - **Warunek:** Dla operacji `DELETE`, kod zaproszenia musi być obecny w ścieżce URL.
     - **Walidacja UI:** Komponent `InviteCodeCard` przekazuje `code` do funkcji `onDeleteInvite`. Brak `code` skutkuje błędem 400 z API.
 - **Wygaśnięcie kodu:**
-    - **Warunek:** Kody zaproszeń są ważne przez 60 minut.
+    - **Warunek:** Kody zaproszeń są ważne przez 30 minut.
     - **Walidacja UI:** Hook `useCountdown` w `InviteCodeCard` monitoruje czas do wygaśnięcia i ustawia flagę `isExpired`. Lista kodów (`ActiveInviteCodeList`) filtruje i usuwa wygasłe kody z widoku.
+- **Ograniczenie liczby kodów (Jeden aktywny kod):**
+    - **Warunek:** W obrębie grupy może istnieć tylko jeden aktywny kod zaproszenia jednocześnie. Przycisk generowania nowego kodu jest wyłączony, jeśli kod już istnieje.
+    - **Walidacja UI:** `InviteContainer` sprawdza `invites.length > 0` i przekazuje flagę `disabled` do `InviteCodeGenerator`.
 - **Ograniczenie liczby kodów (Rate Limiting):**
     - **Warunek:** Backend może narzucić limit na liczbę generowanych kodów (np. max 5 na godzinę).
     - **Walidacja UI:** W przypadku otrzymania błędu 429 (Too Many Requests), `InviteContainer` wyświetli odpowiedni Toast Notification.
@@ -237,8 +241,8 @@ Integracja z API będzie realizowana za pomocą TanStack Query w customowym hook
     - Renderuj listę `InviteCodeCard`.
     - Zaimplementuj logikę automatycznego usuwania wygasłych kodów z listy.
 7.  **Utwórz komponent `InviteCodeGenerator.tsx` (React)**:
-    - Przyjmuj `onGenerateInvite` i `isGenerating` jako propsy.
-    - Zawieraj przycisk "Generuj nowy kod" i obsługuj stan ładowania.
+    - Przyjmuj `onGenerateInvite`, `isGenerating` oraz `disabled` jako propsy.
+    - Zawieraj przycisk "Generuj nowy kod" i obsługuj stan ładowania oraz stan wyłączenia.
 8.  **Utwórz komponent `EmptyState.tsx` (React)**:
     - Wyświetlaj komunikaty o braku aktywnych kodów.
 9.  **Utwórz komponent `PageHeader.tsx` (React)**:
@@ -248,6 +252,7 @@ Integracja z API będzie realizowana za pomocą TanStack Query w customowym hook
     - Wykorzystaj `useInvites` do zarządzania stanem listy kodów.
     - Warunkowo renderuj `ActiveInviteCodeList` lub `EmptyState` na podstawie danych.
     - Przekaż `onGenerateInvite` i `onDeleteInvite` do odpowiednich komponentów dzieci.
+    - Przekaż flagę `disabled={invites.length > 0}` do `InviteCodeGenerator`.
     - Obsłuż błędy z API za pomocą Toast Notifications.
 11. **Utwórz stronę Astro `invite.astro`** (w `src/pages/groups/[groupId]/invite.astro`):
     - Pobierz `groupId` z `Astro.params`.
