@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useInvites } from '@/lib/hooks/useInvites';
+import { useGroupDetail } from '@/lib/hooks/useGroupDetail';
 import { PageHeader } from './PageHeader';
 import { InviteCodeGenerator } from './InviteCodeGenerator';
 import { ActiveInviteCodeList } from './ActiveInviteCodeList';
@@ -23,6 +24,8 @@ function InviteContent({ groupId }: InviteContainerProps) {
         isRevokingInvite,
     } = useInvites(groupId);
 
+    const { data: group } = useGroupDetail(groupId);
+
     if (invitesError) {
         return (
             <div className="flex flex-col gap-4 py-8 items-center text-center">
@@ -39,10 +42,12 @@ function InviteContent({ groupId }: InviteContainerProps) {
         );
     }
 
+    const title = group ? `Kody zaproszenia do grupy ${group.name}` : 'Kody zaproszenia';
+
     return (
         <div className="max-w-2xl mx-auto py-4 flex flex-col gap-10">
             <PageHeader
-                title="Kody zaproszenia"
+                title={title}
                 description="Generuj tymczasowe kody, aby bezpiecznie zapraszać nowych członków do swojej grupy."
             />
 

@@ -1029,7 +1029,7 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 
 - MainLayout z back button
 - Page header:
-    - Heading "Kody zaproszenia"
+    - Heading "Kody zaproszenia do grupy [nazwa]"
     - Helper text: "Kod ważny 30 minut dla bezpieczeństwa grupy"
     - Button "Generuj nowy kod" (primary, large, disabled jeśli istnieje aktywny kod)
 - Active codes list (jeśli są):

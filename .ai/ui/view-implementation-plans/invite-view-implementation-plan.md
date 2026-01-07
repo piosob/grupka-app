@@ -246,7 +246,7 @@ Integracja z API będzie realizowana za pomocą TanStack Query w customowym hook
 8.  **Utwórz komponent `EmptyState.tsx` (React)**:
     - Wyświetlaj komunikaty o braku aktywnych kodów.
 9.  **Utwórz komponent `PageHeader.tsx` (React)**:
-    - Wyświetlaj tytuł "Kody zaproszenia" i tekst pomocniczy.
+    - Wyświetlaj tytuł "Kody zaproszenia do grupy [nazwa]" i tekst pomocniczy.
 10. **Utwórz komponent `InviteContainer.tsx` (React)**:
     - Przyjmuj `groupId: string` jako props.
     - Wykorzystaj `useInvites` do zarządzania stanem listy kodów.
