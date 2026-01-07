@@ -1,0 +1,16 @@
+---
+import MainLayout from '../../../layouts/MainLayout.astro';
+import { GroupHubContainer } from '../../../components/react/GroupHubContainer';
+
+const { groupId } = Astro.params;
+
+if (!groupId) {
+    return Astro.redirect('/dashboard');
+}
+
+// Authentication is handled by middleware
+---
+
+<MainLayout title="Hub Grupy" groupId={groupId}>
+    <GroupHubContainer groupId={groupId} client:load />
+</MainLayout>

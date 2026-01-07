@@ -6,6 +6,7 @@ import type {
     GroupListItemDTO,
     GroupDetailDTO,
     GroupMemberDTO,
+    AdminContactDTO,
     ChildListItemDTO,
     UpdateGroupCommand,
     UpdateGroupResponseDTO,
@@ -315,6 +316,59 @@ export class GroupsService {
             adminName,
             nextEvent,
             myChildren,
+        };
+    }
+
+    /**
+     * Retrieves the admin's contact information.
+     *
+     * @param userId - ID of the authenticated user (to verify membership)
+     * @param groupId - ID of the group
+     * @returns Admin contact information
+     */
+    async getAdminContact(userId: string, groupId: string): Promise<AdminContactDTO> {
+        // First verify user is a member of the group
+        const { data: membership, error: membershipError } = await this.supabase
+            .from('group_members')
+            .select('role')
+            .eq('group_id', groupId)
+            .eq('user_id', userId)
+            .single();
+
+        if (membershipError || !membership) {
+            throw new Error('Access denied or group not found');
+        }
+
+        // Fetch group and admin profile
+        const { data: group, error: groupError } = await this.supabase
+            .from('groups')
+            .select(
+                `
+                created_by,
+                admin_profile:profiles!groups_created_by_fkey (
+                    id,
+                    email
+                )
+            `
+            )
+            .eq('id', groupId)
+            .single();
+
+        if (groupError || !group || !group.admin_profile || !group.created_by) {
+            throw new Error('Admin contact not found');
+        }
+
+        // Fetch admin's children names
+        const { data: children, error: childrenError } = await this.supabase
+            .from('children')
+            .select('display_name')
+            .eq('group_id', groupId)
+            .eq('parent_id', group.created_by);
+
+        return {
+            userId: group.admin_profile.id,
+            email: group.admin_profile.email || '',
+            childrenNames: (children || []).map((c) => c.display_name),
         };
     }
 

@@ -420,7 +420,7 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 - Nazwa grupy i Twoja rola (Admin/Członek).
 - **Sekcja Administratora**: Imię/ksywka admina + przycisk "Pokaż kontakt" (reveal email).
 - **Nadchodzące Wydarzenia**: Skrót 1-2 najbliższych urodzin/wydarzeń.
-- **Twoje Dzieci**: Szybki podgląd profili Twoich dzieci w tej grupie z opcją edycji.
+- **Dzieci**: Szybki podgląd liczby wszystkich dzieci w tej grupie.
 - **Statystyki grupy**: Liczniki dzieci, członków i aktywnych wydarzeń.
 
 **Kluczowe komponenty:**
@@ -430,7 +430,7 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
     - **Nagłówek Grupy**: Tytuł, badge roli, info o adminie.
     - **Launchpad (Aktywne kafle)**:
         - **Kafel 🎂 Wydarzenia**: Pokazuje najbliższe wydarzenie. Kliknięcie prowadzi do `/events`.
-        - **Kafel 👶 Dzieci**: Pokazuje liczbę dzieci i listę Twoich dzieci. Kliknięcie prowadzi do `/children`.
+        - **Kafel 👶 Dzieci**: Pokazuje łączną liczbę dzieci w grupie. Kliknięcie prowadzi do `/children`.
         - **Kafel 👥 Członkowie**: Pokazuje liczbę rodziców. Kliknięcie prowadzi do `/members`.
     - **Admin Actions Section** (tylko dla admina):
         - Przycisk "Generuj kod zaproszenia" (z informacją o ważności 60 min).
@@ -440,7 +440,7 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 
 - Mobile First: kafle o dużym polu dotyku (min 48px)
 - Hierarchia informacji: administrator na górze jako "kanał awaryjny"
-- Szybki dostęp do edycji własnego dziecka (częsty use case)
+- Szybki dostęp do listy wszystkich dzieci w grupie
 - RLS: tylko członkowie grupy mają dostęp do Hubu
 
 **API Endpoints:**

@@ -33,13 +33,7 @@ const user = Astro.locals.user;
                     <div class="mr-4 flex items-center">
                         <Logo />
                     </div>
-                    {groupId && (
-                        <!-- GroupSwitcher (center/left) - dropdown z listą grup -->
-                        <div class="ml-auto">
-                            <!-- Placeholder for GroupSwitcher -->
-                            <span class="text-sm">Group Switcher</span>
-                        </div>
-                    )}
+                 
                     <!-- Profile Menu (right) - avatar + dropdown -->
                     <nav class="flex items-center space-x-2 ml-auto">
                         <UserNav userEmail={user?.email} client:load />
@@ -52,48 +46,29 @@ const user = Astro.locals.user;
                 <slot />
             </main>
 
-            <!-- Bottom Navigation (Mobile) / Left Sidebar (Desktop) -->
+            <!-- Bottom Navigation (Mobile) -->
             {groupId && (
-                <>
-                    <!-- Mobile Bottom Nav -->
-                    <footer class="fixed inset-x-0 bottom-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
-                        <nav class="flex h-14 items-center justify-around">
-                            <!-- Placeholder for Bottom Nav Items -->
-                            <a href={`/groups/${groupId}/events`} class="flex flex-col items-center justify-center text-xs">
-                                <span class="text-lg">🎂</span>
-                                <span>Wydarzenia</span>
-                            </a>
-                            <a href={`/groups/${groupId}/children`} class="flex flex-col items-center justify-center text-xs">
-                                <span class="text-lg">👶</span>
-                                <span>Dzieci</span>
-                            </a>
-                            <a href={`/groups/${groupId}/members`} class="flex flex-col items-center justify-center text-xs">
-                                <span class="text-lg">👥</span>
-                                <span>Członkowie</span>
-                            </a>
-                            <button class="flex flex-col items-center justify-center text-xs">
-                                <span class="text-lg">⋯</span>
-                                <span>Więcej</span>
-                            </button>
-                        </nav>
-                    </footer>
-
-                    <!-- Desktop Left Sidebar -->
-                    <aside class="fixed left-0 top-14 hidden h-[calc(100vh-3.5rem)] w-64 flex-col border-r bg-background/95 p-4 md:flex">
-                        <nav class="flex flex-col space-y-2">
-                            <!-- Placeholder for Sidebar Items -->
-                            <a href={`/groups/${groupId}/events`} class="flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-muted">Wydarzenia</a>
-                            <a href={`/groups/${groupId}/children`} class="flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-muted">Dzieci</a>
-                            <a href={`/groups/${groupId}/members`} class="flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-muted">Członkowie</a>
-                            <div class="border-t my-2"></div>
-                            <a href={`/groups/${groupId}/invite`} class="flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-muted">Generuj kod</a>
-                            <a href={`/groups/${groupId}/settings`} class="flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-muted">Ustawienia</a>
-                            <div class="border-t my-2"></div>
-                            <a href="/profile" class="flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-muted">Profil</a>
-                            <button class="flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-muted">Wyloguj się</button>
-                        </nav>
-                    </aside>
-                </>
+                <footer class="fixed inset-x-0 bottom-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
+                    <nav class="flex h-14 items-center justify-around">
+                        <!-- Placeholder for Bottom Nav Items -->
+                        <a href={`/groups/${groupId}/events`} class="flex flex-col items-center justify-center text-xs">
+                            <span class="text-lg">🎂</span>
+                            <span>Wydarzenia</span>
+                        </a>
+                        <a href={`/groups/${groupId}/children`} class="flex flex-col items-center justify-center text-xs">
+                            <span class="text-lg">👶</span>
+                            <span>Dzieci</span>
+                        </a>
+                        <a href={`/groups/${groupId}/members`} class="flex flex-col items-center justify-center text-xs">
+                            <span class="text-lg">👥</span>
+                            <span>Członkowie</span>
+                        </a>
+                        <button class="flex flex-col items-center justify-center text-xs">
+                            <span class="text-lg">⋯</span>
+                            <span>Więcej</span>
+                        </button>
+                    </nav>
+                </footer>
             )}
         </div>
         <Toaster client:only />

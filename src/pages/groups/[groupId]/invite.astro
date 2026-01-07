@@ -1,0 +1,16 @@
+
+---
+import InviteContainer from '../../components/react/InviteContainer';
+import MainLayout from '../../layouts/MainLayout.astro';
+
+interface Props {
+  groupId: string;
+}
+
+const { groupId } = Astro.params;
+---
+
+<MainLayout title="Zaproszenia do Grupy">
+  <InviteContainer groupId={groupId} client:load />
+</MainLayout>
+
