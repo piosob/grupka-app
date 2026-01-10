@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import { Plus, Link as LinkIcon } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../../lib/query-keys';
 import { useGroups } from '../../lib/hooks/useGroups';
 import { Skeleton } from '../ui/skeleton';
@@ -95,19 +95,17 @@ function DashboardContent() {
                         <Button
                             onClick={() => setIsJoinOpen(true)}
                             variant="outline"
-                            size="sm"
-                            className="flex-1 sm:flex-none rounded-full"
+                            className="flex-1 sm:flex-none rounded-full cursor-pointer"
                         >
-                            <LinkIcon className="w-4 h-4 mr-2" />
-                            <span className="hidden xs:inline">Dołącz</span>
+                            <LinkIcon className="w-4 h-4 mr-1.5" />
+                            Dołącz do istniejącej grupy
                         </Button>
                         <Button
                             onClick={() => setIsCreateOpen(true)}
-                            size="sm"
-                            className="flex-1 sm:flex-none rounded-full"
+                            className="flex-1 sm:flex-none rounded-full cursor-pointer"
                         >
-                            <Plus className="w-4 h-4 mr-2" />
-                            <span className="hidden xs:inline">Utwórz</span>
+                            <Plus className="w-4 h-4 mr-1.5" />
+                            Utwórz nową grupę
                         </Button>
                     </div>
                 )}
