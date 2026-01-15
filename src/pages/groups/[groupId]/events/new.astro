@@ -1,0 +1,16 @@
+---
+import { CreateEventContainer } from '@/components/react/events/CreateEventContainer';
+import MainLayout from '@/layouts/MainLayout.astro';
+
+const { groupId } = Astro.params;
+
+if (!groupId) {
+    return Astro.redirect('/dashboard');
+}
+---
+
+<MainLayout title="Nowe wydarzenie | Grupka">
+    <div class="container max-w-4xl mx-auto px-4 py-8">
+        <CreateEventContainer groupId={groupId} client:load />
+    </div>
+</MainLayout>

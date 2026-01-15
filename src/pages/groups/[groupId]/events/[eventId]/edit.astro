@@ -1,0 +1,16 @@
+---
+import { EditEventContainer } from '@/components/react/events/EditEventContainer';
+import MainLayout from '@/layouts/MainLayout.astro';
+
+const { groupId, eventId } = Astro.params;
+
+if (!groupId || !eventId) {
+    return Astro.redirect('/dashboard');
+}
+---
+
+<MainLayout title="Edytuj wydarzenie | Grupka">
+    <div class="container max-w-4xl mx-auto px-4 py-8">
+        <EditEventContainer groupId={groupId} eventId={eventId} client:load />
+    </div>
+</MainLayout>

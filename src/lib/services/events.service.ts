@@ -103,7 +103,7 @@ export class EventsService {
             .select(
                 `
                 *,
-                child:children(display_name),
+                child:children!events_child_id_fkey(display_name),
                 guests:event_guests(count)
             `,
                 { count: 'exact' }
@@ -244,10 +244,10 @@ export class EventsService {
             .select(
                 `
                 *,
-                child:children(display_name, bio),
+                child:children!events_child_id_fkey(display_name, bio),
                 event_guests(
                     child_id,
-                    children(display_name)
+                    children!event_guests_child_id_fkey(display_name)
                 )
             `
             )

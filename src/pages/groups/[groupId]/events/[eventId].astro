@@ -1,0 +1,16 @@
+---
+import MainLayout from '../../../../layouts/MainLayout.astro';
+import { EventDetailContainer } from '../../../../components/react/events/EventDetailContainer';
+
+const { eventId, groupId } = Astro.params;
+
+if (!eventId || !groupId) {
+    return Astro.redirect('/dashboard');
+}
+---
+
+<MainLayout title="Szczegóły wydarzenia | Grupka">
+    <div class="container max-w-4xl mx-auto px-4 py-8">
+        <EventDetailContainer eventId={eventId} client:load />
+    </div>
+</MainLayout>
