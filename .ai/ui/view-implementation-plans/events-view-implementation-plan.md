@@ -171,17 +171,22 @@ Integracja odbywa się poprzez serwisy zdefiniowane w `src/lib/services/events.s
 2. **Budowa listy**:
     - Stworzenie `EventCard`.
     - Implementacja strony Astro `/groups/[groupId]/events` z `DashboardContainer`.
+    - Dodanie informacji o nazwie grupy w nagłówku.
 3. **Szczegóły wydarzenia**:
     - Stworzenie `EventHero`, `GuestList`.
     - Implementacja logiczna ukrywania komentarzy dla organizatora.
     - Integracja `CommentThread` dla gości.
+    - Dodanie informacji o nazwie grupy w nagłówku (Breadcrumbs).
 4. **Formularz Tworzenia**:
     - Implementacja `GuestSelectionSection` z filtrowaniem i masowym wyborem.
     - Integracja z `useCreateEvent`.
+    - Wyświetlenie nazwy grupy w nagłówku.
 5. **Formularz Edycji**:
     - Reużycie komponentów z tworzenia.
     - Implementacja pre-fillingu danych.
+    - Wyświetlenie nazwy grupy w nagłówku.
 6. **Polerowanie UX**:
     - Dodanie Skeletonów dla stanów ładowania.
-    - Dodanie animacji wejścia dla kart (Framer Motion - opcjonalnie lub Tailwind transitions).
+    - Dodanie animacji wejścia dla kart (Tailwind transitions).
+    - Implementacja AlertDialog dla potwierdzeń usuwania.
     - Testy RLS (próba wejścia na komentarze jako organizator).

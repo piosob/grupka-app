@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 
 interface EventsHeaderProps {
     groupId: string;
+    groupName?: string;
 }
 
-export const EventsHeader = ({ groupId }: EventsHeaderProps) => {
+export const EventsHeader = ({ groupId, groupName }: EventsHeaderProps) => {
     return (
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
             <div className="flex items-center gap-3">
@@ -21,10 +22,13 @@ export const EventsHeader = ({ groupId }: EventsHeaderProps) => {
                     </a>
                 </Button>
                 <div>
+                    <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-semibold text-primary uppercase tracking-wider bg-primary/5 px-2 py-0.5 rounded-full">
+                            {groupName || 'Grupa'}
+                        </span>
+                    </div>
                     <h1 className="text-3xl font-bold tracking-tight">Wydarzenia</h1>
-                    <p className="text-muted-foreground">
-                        Planuj urodziny i wspólne prezenty.
-                    </p>
+                    <p className="text-muted-foreground">Planuj urodziny i wspólne prezenty.</p>
                 </div>
             </div>
 

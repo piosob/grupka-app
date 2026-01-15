@@ -1,6 +1,7 @@
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Users } from 'lucide-react';
 import { useEvents } from '@/lib/hooks/useEvents';
 import { useChildren } from '@/lib/hooks/useChildren';
+import { useGroupDetail } from '@/lib/hooks/useGroupDetail';
 import { EventForm } from './EventForm';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -13,6 +14,7 @@ interface CreateEventContainerProps {
 function CreateEventContent({ groupId }: CreateEventContainerProps) {
     const { createEvent, isCreatingEvent } = useEvents(groupId);
     const { children, isLoadingChildren } = useChildren(groupId, { limit: 100 });
+    const { data: group } = useGroupDetail(groupId);
 
     const handleSubmit = (data: any) => {
         // Handle childId="none" from Select
@@ -62,6 +64,12 @@ function CreateEventContent({ groupId }: CreateEventContainerProps) {
                     </a>
                 </Button>
                 <div>
+                    <div className="flex items-center gap-2 mb-1">
+                        <Users className="w-4 h-4 text-primary/60" />
+                        <span className="text-xs font-semibold text-primary uppercase tracking-wider bg-primary/5 px-2 py-0.5 rounded-full">
+                            {group?.name || 'Grupa'}
+                        </span>
+                    </div>
                     <h1 className="text-3xl font-bold tracking-tight">Nowe wydarzenie</h1>
                     <p className="text-muted-foreground">Zaplanuj spotkanie dla grupy.</p>
                 </div>

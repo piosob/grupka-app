@@ -1,5 +1,6 @@
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Users } from 'lucide-react';
 import { useEventDetail } from '@/lib/hooks/useEvents';
+import { useGroupDetail } from '@/lib/hooks/useGroupDetail';
 import { EventHero } from './EventHero';
 import { GuestList } from './GuestList';
 import { CommentThread } from './CommentThread';
@@ -15,11 +16,13 @@ interface EventDetailContainerProps {
 function EventDetailContent({ eventId }: EventDetailContainerProps) {
     const { event, isLoadingEvent, eventError, deleteEvent, isDeletingEvent } =
         useEventDetail(eventId);
+    const { data: group } = useGroupDetail(event?.groupId || '');
 
     if (isLoadingEvent) {
         return (
             <div className="space-y-8 animate-in fade-in duration-500">
                 <div className="space-y-4">
+                    <Skeleton className="h-6 w-32" />
                     <Skeleton className="h-10 w-2/3" />
                     <Skeleton className="h-4 w-1/3" />
                     <Skeleton className="h-32 w-full rounded-2xl" />
@@ -85,6 +88,15 @@ function EventDetailContent({ eventId }: EventDetailContainerProps) {
                         Wszystkie wydarzenia
                     </a>
                 </Button>
+
+                {group && (
+                    <div className="flex items-center gap-2 mb-2">
+                        <Users className="w-4 h-4 text-primary/60" />
+                        <span className="text-xs font-semibold text-primary uppercase tracking-wider bg-primary/5 px-2 py-0.5 rounded-full">
+                            {group.name}
+                        </span>
+                    </div>
+                )}
             </header>
 
             <EventHero event={event} onDelete={handleDelete} isDeleting={isDeletingEvent} />

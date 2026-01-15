@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useEvents } from '@/lib/hooks/useEvents';
+import { useGroupDetail } from '@/lib/hooks/useGroupDetail';
 import { EventsHeader } from './EventsHeader';
 import { EventCard } from './EventCard';
 import { EventsEmptyState } from './EventsEmptyState';
@@ -16,6 +17,7 @@ type FilterType = 'upcoming' | 'all' | 'past';
 function EventsContent({ groupId }: EventsContainerProps) {
     const [filter, setFilter] = useState<FilterType>('upcoming');
 
+    const { data: group } = useGroupDetail(groupId);
     const { events, isLoadingEvents, eventsError } = useEvents(groupId, {
         upcoming: filter === 'upcoming' ? true : false,
         // We might need to adjust the API/Service to handle 'past' specifically
@@ -39,7 +41,7 @@ function EventsContent({ groupId }: EventsContainerProps) {
 
     return (
         <div className="space-y-6 pb-20 animate-in fade-in duration-700">
-            <EventsHeader groupId={groupId} />
+            <EventsHeader groupId={groupId} groupName={group?.name} />
 
             {/* Filter Tabs */}
             <div className="flex p-1 bg-muted/50 rounded-full w-full max-w-sm sticky top-4 z-10 backdrop-blur-md shadow-sm border border-muted/50">
