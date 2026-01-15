@@ -34,10 +34,10 @@ This document tracks the implementation progress of the REST API endpoints defin
 ## 2.5 Children
 
 - ✅ `GET /api/groups/:groupId/children` - List children in group
-- ❌ `POST /api/groups/:groupId/children` - Add child to group
-- ❌ `GET /api/children/:childId` - Get child details
-- ❌ `PATCH /api/children/:childId` - Update child profile (Parent only)
-- ❌ `DELETE /api/children/:childId` - Delete child profile (Parent only)
+- ✅ `POST /api/groups/:groupId/children` - Add child to group
+- ✅ `GET /api/children/:childId` - Get child details
+- ✅ `PATCH /api/children/:childId` - Update child profile (Parent only)
+- ✅ `DELETE /api/children/:childId` - Delete child profile (Parent only)
 
 ## 2.6 Events
 
