@@ -1,28 +1,23 @@
 import type { APIRoute } from 'astro';
-import { z } from 'astro/zod';
-import { PaginationParamsSchema } from '../../../../lib/schemas';
-import { createGroupsService } from '../../../../lib/services/groups.service';
+import { CreateChildCommandSchema, PaginationParamsSchema } from '../../../../lib/schemas';
+import { createChildrenService } from '../../../../lib/services/children.service';
+import { handleApiError } from '../../../../lib/api-utils';
+
+export const prerender = false;
 
 /**
  * GET /api/groups/:groupId/children
  *
- * Retrieves a list of children for a specific group.
+ * Retrieves a paginated list of children in a specific group.
  *
  * Path Parameters:
  * - groupId (uuid): The ID of the group
  *
- * Query parameters:
- * - limit (number, default 50, max 100): Maximum number of results
- * - offset (number, default 0): Number of results to skip
- *
- * Responses:
- * - 200 OK: Successfully retrieved list
- * - 400 Bad Request: Invalid query parameters
- * - 401 Unauthorized: Missing or invalid authentication token
- * - 403 Forbidden: User is not a member of the group
- * - 500 Internal Server Error: Unexpected server error
+ * Query Parameters:
+ * - limit (number): Number of items to return (default 20, max 100)
+ * - offset (number): Number of items to skip (default 0)
  */
-export const GET: APIRoute = async ({ request, params, locals }) => {
+export const GET: APIRoute = async ({ params, request, locals }) => {
     const { groupId } = params;
 
     if (!groupId) {
@@ -33,10 +28,7 @@ export const GET: APIRoute = async ({ request, params, locals }) => {
                     message: 'Group ID is required',
                 },
             }),
-            {
-                status: 400,
-                headers: { 'Content-Type': 'application/json' },
-            }
+            { status: 400, headers: { 'Content-Type': 'application/json' } }
         );
     }
 
@@ -55,82 +47,105 @@ export const GET: APIRoute = async ({ request, params, locals }) => {
                         message: 'Authentication required',
                     },
                 }),
-                {
-                    status: 401,
-                    headers: { 'Content-Type': 'application/json' },
-                }
+                { status: 401, headers: { 'Content-Type': 'application/json' } }
             );
         }
 
-        // === Extract and Validate Query Parameters ===
+        // === GUARD: Query Validation ===
         const url = new URL(request.url);
-        const queryLimit = url.searchParams.get('limit');
-        const queryOffset = url.searchParams.get('offset');
-
-        const paginationParams = PaginationParamsSchema.parse({
-            limit: queryLimit === null ? undefined : queryLimit,
-            offset: queryOffset === null ? undefined : queryOffset,
+        const queryParams = PaginationParamsSchema.parse({
+            limit: url.searchParams.get('limit'),
+            offset: url.searchParams.get('offset'),
         });
 
         // === Business Logic ===
-        const groupsService = createGroupsService(locals.supabase);
-        const result = await groupsService.getGroupChildren(user.id, groupId, paginationParams);
+        const childrenService = createChildrenService(locals.supabase);
+        const result = await childrenService.listChildren(groupId, user.id, queryParams);
 
-        // === Happy Path: Success ===
         return new Response(JSON.stringify(result), {
             status: 200,
             headers: { 'Content-Type': 'application/json' },
         });
-    } catch (error: any) {
-        // === Error Handling ===
+    } catch (error) {
+        return handleApiError(error, `GET /api/groups/${groupId}/children`);
+    }
+};
 
-        if (error instanceof z.ZodError) {
+/**
+ * POST /api/groups/:groupId/children
+ *
+ * Creates a new child profile in a specific group.
+ *
+ * Path Parameters:
+ * - groupId (uuid): The ID of the group
+ *
+ * Request Body:
+ * - displayName (string, 1-50): Child's display name
+ * - bio (string, max 1000, optional): Optional bio/notes
+ * - birthDate (string, YYYY-MM-DD, optional): Optional birth date
+ */
+export const POST: APIRoute = async ({ params, request, locals }) => {
+    const { groupId } = params;
+
+    if (!groupId) {
+        return new Response(
+            JSON.stringify({
+                error: {
+                    code: 'VALIDATION_ERROR',
+                    message: 'Group ID is required',
+                },
+            }),
+            { status: 400, headers: { 'Content-Type': 'application/json' } }
+        );
+    }
+
+    try {
+        // === GUARD: Authentication ===
+        const {
+            data: { user },
+            error: authError,
+        } = await locals.supabase.auth.getUser();
+
+        if (authError || !user) {
+            return new Response(
+                JSON.stringify({
+                    error: {
+                        code: 'UNAUTHORIZED',
+                        message: 'Authentication required',
+                    },
+                }),
+                { status: 401, headers: { 'Content-Type': 'application/json' } }
+            );
+        }
+
+        // === GUARD: JSON Parsing ===
+        let body;
+        try {
+            body = await request.json();
+        } catch {
             return new Response(
                 JSON.stringify({
                     error: {
                         code: 'VALIDATION_ERROR',
-                        message: 'Validation failed',
-                        details: error.errors.map((e) => ({
-                            field: e.path.join('.'),
-                            message: e.message,
-                        })),
+                        message: 'Invalid JSON in request body',
                     },
                 }),
-                {
-                    status: 400,
-                    headers: { 'Content-Type': 'application/json' },
-                }
+                { status: 400, headers: { 'Content-Type': 'application/json' } }
             );
         }
 
-        if (error.message === 'Access denied or group not found') {
-            return new Response(
-                JSON.stringify({
-                    error: {
-                        code: 'FORBIDDEN',
-                        message: error.message,
-                    },
-                }),
-                {
-                    status: 403,
-                    headers: { 'Content-Type': 'application/json' },
-                }
-            );
-        }
+        // === GUARD: Schema Validation ===
+        const command = CreateChildCommandSchema.parse(body);
 
-        // Unexpected errors
-        console.error(`[GET /api/groups/${groupId}/children] Unexpected error:`, error);
-        return new Response(
-            JSON.stringify({
-                error: {
-                    code: 'SERVICE_UNAVAILABLE',
-                    message: 'An unexpected error occurred',
-                },
-            }),
-            {
-                status: 500,
-                headers: { 'Content-Type': 'application/json' },
-            }
-        );
+        // === Business Logic ===
+        const childrenService = createChildrenService(locals.supabase);
+        const result = await childrenService.createChild(groupId, user.id, command);
+
+        return new Response(JSON.stringify({ data: result }), {
+            status: 201,
+            headers: { 'Content-Type': 'application/json' },
+        });
+    } catch (error) {
+        return handleApiError(error, `POST /api/groups/${groupId}/children`);
     }
 };
