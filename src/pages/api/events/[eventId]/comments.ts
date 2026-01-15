@@ -1,17 +1,18 @@
 import type { APIRoute } from 'astro';
 import { z } from 'astro/zod';
-import { UpdateEventCommandSchema } from '../../../lib/schemas';
-import { createEventsService } from '../../../lib/services/events.service';
-import { handleApiError } from '../../../lib/api-utils';
+import { CreateEventCommentCommandSchema, PaginationParamsSchema } from '../../../../lib/schemas';
+import { createEventCommentsService } from '../../../../lib/services/event_comments.service';
+import { handleApiError } from '../../../../lib/api-utils';
 
 export const prerender = false;
 
 /**
- * GET /api/events/:eventId
+ * GET /api/events/:eventId/comments
  *
- * Retrieves detailed information about a specific event.
+ * Retrieves a paginated list of comments for an event's hidden thread.
+ * Hidden from the event organizer.
  */
-export const GET: APIRoute = async ({ params, locals }) => {
+export const GET: APIRoute = async ({ params, request, locals }) => {
     try {
         const { eventId } = params;
         if (!eventId || !z.string().uuid().safeParse(eventId).success) {
@@ -38,26 +39,37 @@ export const GET: APIRoute = async ({ params, locals }) => {
             );
         }
 
+        // === Extract and Validate Query Parameters ===
+        const url = new URL(request.url);
+        const queryLimit = url.searchParams.get('limit');
+        const queryOffset = url.searchParams.get('offset');
+
+        const paginationParams = PaginationParamsSchema.parse({
+            limit: queryLimit === null ? undefined : queryLimit,
+            offset: queryOffset === null ? undefined : queryOffset,
+        });
+
         // === Business Logic ===
-        const eventsService = createEventsService(locals.supabase);
-        const result = await eventsService.getEventDetail(eventId, user.id);
+        const service = createEventCommentsService(locals.supabase);
+        const result = await service.listComments(eventId, user.id, paginationParams);
 
         // === Happy Path: Success ===
-        return new Response(JSON.stringify({ data: result }), {
+        return new Response(JSON.stringify(result), {
             status: 200,
             headers: { 'Content-Type': 'application/json' },
         });
     } catch (error) {
-        return handleApiError(error, `[GET /api/events/${params.eventId}]`);
+        return handleApiError(error, `[GET /api/events/${params.eventId}/comments]`);
     }
 };
 
 /**
- * PATCH /api/events/:eventId
+ * POST /api/events/:eventId/comments
  *
- * Updates an existing event. Only the organizer can perform this action.
+ * Adds a new comment to an event's hidden thread.
+ * Hidden from the event organizer.
  */
-export const PATCH: APIRoute = async ({ params, request, locals }) => {
+export const POST: APIRoute = async ({ params, request, locals }) => {
     try {
         const { eventId } = params;
         if (!eventId || !z.string().uuid().safeParse(eventId).success) {
@@ -98,61 +110,18 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
         }
 
         // === GUARD: Schema Validation ===
-        const command = UpdateEventCommandSchema.parse(body);
+        const command = CreateEventCommentCommandSchema.parse(body);
 
         // === Business Logic ===
-        const eventsService = createEventsService(locals.supabase);
-        const result = await eventsService.updateEvent(eventId, user.id, command);
+        const service = createEventCommentsService(locals.supabase);
+        const result = await service.addComment(eventId, user.id, command);
 
         // === Happy Path: Success ===
         return new Response(JSON.stringify({ data: result }), {
-            status: 200,
+            status: 201,
             headers: { 'Content-Type': 'application/json' },
         });
     } catch (error) {
-        return handleApiError(error, `[PATCH /api/events/${params.eventId}]`);
-    }
-};
-
-/**
- * DELETE /api/events/:eventId
- *
- * Deletes an event. Only the organizer can perform this action.
- */
-export const DELETE: APIRoute = async ({ params, locals }) => {
-    try {
-        const { eventId } = params;
-        if (!eventId || !z.string().uuid().safeParse(eventId).success) {
-            return new Response(
-                JSON.stringify({
-                    error: { code: 'VALIDATION_ERROR', message: 'Invalid eventId format' },
-                }),
-                { status: 400, headers: { 'Content-Type': 'application/json' } }
-            );
-        }
-
-        // === GUARD: Authentication ===
-        const {
-            data: { user },
-            error: authError,
-        } = await locals.supabase.auth.getUser();
-
-        if (authError || !user) {
-            return new Response(
-                JSON.stringify({
-                    error: { code: 'UNAUTHORIZED', message: 'Authentication required' },
-                }),
-                { status: 401, headers: { 'Content-Type': 'application/json' } }
-            );
-        }
-
-        // === Business Logic ===
-        const eventsService = createEventsService(locals.supabase);
-        await eventsService.deleteEvent(eventId, user.id);
-
-        // === Happy Path: Success (No Content) ===
-        return new Response(null, { status: 204 });
-    } catch (error) {
-        return handleApiError(error, `[DELETE /api/events/${params.eventId}]`);
+        return handleApiError(error, `[POST /api/events/${params.eventId}/comments]`);
     }
 };

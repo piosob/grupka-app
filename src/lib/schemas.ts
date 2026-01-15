@@ -463,6 +463,33 @@ export const CreateEventCommentCommandSchema = z.object({
 export type CreateEventCommentCommand = z.infer<typeof CreateEventCommentCommandSchema>;
 
 // ============================================================================
+// Internal Query Result Schemas (for complex joins)
+// ============================================================================
+
+/**
+ * Internal schema for event comment query result
+ * matches the join in EventCommentsService.listComments
+ */
+export const EventCommentQueryResultSchema = z.object({
+    id: z.string().uuid(),
+    event_id: z.string().uuid(),
+    author_id: z.string().uuid(),
+    content: z.string(),
+    created_at: z.string(),
+    author_profile: z
+        .object({
+            children: z.array(
+                z.object({
+                    display_name: z.string(),
+                })
+            ),
+        })
+        .nullable(),
+});
+
+export type EventCommentQueryResult = z.infer<typeof EventCommentQueryResultSchema>;
+
+// ============================================================================
 // AI (Magic Wand) DTOs & Commands
 // ============================================================================
 

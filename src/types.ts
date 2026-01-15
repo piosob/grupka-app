@@ -16,6 +16,25 @@ export type EventCommentEntity = Tables<'event_comments'>;
 export type ProfileEntity = Tables<'profiles'>;
 export type AiUsageLogEntity = Tables<'ai_usage_logs'>;
 
+// ============================================================================
+// Query Results (Internal types for complex database joins)
+// ============================================================================
+
+/** Result of joining event_comments with profiles and children */
+export interface EventCommentQueryResult extends EventCommentEntity {
+    author_profile: {
+        children: {
+            display_name: string;
+        }[];
+    } | null;
+}
+
+/** Result of joining events with children and guest count */
+export interface EventListItemQueryResult extends EventEntity {
+    child: { display_name: string } | null;
+    guests: { count: number }[];
+}
+
 /** Group role enum from database */
 export type GroupRole = Enums<'group_role'>;
 

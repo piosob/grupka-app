@@ -11,33 +11,9 @@ import type {
     EventGuestDTO,
 } from '../schemas';
 import type { PaginatedResponse, EventEntity } from '../../types';
+import { NotFoundError, ForbiddenError, ValidationError } from '../errors';
 
 export type TypedSupabaseClient = SupabaseClient<Database>;
-
-// ============================================================================
-// Custom Error Types
-// ============================================================================
-
-export class NotFoundError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = 'NotFoundError';
-    }
-}
-
-export class ForbiddenError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = 'ForbiddenError';
-    }
-}
-
-export class ValidationError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = 'ValidationError';
-    }
-}
 
 // ============================================================================
 // Internal helper types for database query results

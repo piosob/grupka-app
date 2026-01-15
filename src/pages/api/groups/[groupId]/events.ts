@@ -1,15 +1,8 @@
 import type { APIRoute } from 'astro';
 import { z } from 'astro/zod';
-import {
-    EventsQueryParamsSchema,
-    CreateEventCommandSchema,
-} from '../../../../lib/schemas';
-import {
-    createEventsService,
-    ForbiddenError,
-    NotFoundError,
-    ValidationError,
-} from '../../../../lib/services/events.service';
+import { EventsQueryParamsSchema, CreateEventCommandSchema } from '../../../../lib/schemas';
+import { createEventsService } from '../../../../lib/services/events.service';
+import { handleApiError } from '../../../../lib/api-utils';
 
 export const prerender = false;
 
@@ -135,59 +128,3 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
         return handleApiError(error, '[POST /api/groups/:groupId/events]');
     }
 };
-
-/**
- * Common error handler for API routes.
- */
-function handleApiError(error: unknown, context: string): Response {
-    if (error instanceof z.ZodError) {
-        return new Response(
-            JSON.stringify({
-                error: {
-                    code: 'VALIDATION_ERROR',
-                    message: 'Validation failed',
-                    details: error.errors.map((e) => ({
-                        field: e.path.join('.'),
-                        message: e.message,
-                    })),
-                },
-            }),
-            { status: 400, headers: { 'Content-Type': 'application/json' } }
-        );
-    }
-
-    if (error instanceof ForbiddenError) {
-        return new Response(
-            JSON.stringify({ error: { code: 'FORBIDDEN', message: error.message } }),
-            { status: 403, headers: { 'Content-Type': 'application/json' } }
-        );
-    }
-
-    if (error instanceof NotFoundError) {
-        return new Response(
-            JSON.stringify({ error: { code: 'NOT_FOUND', message: error.message } }),
-            { status: 404, headers: { 'Content-Type': 'application/json' } }
-        );
-    }
-
-    if (error instanceof ValidationError) {
-        return new Response(
-            JSON.stringify({
-                error: {
-                    code: 'VALIDATION_ERROR',
-                    message: error.message,
-                },
-            }),
-            { status: 400, headers: { 'Content-Type': 'application/json' } }
-        );
-    }
-
-    console.error(`${context} Unexpected error:`, error);
-    return new Response(
-        JSON.stringify({
-            error: { code: 'SERVICE_UNAVAILABLE', message: 'An unexpected error occurred' },
-        }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
-}
-
