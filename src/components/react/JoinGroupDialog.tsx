@@ -61,10 +61,10 @@ export function JoinGroupDialog({ open, onOpenChange, onSuccess }: JoinGroupDial
                 throw new Error(message);
             }
 
-            toast.success(`Dołączono do grupy: ${data.groupName}`);
+            toast.success(`Dołączono do grupy: ${data.data.groupName}`);
             setCode('');
             onOpenChange(false);
-            onSuccess(data.groupId);
+            onSuccess(data.data.groupId);
         } catch (err: any) {
             setError(err.message);
             toast.error(err.message);

@@ -42,9 +42,11 @@ function DashboardContent() {
         queryClient.invalidateQueries({ queryKey: queryKeys.groups.lists() });
     };
 
-    const handleJoinSuccess = (groupId: string) => {
-        // Redirect to the new group's events page
-        window.location.href = `/groups/${groupId}/events`;
+    const handleJoinSuccess = (_groupId: string) => {
+        // Refresh the groups list and stay on dashboard
+        refreshGroups();
+        // The user specifically wants to be on the new group
+        window.location.href = `/groups/${_groupId}`;
     };
 
     if (isLoading) {

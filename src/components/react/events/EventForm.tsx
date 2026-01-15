@@ -1,4 +1,5 @@
 import { useForm, Controller } from 'react-hook-form';
+import { useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Calendar as CalendarIcon, Loader2, Save, X } from 'lucide-react';
 import {
@@ -37,6 +38,16 @@ export const EventForm = ({
     isSubmitting = false,
     onCancel,
 }: EventFormProps) => {
+    // Filter childrenList to ensure unique IDs and stable reference
+    const uniqueChildren = useMemo(() => {
+        const seen = new Set();
+        return childrenList.filter((child) => {
+            if (seen.has(child.id)) return false;
+            seen.add(child.id);
+            return true;
+        });
+    }, [childrenList]);
+
     const isEdit = !!initialData;
 
     const {
@@ -53,13 +64,14 @@ export const EventForm = ({
                   title: initialData.title,
                   eventDate: initialData.eventDate,
                   description: initialData.description || '',
-                  childId: initialData.childId || undefined,
+                  childId: initialData.childId || 'none',
                   guestChildIds: initialData.guests.map((g) => g.childId),
               }
             : {
                   title: '',
                   eventDate: new Date().toISOString().split('T')[0],
                   description: '',
+                  childId: 'none',
                   guestChildIds: [],
               },
     });
@@ -153,7 +165,7 @@ export const EventForm = ({
                                             <SelectItem value="none">
                                                 Brak (wydarzenie ogólne)
                                             </SelectItem>
-                                            {childrenList
+                                            {uniqueChildren
                                                 .filter((c) => c.isOwner)
                                                 .map((child) => (
                                                     <SelectItem key={child.id} value={child.id}>
@@ -186,7 +198,7 @@ export const EventForm = ({
                 {/* Guest Selection */}
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200 fill-mode-both">
                     <GuestSelectionSection
-                        children={childrenList}
+                        children={uniqueChildren}
                         selectedIds={selectedGuestIds}
                         onChange={(ids) => setValue('guestChildIds', ids)}
                     />

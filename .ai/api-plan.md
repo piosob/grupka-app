@@ -124,14 +124,14 @@ Get group details (Group Hub summary).
         "upcomingEventsCount": 3,
         "createdBy": "uuid",
         "createdAt": "2025-01-15T10:30:00Z",
-        "adminName": "Staś, Ania",
+        "adminName": "Krzyś, Ania",
         "nextEvent": {
             "id": "uuid",
             "title": "Urodziny Stasia",
             "eventDate": "2025-05-15",
             "description": "Zapraszamy na urodziny!",
             "childId": "uuid",
-            "childName": "Staś",
+            "childName": "Krzyś",
             "organizerId": "uuid",
             "isOrganizer": true,
             "guestCount": 12,
@@ -142,7 +142,7 @@ Get group details (Group Hub summary).
         "myChildren": [
             {
                 "id": "uuid",
-                "displayName": "Staś",
+                "displayName": "Krzyś",
                 "bio": "Loves dinosaurs...",
                 "birthDate": "2019-05-15",
                 "parentId": "uuid",
@@ -234,7 +234,7 @@ List all members of a group.
             "userId": "uuid",
             "role": "admin",
             "joinedAt": "2025-01-15T10:30:00Z",
-            "childrenNames": ["Staś", "Ania"]
+            "childrenNames": ["Krzyś", "Ania"]
         }
     ],
     "pagination": {
@@ -264,7 +264,7 @@ Get admin's email address (reveal feature for emergency contact).
     "data": {
         "userId": "uuid",
         "email": "admin@example.com",
-        "childrenNames": ["Staś"]
+        "childrenNames": ["Krzyś"]
     }
 }
 ```
@@ -421,7 +421,7 @@ List all children in a group.
     "data": [
         {
             "id": "uuid",
-            "displayName": "Staś",
+            "displayName": "Krzyś",
             "bio": "Loves dinosaurs and building with LEGO...",
             "birthDate": "2019-05-15",
             "parentId": "uuid",
@@ -453,7 +453,7 @@ Add a child to the group.
 
 ```json
 {
-    "displayName": "Staś",
+    "displayName": "Krzyś",
     "bio": "Loves dinosaurs and building with LEGO",
     "birthDate": "2019-05-15"
 }
@@ -471,7 +471,7 @@ Add a child to the group.
 {
     "data": {
         "id": "uuid",
-        "displayName": "Staś",
+        "displayName": "Krzyś",
         "bio": "Loves dinosaurs and building with LEGO",
         "birthDate": "2019-05-15",
         "groupId": "uuid",
@@ -500,7 +500,7 @@ Get child details.
 {
     "data": {
         "id": "uuid",
-        "displayName": "Staś",
+        "displayName": "Krzyś",
         "bio": "Loves dinosaurs and building with LEGO...",
         "birthDate": "2019-05-15",
         "groupId": "uuid",
@@ -527,7 +527,7 @@ Update child profile. Parent only.
 
 ```json
 {
-    "displayName": "Staś od Kasi",
+    "displayName": "Krzyś od Kasi",
     "bio": "Updated interests description...",
     "birthDate": "2019-05-15"
 }
@@ -545,7 +545,7 @@ Update child profile. Parent only.
 {
     "data": {
         "id": "uuid",
-        "displayName": "Staś od Kasi",
+        "displayName": "Krzyś od Kasi",
         "bio": "Updated interests description...",
         "birthDate": "2019-05-15",
         "updatedAt": "2025-01-15T11:00:00Z"
@@ -602,7 +602,7 @@ List events in a group.
             "eventDate": "2025-05-15",
             "description": "Zapraszamy na urodziny!",
             "childId": "uuid",
-            "childName": "Staś",
+            "childName": "Krzyś",
             "organizerId": "uuid",
             "isOrganizer": false,
             "guestCount": 12,
@@ -695,7 +695,7 @@ Get event details.
         "eventDate": "2025-05-15",
         "description": "Zapraszamy na urodziny w sali zabaw!",
         "childId": "uuid",
-        "childName": "Staś",
+        "childName": "Krzyś",
         "childBio": "Loves dinosaurs...",
         "organizerId": "uuid",
         "isOrganizer": false,
@@ -892,7 +892,7 @@ Transform rough notes into a formatted gift ideas list for a child's bio.
 ```json
 {
     "notes": "dinozaury, lego, kolorowanki, nie lubi puzzli",
-    "childDisplayName": "Staś"
+    "childDisplayName": "Krzyś"
 }
 ```
 

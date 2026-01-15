@@ -104,7 +104,7 @@ Integracja odbywa się poprzez `ChildrenService` oraz `AiService` (frontendowe w
     - Użytkownik wpisuje np. "lubi klocki lego, dinozaury, boi się ciemności".
     - Klika "Magic Wand".
     - Przycisk pokazuje spinner, textarea jest read-only.
-    - Po chwili treść zostaje zastąpiona sformatowanym opisem: "Staś to wielki fan klocków LEGO i dinozaurów. Jest bardzo kreatywny, choć bywa ostrożny w nowych sytuacjach...".
+    - Po chwili treść zostaje zastąpiona sformatowanym opisem: "Krzyś to wielki fan klocków LEGO i dinozaurów. Jest bardzo kreatywny, choć bywa ostrożny w nowych sytuacjach...".
     - Użytkownik może ręcznie poprawić ten tekst.
 4. **Usuwanie:** Dostępne tylko w edycji lub szczegółach własnego dziecka. Wymaga potwierdzenia w dialogu.
 

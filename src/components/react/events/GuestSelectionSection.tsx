@@ -28,7 +28,8 @@ export const GuestSelectionSection = ({
     }, [children, searchQuery]);
 
     const handleToggleChild = (childId: string) => {
-        if (selectedIds.includes(childId)) {
+        const isSelected = selectedIds.includes(childId);
+        if (isSelected) {
             onChange(selectedIds.filter((id) => id !== childId));
         } else {
             onChange([...selectedIds, childId]);
@@ -96,36 +97,42 @@ export const GuestSelectionSection = ({
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 divide-y divide-muted/50">
-                                {filteredChildren.map((child) => (
-                                    <div
-                                        key={child.id}
-                                        className="flex items-center gap-3 p-3 hover:bg-primary/5 transition-colors cursor-pointer group"
-                                        onClick={() => handleToggleChild(child.id)}
-                                    >
-                                        <Checkbox
-                                            id={`child-${child.id}`}
-                                            checked={selectedIds.includes(child.id)}
-                                            onCheckedChange={() => handleToggleChild(child.id)}
-                                            className="rounded-full data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                                        />
-                                        <div className="flex-1 min-w-0">
-                                            <Label
-                                                htmlFor={`child-${child.id}`}
-                                                className="text-sm font-medium cursor-pointer block truncate group-hover:text-primary transition-colors"
-                                            >
-                                                {child.displayName}
-                                            </Label>
-                                            <p className="text-[10px] text-muted-foreground">
-                                                {child.isOwner
-                                                    ? 'Twoje dziecko'
-                                                    : 'Dziecko z grupy'}
-                                            </p>
+                                {filteredChildren.map((child) => {
+                                    const isSelected = selectedIds.includes(child.id);
+                                    return (
+                                        <div
+                                            key={child.id}
+                                            className="flex items-center gap-3 p-3 hover:bg-primary/5 transition-colors cursor-pointer group"
+                                            onClick={() => handleToggleChild(child.id)}
+                                        >
+                                            <Checkbox
+                                                id={`child-${child.id}`}
+                                                checked={isSelected}
+                                                onCheckedChange={() => handleToggleChild(child.id)}
+                                                // Prevent double toggle when clicking the checkbox itself (which would bubble to div)
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="rounded-full data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                                            />
+                                            <div className="flex-1 min-w-0">
+                                                <Label
+                                                    // Remove htmlFor to prevent Label from triggering Checkbox click
+                                                    // which would then bubble to div, causing double toggle
+                                                    className="text-sm font-medium cursor-pointer block truncate group-hover:text-primary transition-colors"
+                                                >
+                                                    {child.displayName}
+                                                </Label>
+                                                <p className="text-[10px] text-muted-foreground">
+                                                    {child.isOwner
+                                                        ? 'Twoje dziecko'
+                                                        : 'Dziecko z grupy'}
+                                                </p>
+                                            </div>
+                                            {isSelected && (
+                                                <CheckCircle2 className="w-4 h-4 text-primary animate-in zoom-in duration-300" />
+                                            )}
                                         </div>
-                                        {selectedIds.includes(child.id) && (
-                                            <CheckCircle2 className="w-4 h-4 text-primary animate-in zoom-in duration-300" />
-                                        )}
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         )}
                     </div>
