@@ -19,6 +19,8 @@ import type {
 } from '../schemas';
 import type { GroupEntity, EventEntity, ChildEntity, PaginatedResponse } from '../../types';
 
+import { NotFoundError, ForbiddenError, ConflictError } from '../errors';
+
 type TypedSupabaseClient = SupabaseClient<Database>;
 
 /**
@@ -566,6 +568,92 @@ export class GroupsService {
 
         if (error) {
             throw new Error(`Failed to delete group: ${error.message}`);
+        }
+    }
+
+    /**
+     * Removes a member from a group and their associated children.
+     * Can be performed by the user themselves or by a group admin.
+     *
+     * @param requesterId - ID of the user performing the request
+     * @param groupId - ID of the group
+     * @param targetUserId - ID of the user to be removed
+     * @throws ForbiddenError if requester has no permission
+     * @throws NotFoundError if group or member not found
+     * @throws ConflictError if trying to remove the last admin
+     */
+    async removeMember(requesterId: string, groupId: string, targetUserId: string): Promise<void> {
+        // 1. Get requester and target roles
+        const { data: members, error: membersError } = await this.supabase
+            .from('group_members')
+            .select('user_id, role')
+            .eq('group_id', groupId)
+            .in('user_id', [requesterId, targetUserId]);
+
+        if (membersError) {
+            throw new Error(`Failed to fetch membership info: ${membersError.message}`);
+        }
+
+        const requester = members?.find((m) => m.user_id === requesterId);
+        const target = members?.find((m) => m.user_id === targetUserId);
+
+        if (!requester) {
+            throw new ForbiddenError('Access denied or group not found');
+        }
+
+        if (!target) {
+            throw new NotFoundError('Target user is not a member of this group');
+        }
+
+        // 2. Permission check: requester is admin OR requester is removing themselves
+        const isAdmin = requester.role === 'admin';
+        const isSelf = requesterId === targetUserId;
+
+        if (!isAdmin && !isSelf) {
+            throw new ForbiddenError('Only admins can remove other members');
+        }
+
+        // 3. Prevent removing the last admin
+        if (target.role === 'admin') {
+            const { count, error: countError } = await this.supabase
+                .from('group_members')
+                .select('*', { count: 'exact', head: true })
+                .eq('group_id', groupId)
+                .eq('role', 'admin');
+
+            if (countError) {
+                throw new Error(`Failed to count admins: ${countError.message}`);
+            }
+
+            if (count === 1) {
+                throw new ConflictError('Cannot remove the last administrator of the group');
+            }
+        }
+
+        // 4. Cleanup and removal
+        // Note: We don't have built-in transactions in the JS client, so we execute sequentially.
+        // We delete children first to avoid orphaned records.
+
+        // Delete children of the target user in this group
+        const { error: childrenError } = await this.supabase
+            .from('children')
+            .delete()
+            .eq('group_id', groupId)
+            .eq('parent_id', targetUserId);
+
+        if (childrenError) {
+            throw new Error(`Failed to remove children: ${childrenError.message}`);
+        }
+
+        // Remove group membership
+        const { error: memberError } = await this.supabase
+            .from('group_members')
+            .delete()
+            .eq('group_id', groupId)
+            .eq('user_id', targetUserId);
+
+        if (memberError) {
+            throw new Error(`Failed to remove group member: ${memberError.message}`);
         }
     }
 

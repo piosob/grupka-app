@@ -22,7 +22,7 @@ This document tracks the implementation progress of the REST API endpoints defin
 
 - ✅ `GET /api/groups/:groupId/members` - List group members
 - ✅ `GET /api/groups/:groupId/members/admin-contact` - Admin contact reveal
-- ❌ `DELETE /api/groups/:groupId/members/:userId` - Remove member / Leave group
+- ✅ `DELETE /api/groups/:groupId/members/:userId` - Remove member / Leave group
 
 ## 2.4 Group Invites
 
