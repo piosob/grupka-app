@@ -1,0 +1,14 @@
+---
+import { EditChildContainer } from '@/components/react/children/EditChildContainer';
+import MainLayout from '@/layouts/MainLayout.astro';
+
+const { groupId, childId } = Astro.params;
+
+if (!groupId || !childId) {
+    return Astro.redirect('/dashboard');
+}
+---
+
+<MainLayout title="Edytuj profil dziecka" groupId={groupId}>
+    <EditChildContainer groupId={groupId} childId={childId} client:load />
+</MainLayout>

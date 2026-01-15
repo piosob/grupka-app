@@ -1,0 +1,14 @@
+---
+import { ChildrenContainer } from '@/components/react/children/ChildrenContainer';
+import MainLayout from '@/layouts/MainLayout.astro';
+
+const { groupId } = Astro.params;
+
+if (!groupId) {
+    return Astro.redirect('/dashboard');
+}
+---
+
+<MainLayout title="Dzieci" groupId={groupId}>
+    <ChildrenContainer groupId={groupId} client:load />
+</MainLayout>
