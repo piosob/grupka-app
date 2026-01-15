@@ -49,9 +49,9 @@ This document tracks the implementation progress of the REST API endpoints defin
 
 ## 2.7 Event Comments
 
-- ❌ `GET /api/events/:eventId/comments` - List comments (Surprise protection)
-- ❌ `POST /api/events/:eventId/comments` - Add comment
-- ❌ `DELETE /api/events/:eventId/comments/:commentId` - Delete comment (Author only)
+- ✅ `GET /api/events/:eventId/comments` - List comments (Surprise protection)
+- ✅ `POST /api/events/:eventId/comments` - Add comment
+- ✅ `DELETE /api/events/:eventId/comments/:commentId` - Delete comment (Author only)
 
 ## 2.8 AI (Magic Wand)
 
