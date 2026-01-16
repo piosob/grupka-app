@@ -1,12 +1,11 @@
 import { useState, useMemo } from 'react';
-import { Search, CheckCircle2 } from 'lucide-react';
+import { Search, CheckCircle2, Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { ChildListItemDTO } from '@/types';
+import { cn } from '@/lib/utils';
 
 interface GuestSelectionSectionProps {
     children: ChildListItemDTO[];
@@ -22,10 +21,17 @@ export const GuestSelectionSection = ({
     const [searchQuery, setSearchQuery] = useState('');
 
     const filteredChildren = useMemo(() => {
+        if (!children) return [];
         return children.filter((child) =>
             child.displayName.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [children, searchQuery]);
+
+    const { filteredIds, allFilteredSelected } = useMemo(() => {
+        const ids = filteredChildren.map((c) => c.id);
+        const allSelected = ids.length > 0 && ids.every((id) => selectedIds.includes(id));
+        return { filteredIds: ids, allFilteredSelected: allSelected };
+    }, [filteredChildren, selectedIds]);
 
     const handleToggleChild = (childId: string) => {
         const isSelected = selectedIds.includes(childId);
@@ -36,9 +42,9 @@ export const GuestSelectionSection = ({
         }
     };
 
-    const handleToggleAll = () => {
-        const filteredIds = filteredChildren.map((c) => c.id);
-        const allFilteredSelected = filteredIds.every((id) => selectedIds.includes(id));
+    const handleToggleAll = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
 
         if (allFilteredSelected) {
             // Unselect all currently filtered
@@ -51,9 +57,6 @@ export const GuestSelectionSection = ({
     };
 
     const selectedCount = selectedIds.length;
-    const filteredIds = filteredChildren.map((c) => c.id);
-    const allFilteredSelected =
-        filteredIds.length > 0 && filteredIds.every((id) => selectedIds.includes(id));
 
     return (
         <div className="space-y-4">
@@ -89,7 +92,7 @@ export const GuestSelectionSection = ({
             </div>
 
             <div className="border border-muted-foreground/20 rounded-2xl overflow-hidden bg-muted/5">
-                <ScrollArea className="h-[300px] w-full">
+                <div className="h-[300px] w-full overflow-y-auto custom-scrollbar">
                     <div className="p-1">
                         {filteredChildren.length === 0 ? (
                             <div className="py-8 text-center text-muted-foreground text-sm">
@@ -105,22 +108,24 @@ export const GuestSelectionSection = ({
                                             className="flex items-center gap-3 p-3 hover:bg-primary/5 transition-colors cursor-pointer group"
                                             onClick={() => handleToggleChild(child.id)}
                                         >
-                                            <Checkbox
-                                                id={`child-${child.id}`}
-                                                checked={isSelected}
-                                                onCheckedChange={() => handleToggleChild(child.id)}
-                                                // Prevent double toggle when clicking the checkbox itself (which would bubble to div)
-                                                onClick={(e) => e.stopPropagation()}
-                                                className="rounded-full data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                                            />
+                                            {/* Simple Custom Checkbox to avoid Radix Ref loops */}
+                                            <div
+                                                className={cn(
+                                                    'size-5 shrink-0 rounded-full border flex items-center justify-center transition-all duration-200',
+                                                    isSelected
+                                                        ? 'bg-primary border-primary text-primary-foreground shadow-sm scale-110'
+                                                        : 'border-muted-foreground/30 bg-background group-hover:border-primary/50'
+                                                )}
+                                            >
+                                                {isSelected && (
+                                                    <Check className="size-3 h-3 stroke-[3]" />
+                                                )}
+                                            </div>
+
                                             <div className="flex-1 min-w-0">
-                                                <Label
-                                                    // Remove htmlFor to prevent Label from triggering Checkbox click
-                                                    // which would then bubble to div, causing double toggle
-                                                    className="text-sm font-medium cursor-pointer block truncate group-hover:text-primary transition-colors"
-                                                >
+                                                <span className="text-sm font-medium block truncate group-hover:text-primary transition-colors">
                                                     {child.displayName}
-                                                </Label>
+                                                </span>
                                                 <p className="text-[10px] text-muted-foreground">
                                                     {child.isOwner
                                                         ? 'Twoje dziecko'
@@ -128,7 +133,7 @@ export const GuestSelectionSection = ({
                                                 </p>
                                             </div>
                                             {isSelected && (
-                                                <CheckCircle2 className="w-4 h-4 text-primary animate-in zoom-in duration-300" />
+                                                <CheckCircle2 className="w-4 h-4 text-primary/40" />
                                             )}
                                         </div>
                                     );
@@ -136,7 +141,7 @@ export const GuestSelectionSection = ({
                             </div>
                         )}
                     </div>
-                </ScrollArea>
+                </div>
             </div>
         </div>
     );

@@ -1,5 +1,5 @@
-import { useForm, Controller } from 'react-hook-form';
-import { useMemo } from 'react';
+import { useForm, Controller, useWatch } from 'react-hook-form';
+import { useMemo, useCallback } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Calendar as CalendarIcon, Loader2, Save, X } from 'lucide-react';
 import {
@@ -40,6 +40,7 @@ export const EventForm = ({
 }: EventFormProps) => {
     // Filter childrenList to ensure unique IDs and stable reference
     const uniqueChildren = useMemo(() => {
+        if (!childrenList || childrenList.length === 0) return [];
         const seen = new Set();
         return childrenList.filter((child) => {
             if (seen.has(child.id)) return false;
@@ -55,7 +56,6 @@ export const EventForm = ({
         handleSubmit,
         control,
         formState: { errors },
-        watch,
         setValue,
     } = useForm<CreateEventCommand>({
         resolver: zodResolver(CreateEventCommandSchema),
@@ -76,20 +76,29 @@ export const EventForm = ({
               },
     });
 
-    const selectedGuestIds = watch('guestChildIds') || [];
+    const selectedGuestIds =
+        useWatch({
+            control,
+            name: 'guestChildIds',
+            defaultValue: [],
+        }) || [];
+
+    const handleGuestChange = useCallback(
+        (ids: string[]) => {
+            setValue('guestChildIds', ids, { shouldDirty: true });
+        },
+        [setValue]
+    );
 
     const handleFormSubmit = (data: CreateEventCommand) => {
         onSubmit(data);
     };
 
     return (
-        <form
-            onSubmit={handleSubmit(handleFormSubmit)}
-            className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700"
-        >
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
             <div className="space-y-6">
                 {/* Basic Info */}
-                <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-500 delay-100 fill-mode-both">
+                <div className="space-y-4">
                     <div className="space-y-2">
                         <Label
                             htmlFor="title"
@@ -196,16 +205,16 @@ export const EventForm = ({
                 </div>
 
                 {/* Guest Selection */}
-                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200 fill-mode-both">
+                <div>
                     <GuestSelectionSection
                         children={uniqueChildren}
                         selectedIds={selectedGuestIds}
-                        onChange={(ids) => setValue('guestChildIds', ids)}
+                        onChange={handleGuestChange}
                     />
                 </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-muted/50 animate-in fade-in slide-in-from-bottom-2 duration-500 delay-300 fill-mode-both">
+            <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-muted/50">
                 <Button
                     type="submit"
                     className="flex-1 rounded-full h-12 shadow-lg shadow-primary/10"

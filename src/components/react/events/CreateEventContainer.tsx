@@ -6,6 +6,7 @@ import { EventForm } from './EventForm';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { QueryProvider } from '../providers/QueryProvider';
+import { useMemo } from 'react';
 
 interface CreateEventContainerProps {
     groupId: string;
@@ -13,7 +14,10 @@ interface CreateEventContainerProps {
 
 function CreateEventContent({ groupId }: CreateEventContainerProps) {
     const { createEvent, isCreatingEvent } = useEvents(groupId);
-    const { children, isLoadingChildren } = useChildren(groupId, { limit: 100 });
+    const { children, isLoadingChildren } = useChildren(
+        groupId,
+        useMemo(() => ({ limit: 100 }), [])
+    );
     const { data: group } = useGroupDetail(groupId);
 
     const handleSubmit = (data: any) => {

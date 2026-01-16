@@ -330,7 +330,7 @@ export const CreateEventCommandSchema = z.object({
     title: z.string().min(1).max(100),
     eventDate: z.string().date(),
     description: z.string().optional(),
-    childId: z.string().uuid().optional(),
+    childId: z.string().uuid().or(z.literal('none')).optional(),
     guestChildIds: z.array(z.string().uuid()).optional(),
 });
 
