@@ -531,7 +531,7 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 - Opis pełny
 - Nazwa dziecka + bio (dla gości - inspiracja)
 - Lista gości (nazwy dzieci)
-- **Dla gościa**: Sekcja komentarzy (hidden thread)
+- **Dla gościa**: Sekcja komentarzy (hidden thread). Sortowanie: przypięte na górę, potem od najnowszych. Każdy gość może przypiąć ważną wiadomość. Tylko autor może usunąć swój komentarz.
 - **Dla organizatora**: Info box o ukrytym wątku
 
 **Kluczowe komponenty:**
@@ -570,8 +570,10 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
         - Avatar autora
         - Author label: "Mama Ani"
         - Comment content
-        - Timestamp (relative: "2 godziny temu")
-        - Button "Usuń" (tylko własne komentarze)
+        - Timestamp (relative)
+        - **Badge/Icon "Pinned"** (jeśli przypięty)
+        - **Button "Pin/Unpin"** (pinezka) - dostępny dla wszystkich gości
+        - **Button "Usuń"** (ikona kosza) - widoczny TYLKO dla autora
     - Comment input (sticky bottom na mobile):
         - Textarea (auto-resize, max 2000 chars)
         - Button "Wyślij" (disabled jeśli empty)
@@ -1873,7 +1875,9 @@ interface CommentThreadProps {
         - Author label: "Mama Ani"
         - Content (text, line breaks)
         - Timestamp (relative)
-        - Button "Usuń" (conditional, tylko author)
+        - **Badge/Icon "Pinned"** (jeśli przypięty)
+        - **Button "Pin/Unpin"** (pinezka) - dostępny dla wszystkich gości
+        - **Button "Usuń"** (ikona kosza) - widoczny TYLKO dla autora
     - Empty state: "Bądź pierwszą osobą..."
     - Skeleton loaders podczas fetch
 - Comment input (sticky bottom mobile):
@@ -1885,6 +1889,8 @@ interface CommentThreadProps {
 
 - React Query dla GET /api/events/:eventId/comments
 - React Query mutation dla POST (optimistic update)
+- **React Query mutation dla PATCH** (pin/unpin)
+- **Sortowanie po stronie API**: `isPinned DESC, createdAt DESC` (najnowsze pod przypiętymi)
 - Auto-scroll do nowego komentarza
 - Relative timestamps (formatRelative helper)
 
@@ -2744,8 +2750,10 @@ CTA: Focused textarea (auto-focus)
 
 **Kryteria spełnione:**
 ✓ Goście widzą sekcję komentarzy
-✓ Nowe komentarze po refetch/refresh (brak realtime w MVP)
+✓ Sortowanie: przypięte na górze, potem od najnowszych
+✓ Możliwość przypinania (pin) ważnych wiadomości przez dowolnego gościa
 ✓ Author label: "Mama Adasia" (z dziecka autora)
+✓ Widoczność przycisku usuwania TYLKO dla autora
 ✓ Możliwość dodawania komentarzy
 ✓ Optimistic updates
 

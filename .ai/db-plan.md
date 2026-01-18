@@ -75,6 +75,7 @@ _Wątek dyskusyjny z blokadą widoczności dla organizatora._
 - `event_id`: **UUID NOT NULL** – FK -> `events(id)`, `ON DELETE CASCADE`.
 - `author_id`: **UUID NOT NULL** – FK -> `profiles(id)`.
 - `content`: **VARCHAR(2000) NOT NULL** – treść (min. 1 znak).
+- `is_pinned`: **BOOLEAN NOT NULL DEFAULT FALSE** – czy komentarz jest przypięty na górze.
 - `created_at`: **TIMESTAMPTZ NOT NULL** – domyślnie `NOW()`.
 
 **9. ai_usage_logs** (Logi AI)
@@ -107,7 +108,7 @@ Indeksy są krytyczne dla wydajności polityk RLS, które są sprawdzane przy ka
 - **group_members:** `idx_group_members_user_id`, `idx_group_members_group_id` (Najważniejsze indeksy dla weryfikacji uprawnień).
 - **children:** `idx_children_group_id`, `idx_children_parent_id`.
 - **events:** `idx_events_group_id`, `idx_events_organizer_id`, `idx_events_date` (sortowanie).
-- **event_comments:** `idx_event_comments_event_id` (szybkie ładowanie wątku).
+- **event_comments:** `idx_event_comments_event_id`, `idx_event_comments_pinned_created` (szybkie ładowanie wątku z uwzględnieniem przypięcia i daty).
 - **group_invites:** `idx_invites_code` (wyszukiwanie zaproszeń).
 
 ---

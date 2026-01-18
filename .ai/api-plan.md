@@ -809,6 +809,8 @@ List comments in an event's hidden thread. **Not accessible to event organizer**
             "content": "Proponuję złożyć się na zestaw LEGO Dinosaury!",
             "authorId": "uuid",
             "authorLabel": "Anna (mama Ani)",
+            "isPinned": false,
+            "isAuthor": true,
             "createdAt": "2025-01-15T10:30:00Z"
         }
     ],
@@ -823,12 +825,44 @@ List comments in an event's hidden thread. **Not accessible to event organizer**
 **Notes:**
 
 - `authorLabel` is derived from the author's child's display name in the group
+- Comments are sorted by: `isPinned` DESC, `createdAt` DESC
+- `isAuthor` is true if the current user is the author of the comment
+
+---
+
+#### PATCH /api/events/:eventId/comments/:commentId
+
+Pin or unpin a comment. Any member of the group (except organizer) can pin/unpin.
+
+**Request Body:**
+
+```json
+{
+    "isPinned": true
+}
+```
+
+**Response (200 OK - `SingleResponse<EventCommentDTO>`):**
+
+```json
+{
+    "data": {
+        "id": "uuid",
+        "content": "Proponuję złożyć się na zestaw LEGO Dinosaury!",
+        "authorId": "uuid",
+        "authorLabel": "Anna (mama Ani)",
+        "isPinned": true,
+        "isAuthor": false,
+        "createdAt": "2025-01-15T10:30:00Z"
+    }
+}
+```
 
 **Error Responses:**
 
 - `401 Unauthorized` - Invalid or missing token
 - `403 Forbidden` - Not a member of the event's group OR is the event organizer
-- `404 Not Found` - Event does not exist
+- `404 Not Found` - Comment does not exist
 
 ---
 

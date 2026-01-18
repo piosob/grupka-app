@@ -55,6 +55,8 @@ Rodzice korzystający z obecnych rozwiązań (np. WhatsApp, Messenger) napotykaj
 
 - Tworzenie wydarzeń prywatnych z możliwością selekcji gości (checkboxy + przycisk "Zaznacz wszystkich").
 - **Ukryty wątek:** Tablica komentarzy dla gości, technicznie niewidoczna dla organizatora (zabezpieczenie RLS).
+    - **Sortowanie i Przypinanie:** Komentarze wyświetlane od najnowszych, z możliwością przypięcia (pinned) ważnych wiadomości na górę przez dowolnego uczestnika.
+    - **Uprawnienia do usuwania:** Tylko autor komentarza może go usunąć.
 - **Pasywny wskaźnik aktualizacji:** Badge informujący o zmianie w wydarzeniu (widoczny przez 8h od edycji).
 
 ## 4. Granice produktu

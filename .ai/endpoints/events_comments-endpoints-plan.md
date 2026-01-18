@@ -6,8 +6,9 @@ Moduł ten umożliwia obsługę ukrytego wątku komentarzy dla wydarzenia. Głó
 
 Punkty końcowe:
 
-- `GET /api/events/:eventId/comments`: Pobieranie listy komentarzy (z wyłączeniem organizatora).
+- `GET /api/events/:eventId/comments`: Pobieranie listy komentarzy (z wyłączeniem organizatora). Sortowanie: przypięte na górze, potem od najnowszych.
 - `POST /api/events/:eventId/comments`: Dodawanie komentarza (z wyłączeniem organizatora).
+- `PATCH /api/events/:eventId/comments/:commentId`: Przypinanie/odpinanie komentarza (dostępne dla każdego gościa).
 - `DELETE /api/events/:eventId/comments/:commentId`: Usuwanie własnego komentarza (tylko autor komentarza).
 
 ## 2. Szczegóły żądania
@@ -26,6 +27,14 @@ Punkty końcowe:
 - **Struktura URL**: `/api/events/[eventId]/comments`
 - **Request Body**: `CreateEventCommentCommand`
     - `content`: string (1-2000 znaków)
+
+### PATCH /api/events/:eventId/comments/:commentId
+
+- **Metoda HTTP**: `PATCH`
+- **Struktura URL**: `/api/events/[eventId]/comments/[commentId]`
+- **Request Body**:
+    - `isPinned`: boolean
+- **Uprawnienia**: Każdy gość wydarzenia może przypiąć/odpiąć dowolny komentarz.
 
 ### DELETE /api/events/:eventId/comments/:commentId
 
@@ -58,10 +67,13 @@ Wykorzystane zostaną typy zdefiniowane w `src/lib/schemas.ts` oraz `src/types.t
     - Pobiera dane wydarzenia, aby sprawdzić `group_id` i `organizer_id`.
     - Weryfikuje uprawnienia:
         - Czy użytkownik jest członkiem grupy?
-        - Czy użytkownik **nie jest** organizatorem (dla GET/POST)?
+        - Czy użytkownik **nie jest** organizatorem (dla GET/POST/PATCH)?
         - Czy użytkownik jest autorem (dla DELETE)?
     - Wykonuje operację na bazie danych Supabase (`event_comments`).
-    - Przy pobieraniu listy: dołącza `authorLabel` (pobierany z tabeli `children` powiązanej z `author_id` w ramach tej samej grupy).
+    - Przy pobieraniu listy:
+        - Dołącza `authorLabel` (pobierany z tabeli `children` powiązanej z `author_id` w ramach tej samej grupy).
+        - Ustawia flagi `isPinned` i `isAuthor` (porównując `userId` z `author_id`).
+        - Sortuje: `is_pinned DESC`, `created_at DESC`.
 4.  **Baza danych** (Supabase):
     - Tabela `event_comments` przechowuje dane.
     - RLS (Row Level Security) zapewnia dodatkową warstwę bezpieczeństwa na poziomie bazy.
@@ -110,6 +122,9 @@ Stworzenie pliku `src/lib/services/event_comments.service.ts` i implementacja kl
 - Implementacja metody `deleteComment(eventId, commentId, userId)`:
     - Sprawdzenie czy użytkownik jest autorem.
     - Delete z `event_comments`.
+- Implementacja metody `togglePinComment(eventId, commentId, userId, isPinned)`:
+    - Sprawdzenie uprawnień (grupa, nie-organizator).
+    - Update `is_pinned` w `event_comments`.
 
 ### Krok 2: Implementacja Endpointów API (Lista i Dodawanie)
 
@@ -119,11 +134,12 @@ Stworzenie pliku `src/pages/api/events/[eventId]/comments.ts`.
 - Obsługa `POST`: Parsowanie body, walidacja `CreateEventCommentCommandSchema`, wywołanie `service.addComment`.
 - Implementacja `handleApiError` (można przenieść do wspólnego helpera lub skopiować wzorzec z `events/[eventId].ts`).
 
-### Krok 3: Implementacja Endpointu API (Usuwanie)
+### Krok 3: Implementacja Endpointu API (Usuwanie i Przypinanie)
 
 Stworzenie pliku `src/pages/api/events/[eventId]/comments/[commentId].ts`.
 
 - Obsługa `DELETE`: Wywołanie `service.deleteComment`.
+- Obsługa `PATCH`: Parsowanie body (`isPinned`), wywołanie `service.togglePinComment`.
 
 ### Krok 4: Testy i Weryfikacja
 
