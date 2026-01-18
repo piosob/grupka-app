@@ -69,7 +69,7 @@ export const EventForm = ({
               }
             : {
                   title: '',
-                  eventDate: new Date().toISOString().split('T')[0],
+                  eventDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
                   description: '',
                   childId: 'none',
                   guestChildIds: [],
