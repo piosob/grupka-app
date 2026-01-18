@@ -220,8 +220,7 @@ export class GroupsService {
 					created_by,
 					created_at,
 					members:group_members(count),
-					children:children(count),
-					events:events(count)
+					children:children(count)
 				)
 			`
             )
@@ -236,47 +235,88 @@ export class GroupsService {
         // Cast joined data to our helper interface
         const group = membership.group as unknown as GroupWithCounts;
 
-        // 2. Fetch additional data in parallel
-        const [adminProfileData, adminChildrenData, nextEventData, myChildrenData] =
-            await Promise.all([
-                // Fetch admin's profile (first_name)
-                this.supabase
-                    .from('profiles')
-                    .select('first_name')
-                    .eq('id', group.created_by)
-                    .single(),
+        const today = new Date().toISOString().split('T')[0];
 
-                // Fetch admin's children names in this group
-                this.supabase
-                    .from('children')
-                    .select('display_name')
-                    .eq('group_id', groupId)
-                    .eq('parent_id', group.created_by),
+        // 2. Double Safety: Get IDs of children belonging to the user in this group
+        const { data: myChildrenInGroup } = await this.supabase
+            .from('children')
+            .select('id')
+            .eq('group_id', groupId)
+            .eq('parent_id', userId);
+        const myChildrenIds = myChildrenInGroup?.map((c) => c.id) || [];
 
-                // Fetch nearest upcoming event
-                this.supabase
-                    .from('events')
-                    .select(
-                        `
+        // 3. Double Safety: Get event IDs where user's children are invited
+        const { data: guestEntries } = await this.supabase
+            .from('event_guests')
+            .select('event_id')
+            .in('child_id', myChildrenIds.length > 0 ? myChildrenIds : ['00000000-0000-0000-0000-000000000000']);
+        const invitedEventIds = guestEntries?.map((ge) => ge.event_id) || [];
+
+        // 4. Involvement filter for events
+        const involvementFilters = [`organizer_id.eq.${userId}`];
+        if (myChildrenIds.length > 0) {
+            involvementFilters.push(`child_id.in.(${myChildrenIds.join(',')})`);
+        }
+        if (invitedEventIds.length > 0) {
+            involvementFilters.push(`id.in.(${invitedEventIds.join(',')})`);
+        }
+        const involvementOrString = involvementFilters.join(',');
+
+        // 5. Fetch additional data in parallel
+        const [
+            adminProfileData,
+            adminChildrenData,
+            nextEventData,
+            myChildrenData,
+            upcomingEventsCountData,
+        ] = await Promise.all([
+            // Fetch admin's profile (first_name)
+            this.supabase
+                .from('profiles')
+                .select('first_name')
+                .eq('id', group.created_by)
+                .single(),
+
+            // Fetch admin's children names in this group
+            this.supabase
+                .from('children')
+                .select('display_name')
+                .eq('group_id', groupId)
+                .eq('parent_id', group.created_by),
+
+            // Fetch nearest upcoming event (with involvement filter)
+            this.supabase
+                .from('events')
+                .select(
+                    `
 					*,
 					child:children(display_name),
 					guests:event_guests(count)
 				`
-                    )
-                    .eq('group_id', groupId)
-                    .gte('event_date', new Date().toISOString().split('T')[0])
-                    .order('event_date', { ascending: true })
-                    .limit(1)
-                    .maybeSingle(),
+                )
+                .eq('group_id', groupId)
+                .gte('event_date', today)
+                .or(involvementOrString)
+                .order('event_date', { ascending: true })
+                .limit(1)
+                .maybeSingle(),
 
-                // Fetch user's children in this group
-                this.supabase
-                    .from('children')
-                    .select('*')
-                    .eq('group_id', groupId)
-                    .eq('parent_id', userId)
-                    .order('display_name', { ascending: true }),
-            ]);
+            // Fetch user's children in this group
+            this.supabase
+                .from('children')
+                .select('*')
+                .eq('group_id', groupId)
+                .eq('parent_id', userId)
+                .order('display_name', { ascending: true }),
+
+            // Fetch count of upcoming events (with involvement filter)
+            this.supabase
+                .from('events')
+                .select('*', { count: 'exact', head: true })
+                .eq('group_id', groupId)
+                .gte('event_date', today)
+                .or(involvementOrString),
+        ]);
 
         // Process admin name (now using first_name)
         const adminName = adminProfileData.data?.first_name || 'Administrator';
@@ -320,8 +360,7 @@ export class GroupsService {
             role: membership.role as 'admin' | 'member',
             memberCount: group.members?.[0]?.count ?? 0,
             childrenCount: group.children?.[0]?.count ?? 0,
-            // TODO: In a real app, upcomingEventsCount should be filtered by date in the query
-            upcomingEventsCount: group.events?.[0]?.count ?? 0,
+            upcomingEventsCount: upcomingEventsCountData.count ?? 0,
             createdBy: group.created_by,
             createdAt: group.created_at,
             adminName,

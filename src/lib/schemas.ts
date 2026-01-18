@@ -449,6 +449,8 @@ export const EventCommentDTOSchema = z.object({
     content: z.string().min(1).max(2000),
     authorId: z.string().uuid(),
     authorLabel: z.string(),
+    isPinned: z.boolean(),
+    isAuthor: z.boolean(),
     createdAt: z.string().datetime(),
 });
 
@@ -464,6 +466,16 @@ export const CreateEventCommentCommandSchema = z.object({
 
 export type CreateEventCommentCommand = z.infer<typeof CreateEventCommentCommandSchema>;
 
+/**
+ * Command for updating an event comment (e.g. pinning)
+ * Used in: PATCH /api/events/:eventId/comments/:commentId
+ */
+export const UpdateEventCommentCommandSchema = z.object({
+    isPinned: z.boolean().optional(),
+});
+
+export type UpdateEventCommentCommand = z.infer<typeof UpdateEventCommentCommandSchema>;
+
 // ============================================================================
 // Internal Query Result Schemas (for complex joins)
 // ============================================================================
@@ -477,6 +489,7 @@ export const EventCommentQueryResultSchema = z.object({
     event_id: z.string().uuid(),
     author_id: z.string().uuid(),
     content: z.string(),
+    is_pinned: z.boolean(),
     created_at: z.string(),
     author_profile: z
         .object({

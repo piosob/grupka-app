@@ -118,6 +118,7 @@ export type Database = {
                     created_at: string;
                     event_id: string;
                     id: string;
+                    is_pinned: boolean;
                 };
                 Insert: {
                     author_id: string;
@@ -125,6 +126,7 @@ export type Database = {
                     created_at?: string;
                     event_id: string;
                     id?: string;
+                    is_pinned?: boolean;
                 };
                 Update: {
                     author_id?: string;
@@ -132,6 +134,7 @@ export type Database = {
                     created_at?: string;
                     event_id?: string;
                     id?: string;
+                    is_pinned?: boolean;
                 };
                 Relationships: [
                     {

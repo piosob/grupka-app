@@ -97,7 +97,22 @@ export class EventsService {
             throw new ForbiddenError('Not a member of this group');
         }
 
-        // 2. Build query
+        // 2. Double Safety: Get IDs of children belonging to the user in this group
+        const { data: myChildren } = await this.supabase
+            .from('children')
+            .select('id')
+            .eq('group_id', groupId)
+            .eq('parent_id', userId);
+        const myChildrenIds = myChildren?.map((c) => c.id) || [];
+
+        // 3. Double Safety: Get event IDs where user's children are invited
+        const { data: guestEntries } = await this.supabase
+            .from('event_guests')
+            .select('event_id')
+            .in('child_id', myChildrenIds.length > 0 ? myChildrenIds : ['00000000-0000-0000-0000-000000000000']);
+        const invitedEventIds = guestEntries?.map((ge) => ge.event_id) || [];
+
+        // 4. Build query with explicit filters for involvement
         let query = this.supabase
             .from('events')
             .select(
@@ -109,6 +124,16 @@ export class EventsService {
                 { count: 'exact' }
             )
             .eq('group_id', groupId);
+
+        // Involvement filter: organizer OR parent of birthday child OR parent of invited guest
+        const involvementFilters = [`organizer_id.eq.${userId}`];
+        if (myChildrenIds.length > 0) {
+            involvementFilters.push(`child_id.in.(${myChildrenIds.join(',')})`);
+        }
+        if (invitedEventIds.length > 0) {
+            involvementFilters.push(`id.in.(${invitedEventIds.join(',')})`);
+        }
+        query = query.or(involvementFilters.join(','));
 
         if (params.upcoming) {
             const today = new Date().toISOString().split('T')[0];
@@ -264,6 +289,36 @@ export class EventsService {
         const isMember = await this.isUserGroupMember(event.group_id, userId);
         if (!isMember) {
             throw new ForbiddenError('Not a member of this group');
+        }
+
+        // Double Safety: Verify if user is organizer, parent of birthday child, or parent of a guest
+        const isOrganizer = event.organizer_id === userId;
+        
+        // Check if user is parent of the birthday child
+        let isParentOfBirthdayChild = false;
+        if (event.child_id) {
+            const { count: parentCount } = await this.supabase
+                .from('children')
+                .select('*', { count: 'exact', head: true })
+                .eq('id', event.child_id)
+                .eq('parent_id', userId);
+            isParentOfBirthdayChild = (parentCount ?? 0) > 0;
+        }
+
+        // Check if user is parent of any invited guest
+        const guestIds = (event.event_guests || []).map((eg: any) => eg.child_id);
+        let isParentOfGuest = false;
+        if (guestIds.length > 0) {
+            const { count: guestParentCount } = await this.supabase
+                .from('children')
+                .select('*', { count: 'exact', head: true })
+                .in('id', guestIds)
+                .eq('parent_id', userId);
+            isParentOfGuest = (guestParentCount ?? 0) > 0;
+        }
+
+        if (!isOrganizer && !isParentOfBirthdayChild && !isParentOfGuest) {
+            throw new ForbiddenError('Access denied: You are not involved in this event');
         }
 
         const guests: EventGuestDTO[] = (event.event_guests || []).map((eg: any) => ({

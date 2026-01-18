@@ -1,6 +1,11 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/db/database.types';
-import type { EventCommentDTO, CreateEventCommentCommand, PaginationParams } from '@/lib/schemas';
+import type {
+    EventCommentDTO,
+    CreateEventCommentCommand,
+    UpdateEventCommentCommand,
+    PaginationParams,
+} from '@/lib/schemas';
 import type { PaginatedResponse, EventCommentQueryResult } from '@/types';
 import { ForbiddenError, NotFoundError } from '@/lib/errors';
 
@@ -84,7 +89,8 @@ export class EventCommentsService {
             )
             .eq('event_id', eventId)
             .eq('author_profile.children.group_id', event.group_id)
-            .order('created_at', { ascending: true })
+            .order('is_pinned', { ascending: false })
+            .order('created_at', { ascending: false })
             .range(params.offset, params.offset + params.limit - 1);
 
         if (error) {
@@ -109,6 +115,8 @@ export class EventCommentsService {
                 content: comment.content,
                 authorId: comment.author_id,
                 authorLabel,
+                isPinned: comment.is_pinned,
+                isAuthor: comment.author_id === userId,
                 createdAt: comment.created_at,
             };
         });
@@ -184,6 +192,8 @@ export class EventCommentsService {
             content: data.content,
             authorId: data.author_id,
             authorLabel,
+            isPinned: false,
+            isAuthor: true,
             createdAt: data.created_at,
         };
     }
@@ -218,6 +228,76 @@ export class EventCommentsService {
         if (deleteError) {
             throw new Error(`Failed to delete comment: ${deleteError.message}`);
         }
+    }
+
+    /**
+     * Toggles the pin status of a comment.
+     * Any member of the group (except organizer) can pin/unpin.
+     */
+    async updateComment(
+        eventId: string,
+        commentId: string,
+        userId: string,
+        command: UpdateEventCommentCommand
+    ): Promise<EventCommentDTO> {
+        // 1. Get event info
+        const event = await this.getEventBasicInfo(eventId);
+
+        // 2. Verify membership
+        const isMember = await this.isUserGroupMember(event.group_id, userId);
+        if (!isMember) {
+            throw new ForbiddenError('Not a member of this group');
+        }
+
+        // 3. Surprise Protection: Organizer cannot pin comments
+        if (event.organizer_id === userId) {
+            throw new ForbiddenError('Organizers cannot pin comments in the hidden thread');
+        }
+
+        // 4. Update comment
+        const { data, error } = await this.supabase
+            .from('event_comments')
+            .update({
+                is_pinned: command.isPinned,
+            })
+            .eq('id', commentId)
+            .eq('event_id', eventId)
+            .select(
+                `
+                *,
+                author_profile:profiles!event_comments_author_id_fkey (
+                    first_name,
+                    children:children (
+                        display_name
+                    )
+                )
+            `
+            )
+            .eq('author_profile.children.group_id', event.group_id)
+            .single();
+
+        if (error || !data) {
+            throw new Error(`Failed to update comment: ${error?.message || 'Not found'}`);
+        }
+
+        // 5. Map to DTO
+        const comment = data as unknown as EventCommentQueryResult;
+        const firstName = comment.author_profile?.first_name || 'Rodzic';
+        const childrenNames = comment.author_profile?.children?.map((c) => c.display_name) || [];
+        const authorLabel =
+            childrenNames.length > 0
+                ? `${firstName} (rodzic ${childrenNames.join(', ')})`
+                : firstName;
+
+        return {
+            id: comment.id,
+            content: comment.content,
+            authorId: comment.author_id,
+            authorLabel,
+            isPinned: comment.is_pinned,
+            isAuthor: comment.author_id === userId,
+            createdAt: comment.created_at,
+        };
     }
 }
 

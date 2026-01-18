@@ -3,6 +3,7 @@ import { queryKeys } from '../query-keys';
 import type {
     EventCommentDTO,
     CreateEventCommentCommand,
+    UpdateEventCommentCommand,
     PaginatedResponse,
     PaginationParams,
 } from '../../types';
@@ -88,6 +89,40 @@ export const useComments = (eventId: string, params: Partial<PaginationParams> =
         },
     });
 
+    // Update comment mutation (e.g. pin/unpin)
+    const { mutate: updateComment, isPending: isUpdatingComment } = useMutation({
+        mutationFn: async ({
+            commentId,
+            command,
+        }: {
+            commentId: string;
+            command: UpdateEventCommentCommand;
+        }) => {
+            const response = await fetch(`/api/events/${eventId}/comments/${commentId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(command),
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error?.message || 'Nie udało się zaktualizować komentarza');
+            }
+            const json = await response.json();
+            return json.data;
+        },
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.events.comments(eventId) });
+            if (data.isPinned) {
+                toast.success('Komentarz został przypięty');
+            } else {
+                toast.success('Komentarz został odpięty');
+            }
+        },
+        onError: (error: Error) => {
+            toast.error(error.message);
+        },
+    });
+
     return {
         comments: commentsData?.data || [],
         pagination: commentsData?.pagination,
@@ -97,5 +132,7 @@ export const useComments = (eventId: string, params: Partial<PaginationParams> =
         isAddingComment,
         deleteComment,
         isDeletingComment,
+        updateComment,
+        isUpdatingComment,
     };
 };

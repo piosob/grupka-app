@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Send, ShieldAlert, Trash2 } from 'lucide-react';
+import { Pin, Send, ShieldAlert, Trash2 } from 'lucide-react';
 import { useComments } from '@/lib/hooks/useComments';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -25,8 +26,14 @@ interface CommentThreadProps {
 
 export const CommentThread = ({ eventId, isOrganizer }: CommentThreadProps) => {
     const [newComment, setNewComment] = useState('');
-    const { comments, isLoadingComments, addComment, isAddingComment, deleteComment } =
-        useComments(eventId);
+    const {
+        comments,
+        isLoadingComments,
+        addComment,
+        isAddingComment,
+        deleteComment,
+        updateComment,
+    } = useComments(eventId);
 
     if (isOrganizer) {
         return (
@@ -102,9 +109,20 @@ export const CommentThread = ({ eventId, isOrganizer }: CommentThreadProps) => {
                                 </Avatar>
                                 <div className="flex-1 space-y-1">
                                     <div className="flex items-center justify-between">
-                                        <p className="text-xs font-semibold text-muted-foreground">
-                                            {comment.authorLabel}
-                                        </p>
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-xs font-semibold text-muted-foreground">
+                                                {comment.authorLabel}
+                                            </p>
+                                            {comment.isPinned && (
+                                                <Badge
+                                                    variant="secondary"
+                                                    className="px-1.5 py-0 h-4 text-[9px] uppercase tracking-wider bg-primary/10 text-primary border-none"
+                                                >
+                                                    <Pin className="w-2 h-2 mr-1 fill-current" />
+                                                    Przypięte
+                                                </Badge>
+                                            )}
+                                        </div>
                                         <span className="text-[10px] text-muted-foreground/50">
                                             {new Date(comment.createdAt).toLocaleTimeString(
                                                 'pl-PL',
@@ -112,44 +130,82 @@ export const CommentThread = ({ eventId, isOrganizer }: CommentThreadProps) => {
                                             )}
                                         </span>
                                     </div>
-                                    <div className="relative bg-muted/50 p-3 rounded-2xl rounded-tl-none border border-muted/30 group-hover:bg-muted/70 transition-colors">
+                                    <div
+                                        className={cn(
+                                            'relative p-3 rounded-2xl rounded-tl-none border transition-colors',
+                                            comment.isPinned
+                                                ? 'bg-primary/5 border-primary/20 group-hover:bg-primary/10'
+                                                : 'bg-muted/50 border-muted/30 group-hover:bg-muted/70'
+                                        )}
+                                    >
                                         <p className="text-sm whitespace-pre-wrap">
                                             {comment.content}
                                         </p>
 
-                                        <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="absolute -right-2 -top-2 h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity bg-background border shadow-sm hover:text-destructive"
-                                                >
-                                                    <Trash2 className="w-3 h-3" />
-                                                </Button>
-                                            </AlertDialogTrigger>
-                                            <AlertDialogContent className="rounded-2xl">
-                                                <AlertDialogHeader>
-                                                    <AlertDialogTitle>
-                                                        Usunąć komentarz?
-                                                    </AlertDialogTitle>
-                                                    <AlertDialogDescription>
-                                                        Czy na pewno chcesz usunąć ten komentarz?
-                                                        Tej operacji nie można cofnąć.
-                                                    </AlertDialogDescription>
-                                                </AlertDialogHeader>
-                                                <AlertDialogFooter>
-                                                    <AlertDialogCancel className="rounded-full">
-                                                        Anuluj
-                                                    </AlertDialogCancel>
-                                                    <AlertDialogAction
-                                                        onClick={() => deleteComment(comment.id)}
-                                                        className="rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                                    >
-                                                        Usuń
-                                                    </AlertDialogAction>
-                                                </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog>
+                                        <div className="absolute -right-2 -top-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() =>
+                                                    updateComment({
+                                                        commentId: comment.id,
+                                                        command: { isPinned: !comment.isPinned },
+                                                    })
+                                                }
+                                                className={cn(
+                                                    'h-6 w-6 rounded-full bg-background border shadow-sm',
+                                                    comment.isPinned
+                                                        ? 'text-primary'
+                                                        : 'hover:text-primary'
+                                                )}
+                                            >
+                                                <Pin
+                                                    className={cn(
+                                                        'w-3 h-3',
+                                                        comment.isPinned && 'fill-current'
+                                                    )}
+                                                />
+                                            </Button>
+
+                                            {comment.isAuthor && (
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-6 w-6 rounded-full bg-background border shadow-sm hover:text-destructive"
+                                                        >
+                                                            <Trash2 className="w-3 h-3" />
+                                                        </Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent className="rounded-2xl">
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>
+                                                                Usunąć komentarz?
+                                                            </AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                Czy na pewno chcesz usunąć ten
+                                                                komentarz? Tej operacji nie można
+                                                                cofnąć.
+                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel className="rounded-full">
+                                                                Anuluj
+                                                            </AlertDialogCancel>
+                                                            <AlertDialogAction
+                                                                onClick={() =>
+                                                                    deleteComment(comment.id)
+                                                                }
+                                                                className="rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                            >
+                                                                Usuń
+                                                            </AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -22,6 +22,7 @@ export type AiUsageLogEntity = Tables<'ai_usage_logs'>;
 
 /** Result of joining event_comments with profiles and children */
 export interface EventCommentQueryResult extends EventCommentEntity {
+    is_pinned: boolean;
     author_profile: {
         first_name: string;
         children: {
@@ -84,6 +85,7 @@ export type {
     // Event Comments DTOs & Commands
     EventCommentDTO,
     CreateEventCommentCommand,
+    UpdateEventCommentCommand,
     // AI DTOs & Commands
     MagicWandCommand,
     MagicWandResponseDTO,
