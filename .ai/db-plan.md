@@ -6,6 +6,7 @@
 _Rozszerzenie tabeli systemowej `auth.users` w Supabase._
 
 - `id`: **UUID PRIMARY KEY** – referencja do `auth.users(id)`, `ON DELETE CASCADE`.
+- `first_name`: **VARCHAR(50) NOT NULL** – imię użytkownika (bez nazwiska).
 - `email`: **TEXT** – kopia adresu email (opcjonalnie, do szybkiego odczytu).
 - `created_at`: **TIMESTAMPTZ NOT NULL** – domyślnie `NOW()`.
 

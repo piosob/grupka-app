@@ -22,6 +22,9 @@
 
 Authentication is handled by Supabase Auth SDK on the client side. The API uses JWT tokens from Supabase for authorization. Profile creation is automatic via database trigger on `auth.users` insert.
 
+**Registration:**
+Client must provide `first_name` in the `options.data` object during `signUp`. This metadata is used by the trigger to populate the `profiles` table.
+
 **Note:** All endpoints below require `Authorization: Bearer <supabase_access_token>` header unless otherwise specified.
 
 ---
@@ -124,7 +127,7 @@ Get group details (Group Hub summary).
         "upcomingEventsCount": 3,
         "createdBy": "uuid",
         "createdAt": "2025-01-15T10:30:00Z",
-        "adminName": "Krzyś, Ania",
+        "adminName": "Anna",
         "nextEvent": {
             "id": "uuid",
             "title": "Urodziny Stasia",
@@ -232,6 +235,7 @@ List all members of a group.
     "data": [
         {
             "userId": "uuid",
+            "firstName": "Anna",
             "role": "admin",
             "joinedAt": "2025-01-15T10:30:00Z",
             "childrenNames": ["Krzyś", "Ania"]
@@ -804,7 +808,7 @@ List comments in an event's hidden thread. **Not accessible to event organizer**
             "id": "uuid",
             "content": "Proponuję złożyć się na zestaw LEGO Dinosaury!",
             "authorId": "uuid",
-            "authorLabel": "Mama Ani",
+            "authorLabel": "Anna (mama Ani)",
             "createdAt": "2025-01-15T10:30:00Z"
         }
     ],
@@ -1089,7 +1093,7 @@ export async function onRequest({ request, locals }, next) {
 
 1. Join `event_comments` with `children` via `author_id = parent_id`
 2. Filter children to same group as event
-3. Format as "Mama/Tata {childName}" or just child name
+3. Format as "{firstName} (rodzic {childName})" or just "{firstName}"
 
 ### 4.3 Update Badge Logic
 

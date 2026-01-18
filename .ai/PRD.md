@@ -47,7 +47,7 @@ Rodzice korzystający z obecnych rozwiązań (np. WhatsApp, Messenger) napotykaj
 
 ### 3.3 Profile Dzieci i AI
 
-- Identyfikacja dziecka wyłącznie poprzez "Nazwę wyświetlaną" (np. "Staś od Kasi").
+- Identyfikacja użytkownika w aplikacji odbywa się poprzez jego **Imię**. W kontekstach grupowych (np. lista członków) wyświetlane jest również powiązanie z dziećmi (np. "Anna (mama Stasia)").
 - Funkcja **Magic Wand** dostępna w formularzu edycji/dodawania profilu.
 - Model działania AI: Rodzic wpisuje notatkę -> AI generuje sugestie -> Rodzic weryfikuje i poprawia tekst -> Rodzic zapisuje zmiany.
 
@@ -98,6 +98,7 @@ Rodzice korzystający z obecnych rozwiązań (np. WhatsApp, Messenger) napotykaj
     - Link do strony resetowania hasła.
 - Strona rejestracji powinna zawierać:
     - Pola do wprowadzenia adresu email, hasła i powtórzenia hasła.
+    - Pole "Imię" (wymagane, bez nazwiska) z informacją: "Szanujemy Twoją prywatność. Podaj tylko imię - to wystarczy, by inni rodzice Cię rozpoznali."
     - Przycisk rejestracji.
     - Link do strony logowania.
 - Odzyskiwanie hasła powinno odbywać się poprzez wysłanie emaila z linkiem do resetowania hasła.
@@ -180,7 +181,7 @@ Rodzice korzystający z obecnych rozwiązań (np. WhatsApp, Messenger) napotykaj
 
 - Goście widzą sekcję komentarzy.
 - Nowe komentarze pojawiają się po przeładowaniu strony.
-- Autor komentarza jest podpisany nazwą swojego dziecka (np. "Mama Adasia").
+- Autor komentarza jest podpisany swoim Imieniem oraz informacją o dziecku (np. "Anna (mama Adasia)").
 
 ## 6. Metryki sukcesu
 

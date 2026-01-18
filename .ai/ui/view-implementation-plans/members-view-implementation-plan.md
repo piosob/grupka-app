@@ -38,7 +38,7 @@ MembersContainer (React)
 
 ### MemberCard
 - **Opis:** Karta pojedynczego członka grupy.
-- **Główne elementy:** Avatar (inicjały), Nazwa (oparta na dzieciach, np. "Rodzic: Staś, Ania"), Rola (Badge), Data dołączenia.
+- **Główne elementy:** Avatar (inicjały imienia), Imię użytkownika (np. "Anna"), Podpis dzieci (np. "Rodzic: Staś, Ania"), Rola (Badge), Data dołączenia.
 - **Obsługiwane interakcje:** Otwarcie dialogu kontaktu, otwarcie menu akcji.
 - **Propsy:** `member: GroupMemberDTO`, `isCurrentUser: boolean`, `canManage: boolean` (czy aktualny użytkownik jest adminem).
 
@@ -61,14 +61,15 @@ Większość danych pochodzi bezpośrednio z DTO, ale pomocne będą dodatkowe p
 ```typescript
 // Rozszerzenie GroupMemberDTO dla potrzeb UI
 export interface MemberViewModel extends GroupMemberDTO {
-    initials: string;       // Inicjały wygenerowane z display_name dzieci lub placeholder
-    displayName: string;    // Sformatowana nazwa: "Rodzic: [Lista Dzieci]"
+    initials: string;       // Inicjały z firstName
+    displayName: string;    // firstName
+    childrenLabel: string;  // "Rodzic: [Lista Dzieci]"
     isSelf: boolean;        // Czy to aktualnie zalogowany użytkownik
 }
 ```
 
 ### DTO (istniejące w src/types.ts i src/lib/schemas.ts)
-- `GroupMemberDTO`: `userId`, `role`, `joinedAt`, `childrenNames`.
+- `GroupMemberDTO`: `userId`, `firstName`, `role`, `joinedAt`, `childrenNames`.
 - `AdminContactDTO`: `userId`, `email`, `childrenNames`.
 
 ## 6. Zarządzanie stanem
