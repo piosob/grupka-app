@@ -16,7 +16,7 @@ interface ChildDetailContainerProps {
 }
 
 function ChildDetailContent({ groupId, childId }: ChildDetailContainerProps) {
-    const { child, isLoadingChild, deleteChild, isDeletingChild } = useChildDetail(childId);
+    const { child, isLoadingChild, deleteChild, isDeletingChild, childError } = useChildDetail(childId);
     const { data: group } = useGroupDetail(groupId);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
@@ -28,7 +28,17 @@ function ChildDetailContent({ groupId, childId }: ChildDetailContainerProps) {
             </div>
         );
     }
-
+if (childError) {
+    return (
+        <div className="text-center py-16">
+            <h2 className="text-2xl font-bold mb-4">Wystąpił błąd!</h2>
+            <p className="text-muted-foreground">Nie udało się załadować profilu dziecka albo nie masz dostępu do tego profilu</p>
+            <Button className='mt-4' onClick={() => (window.location.href = `/dashboard`)}>
+                Powrót do pulpitu
+            </Button>
+        </div>
+    );
+}
     if (!child) {
         return (
             <div className="text-center py-16">
