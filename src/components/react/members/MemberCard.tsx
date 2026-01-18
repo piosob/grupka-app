@@ -15,6 +15,7 @@ import type { GroupMemberDTO } from '@/types';
 export interface MemberViewModel extends GroupMemberDTO {
     initials: string;
     displayName: string;
+    childrenLabel: string;
     isSelf: boolean;
 }
 
@@ -63,6 +64,9 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                             )}
                         </div>
                         <span className="text-xs text-muted-foreground truncate">
+                            {member.childrenLabel}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground/60 truncate">
                             Dołączył(a) {new Date(member.joinedAt).toLocaleDateString('pl-PL')}
                         </span>
                     </div>

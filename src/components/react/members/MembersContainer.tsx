@@ -20,25 +20,19 @@ interface MembersContainerProps {
 
 const mapMemberToViewModel = (member: GroupMemberDTO, currentUserId: string): MemberViewModel => {
     const childrenNames = member.childrenNames || [];
-    const displayName =
+    const childrenLabel =
         childrenNames.length > 0
             ? `Rodzic: ${childrenNames.join(', ')}`
             : 'Rodzic (brak przypisanych dzieci)';
 
-    // Generate initials from first letter of each child's name, up to 2 characters
-    const initials =
-        childrenNames.length > 0
-            ? childrenNames
-                  .map((n) => n.trim().charAt(0))
-                  .join('')
-                  .slice(0, 2)
-                  .toUpperCase()
-            : 'R';
+    // Generate initials from first_name
+    const initials = (member.firstName || 'R').charAt(0).toUpperCase();
 
     return {
         ...member,
         initials,
-        displayName,
+        displayName: member.firstName || 'Użytkownik',
+        childrenLabel,
         isSelf: member.userId === currentUserId,
     };
 };

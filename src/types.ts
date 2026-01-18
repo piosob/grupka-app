@@ -23,6 +23,7 @@ export type AiUsageLogEntity = Tables<'ai_usage_logs'>;
 /** Result of joining event_comments with profiles and children */
 export interface EventCommentQueryResult extends EventCommentEntity {
     author_profile: {
+        first_name: string;
         children: {
             display_name: string;
         }[];

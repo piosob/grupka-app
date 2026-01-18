@@ -74,6 +74,7 @@ export class EventCommentsService {
                 `
                 *,
                 author_profile:profiles!event_comments_author_id_fkey!inner (
+                    first_name,
                     children:children!inner (
                         display_name
                     )
@@ -94,13 +95,20 @@ export class EventCommentsService {
         const mappedData: EventCommentDTO[] = (
             (data as unknown as EventCommentQueryResult[]) || []
         ).map((comment) => {
+            const firstName = comment.author_profile?.first_name || 'Rodzic';
             const childrenNames =
                 comment.author_profile?.children?.map((c) => c.display_name) || [];
+
+            const authorLabel =
+                childrenNames.length > 0
+                    ? `${firstName} (rodzic ${childrenNames.join(', ')})`
+                    : firstName;
+
             return {
                 id: comment.id,
                 content: comment.content,
                 authorId: comment.author_id,
-                authorLabel: childrenNames.length > 0 ? childrenNames.join(', ') : 'Rodzic',
+                authorLabel,
                 createdAt: comment.created_at,
             };
         });
@@ -153,20 +161,29 @@ export class EventCommentsService {
             throw new Error(`Failed to add comment: ${error?.message}`);
         }
 
-        // 5. Fetch author label for the response
-        const { data: authorData } = await this.supabase
-            .from('children')
-            .select('display_name')
-            .eq('parent_id', userId)
-            .eq('group_id', event.group_id);
+        // 5. Fetch author info for the response
+        const [profileData, childrenData] = await Promise.all([
+            this.supabase.from('profiles').select('first_name').eq('id', userId).single(),
+            this.supabase
+                .from('children')
+                .select('display_name')
+                .eq('parent_id', userId)
+                .eq('group_id', event.group_id),
+        ]);
 
-        const childrenNames = authorData?.map((c) => c.display_name) || [];
+        const firstName = profileData.data?.first_name || 'Rodzic';
+        const childrenNames = childrenData.data?.map((c) => c.display_name) || [];
+
+        const authorLabel =
+            childrenNames.length > 0
+                ? `${firstName} (rodzic ${childrenNames.join(', ')})`
+                : firstName;
 
         return {
             id: data.id,
             content: data.content,
             authorId: data.author_id,
-            authorLabel: childrenNames.length > 0 ? childrenNames.join(', ') : 'Rodzic',
+            authorLabel,
             createdAt: data.created_at,
         };
     }

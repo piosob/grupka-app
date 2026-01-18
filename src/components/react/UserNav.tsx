@@ -14,9 +14,10 @@ import {
 
 interface UserNavProps {
     userEmail?: string | null;
+    firstName?: string | null;
 }
 
-export function UserNav({ userEmail }: UserNavProps) {
+export function UserNav({ userEmail, firstName }: UserNavProps) {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     const handleLogout = async () => {
@@ -54,8 +55,8 @@ export function UserNav({ userEmail }: UserNavProps) {
         );
     }
 
-    // Get initials from email (first letter)
-    const initials = userEmail.charAt(0).toUpperCase();
+    // Get initials from firstName or email
+    const initials = (firstName || userEmail).charAt(0).toUpperCase();
 
     return (
         <div className="flex items-center gap-2">
@@ -84,7 +85,9 @@ export function UserNav({ userEmail }: UserNavProps) {
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                     <DropdownMenuLabel className="font-normal">
                         <div className="flex flex-col space-y-1">
-                            <p className="text-sm font-medium leading-none">Twoje konto</p>
+                            <p className="text-sm font-medium leading-none">
+                                {firstName || 'Twoje konto'}
+                            </p>
                             <p className="text-xs leading-none text-muted-foreground">
                                 {userEmail}
                             </p>

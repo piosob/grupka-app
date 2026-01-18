@@ -65,6 +65,21 @@ export function RegisterForm({
             <CardContent>
                 <form method="POST" action={action} className="space-y-4">
                     <div className="space-y-2">
+                        <Label htmlFor="firstName">Imię</Label>
+                        <Input
+                            id="firstName"
+                            name="firstName"
+                            type="text"
+                            placeholder="np. Anna"
+                            required
+                        />
+                        <p className="text-xs text-gray-500">
+                            Szanujemy Twoją prywatność. Podaj tylko imię - to wystarczy, by inni
+                            rodzice Cię rozpoznali.
+                        </p>
+                    </div>
+
+                    <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
                         <Input
                             id="email"

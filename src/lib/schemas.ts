@@ -134,6 +134,7 @@ export type UpdateGroupResponseDTO = z.infer<typeof UpdateGroupResponseDTOSchema
  */
 export const GroupMemberDTOSchema = z.object({
     userId: z.string().uuid(),
+    firstName: z.string(),
     role: z.enum(['admin', 'member']),
     joinedAt: z.string().datetime(),
     childrenNames: z.array(z.string()),
@@ -148,6 +149,7 @@ export type GroupMemberDTO = z.infer<typeof GroupMemberDTOSchema>;
  */
 export const AdminContactDTOSchema = z.object({
     userId: z.string().uuid(),
+    firstName: z.string(),
     email: z.string().email(),
     childrenNames: z.array(z.string()),
 });
@@ -478,6 +480,7 @@ export const EventCommentQueryResultSchema = z.object({
     created_at: z.string(),
     author_profile: z
         .object({
+            first_name: z.string(),
             children: z.array(
                 z.object({
                     display_name: z.string(),
@@ -556,6 +559,7 @@ export type LoginCommand = z.infer<typeof LoginCommandSchema>;
  */
 export const RegisterCommandSchema = z
     .object({
+        firstName: z.string().min(1, 'Imię jest wymagane'),
         email: z.string().email('Nieprawidłowy format adresu email'),
         password: z.string().min(8, 'Hasło musi mieć co najmniej 8 znaków'),
         confirmPassword: z.string().min(8, 'Hasło musi mieć co najmniej 8 znaków'),

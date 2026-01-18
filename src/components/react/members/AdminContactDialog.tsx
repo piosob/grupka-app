@@ -69,6 +69,13 @@ export const AdminContactDialog: React.FC<AdminContactDialogProps> = ({
                         <div className="space-y-4">
                             <div className="rounded-lg bg-muted p-4 space-y-1">
                                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                    Imię administratora
+                                </p>
+                                <p className="text-sm font-semibold">{contact.firstName}</p>
+                            </div>
+
+                            <div className="rounded-lg bg-muted p-4 space-y-1">
+                                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                     Adres email
                                 </p>
                                 <div className="flex items-center justify-between gap-2">

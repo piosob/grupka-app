@@ -45,7 +45,7 @@ export const register = defineAction({
         const supabase = context.locals.supabase;
         const authService = createAuthService(supabase);
 
-        const result = await authService.register(input.email, input.password);
+        const result = await authService.register(input.email, input.password, input.firstName);
 
         if (!result.success) {
             throw new Error(result.error || 'Nie udało się utworzyć konta');

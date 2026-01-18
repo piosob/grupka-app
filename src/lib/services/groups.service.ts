@@ -54,6 +54,7 @@ interface GroupMemberQueryResult {
     role: Database['public']['Enums']['group_role'];
     joined_at: string;
     profile: {
+        first_name: string;
         children: {
             display_name: string;
         }[];
@@ -236,41 +237,49 @@ export class GroupsService {
         const group = membership.group as unknown as GroupWithCounts;
 
         // 2. Fetch additional data in parallel
-        const [adminInfo, nextEventData, myChildrenData] = await Promise.all([
-            // Fetch admin's children names (admin is the one who created the group)
-            this.supabase
-                .from('children')
-                .select('display_name')
-                .eq('group_id', groupId)
-                .eq('parent_id', group.created_by),
+        const [adminProfileData, adminChildrenData, nextEventData, myChildrenData] =
+            await Promise.all([
+                // Fetch admin's profile (first_name)
+                this.supabase
+                    .from('profiles')
+                    .select('first_name')
+                    .eq('id', group.created_by)
+                    .single(),
 
-            // Fetch nearest upcoming event
-            this.supabase
-                .from('events')
-                .select(
-                    `
+                // Fetch admin's children names in this group
+                this.supabase
+                    .from('children')
+                    .select('display_name')
+                    .eq('group_id', groupId)
+                    .eq('parent_id', group.created_by),
+
+                // Fetch nearest upcoming event
+                this.supabase
+                    .from('events')
+                    .select(
+                        `
 					*,
 					child:children(display_name),
 					guests:event_guests(count)
 				`
-                )
-                .eq('group_id', groupId)
-                .gte('event_date', new Date().toISOString().split('T')[0])
-                .order('event_date', { ascending: true })
-                .limit(1)
-                .maybeSingle(),
+                    )
+                    .eq('group_id', groupId)
+                    .gte('event_date', new Date().toISOString().split('T')[0])
+                    .order('event_date', { ascending: true })
+                    .limit(1)
+                    .maybeSingle(),
 
-            // Fetch user's children in this group
-            this.supabase
-                .from('children')
-                .select('*')
-                .eq('group_id', groupId)
-                .eq('parent_id', userId)
-                .order('display_name', { ascending: true }),
-        ]);
+                // Fetch user's children in this group
+                this.supabase
+                    .from('children')
+                    .select('*')
+                    .eq('group_id', groupId)
+                    .eq('parent_id', userId)
+                    .order('display_name', { ascending: true }),
+            ]);
 
-        // Process admin name (comma separated children names)
-        const adminName = adminInfo.data?.map((c) => c.display_name).join(', ') || null;
+        // Process admin name (now using first_name)
+        const adminName = adminProfileData.data?.first_name || 'Administrator';
 
         // Process next event
         let nextEvent: EventListItemDTO | null = null;
@@ -349,7 +358,8 @@ export class GroupsService {
                 created_by,
                 admin_profile:profiles!groups_created_by_fkey (
                     id,
-                    email
+                    email,
+                    first_name
                 )
             `
             )
@@ -369,6 +379,7 @@ export class GroupsService {
 
         return {
             userId: group.admin_profile.id,
+            firstName: group.admin_profile.first_name,
             email: group.admin_profile.email || '',
             childrenNames: (children || []).map((c) => c.display_name),
         };
@@ -407,6 +418,7 @@ export class GroupsService {
 				role,
 				joined_at,
 				profile:profiles (
+					first_name,
 					children:children (
 						display_name
 					)
@@ -426,6 +438,7 @@ export class GroupsService {
             (data as unknown as GroupMemberQueryResult[]) || []
         ).map((item) => ({
             userId: item.user_id,
+            firstName: item.profile?.first_name || 'Użytkownik',
             role: item.role,
             joinedAt: item.joined_at,
             childrenNames: item.profile?.children?.map((c) => c.display_name) || [],

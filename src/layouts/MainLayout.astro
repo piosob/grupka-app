@@ -36,7 +36,11 @@ const user = Astro.locals.user;
                  
                     <!-- Profile Menu (right) - avatar + dropdown -->
                     <nav class="flex items-center space-x-2 ml-auto">
-                        <UserNav userEmail={user?.email} client:load />
+                        <UserNav 
+                            userEmail={user?.email} 
+                            firstName={user?.user_metadata?.first_name} 
+                            client:load 
+                        />
                     </nav>
                 </div>
             </header>

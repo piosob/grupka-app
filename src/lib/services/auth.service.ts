@@ -61,13 +61,16 @@ export class AuthService {
     /**
      * Register new user with email and password
      */
-    async register(email: string, password: string): Promise<RegisterResult> {
+    async register(email: string, password: string, firstName: string): Promise<RegisterResult> {
         try {
             const { data, error } = await this.supabase.auth.signUp({
                 email,
                 password,
                 options: {
                     emailRedirectTo: `${this.getBaseUrl()}/api/auth/callback`,
+                    data: {
+                        first_name: firstName,
+                    },
                 },
             });
 
