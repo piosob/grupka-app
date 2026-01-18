@@ -49,7 +49,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                             <span className="font-semibold truncate">
                                 {member.displayName}
                                 {member.isSelf && (
-                                    <span className="ml-1 text-xs font-normal text-muted-foreground">
+                                    <span className="ml-1 text-lg font-normal text-muted-foreground">
                                         (Ty)
                                     </span>
                                 )}

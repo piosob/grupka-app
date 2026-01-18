@@ -15,6 +15,8 @@ interface GroupHubContainerProps {
 function GroupHubContent({ groupId }: GroupHubContainerProps) {
     const { data: group, isLoading, error } = useGroupDetail(groupId);
 
+    console.log('group', group);
+
     if (isLoading) {
         return (
             <div className="space-y-8 animate-in fade-in duration-500">
@@ -109,6 +111,11 @@ function GroupHubContent({ groupId }: GroupHubContainerProps) {
                     icon={<Baby />}
                     href={`/groups/${groupId}/children`}
                     summaryText={`W grupie jest zarejestrowanych ${group.childrenCount} dzieci`}
+                    alertText={
+                        group.myChildren.length === 0
+                            ? 'Kliknij, aby dodać swoje dziecko do grupy!'
+                            : undefined
+                    }
                 />
 
                 <LaunchpadTile

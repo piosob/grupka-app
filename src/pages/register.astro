@@ -4,23 +4,18 @@ import AuthLayout from '../layouts/AuthLayout.astro';
 import { RegisterForm } from '../components/react/RegisterForm';
 import Logo from '../components/astro/Logo.astro';
 import { actions } from 'astro:actions';
-import type { ServerActionResult } from '../types';
-import { register as registerAction } from '../actions/auth';
 
 // If user is already logged in, middleware will redirect to /dashboard
-type RegisterActionResponse = {
-    success?: boolean;
-    needsEmailConfirmation?: boolean;
-};
-
-const registerActionDefinition = registerAction as Parameters<typeof Astro.getActionResult>[0];
-const actionResult = Astro.getActionResult(
-    registerActionDefinition
-) as ServerActionResult<RegisterActionResponse>;
+const actionResult = Astro.getActionResult(actions.auth.register);
 const registerError = actionResult?.error?.message;
 const successData = actionResult?.data;
 const registerSuccess = Boolean(successData?.success);
 const needsEmailConfirmation = Boolean(successData?.needsEmailConfirmation);
+
+
+if (registerSuccess && !needsEmailConfirmation) {
+    return Astro.redirect('/dashboard');
+}
 ---
 
 <AuthLayout title="Rejestracja">

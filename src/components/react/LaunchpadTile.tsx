@@ -9,6 +9,7 @@ interface LaunchpadTileProps {
     href: string;
     summaryText: string;
     badge?: string;
+    alertText?: string;
     className?: string;
 }
 
@@ -18,6 +19,7 @@ export function LaunchpadTile({
     href,
     summaryText,
     badge,
+    alertText,
     className,
 }: LaunchpadTileProps) {
     return (
@@ -44,6 +46,11 @@ export function LaunchpadTile({
                             {title}
                         </h3>
                         <p className="text-sm text-muted-foreground line-clamp-2">{summaryText}</p>
+                        {alertText && (
+                            <p className="text-sm font-medium text-orange-600 dark:text-orange-400 animate-pulse mt-2">
+                                {alertText}
+                            </p>
+                        )}
                     </div>
 
                     <div className="mt-auto pt-2 flex items-center text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
