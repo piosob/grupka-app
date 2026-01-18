@@ -124,11 +124,11 @@ Get group details (Group Hub summary).
         "role": "admin",
         "memberCount": 15,
         "childrenCount": 18,
-        "upcomingEventsCount": 3,
+        "upcomingEventsCount": 3, // Tylko nadchodzące wydarzenia, w które użytkownik jest zaangażowany
         "createdBy": "uuid",
         "createdAt": "2025-01-15T10:30:00Z",
         "adminName": "Anna",
-        "nextEvent": {
+        "nextEvent": { // Najbliższe nadchodzące wydarzenie (organizer/gość/rodzic)
             "id": "uuid",
             "title": "Urodziny Stasia",
             "eventDate": "2025-05-15",
@@ -626,6 +626,7 @@ List events in a group.
 **Notes:**
 
 - `hasNewUpdates`: true if `updatedAt` is within the last 8 hours (passive update indicator)
+- **Privacy**: Zwracane są tylko wydarzenia, w których użytkownik jest zaangażowany (organizator, rodzic solenizanta lub rodzic gościa).
 
 **Error Responses:**
 
@@ -988,6 +989,7 @@ The API uses **Supabase Auth** with JWT tokens:
 Database-level security enforces authorization rules:
 
 - **Group Isolation**: Users can only access data from groups they belong to
+- **Event Privacy**: Users only see events they organize, or where their child is the birthday child/guest.
 - **Surprise Protection**: Event organizers cannot access `event_comments` on their own events
 - **Ownership Enforcement**: Only parents can modify their children's profiles
 
@@ -1089,9 +1091,9 @@ export async function onRequest({ request, locals }, next) {
 #### Group Hub Details (GET /api/groups/:groupId)
 
 1. Verify user is a member of the group
-2. Fetch basic group info and counts (members, children, events)
+2. Fetch basic group info and counts (members, children, upcoming involved events)
 3. Fetch admin identification (imiona dzieci administratora)
-4. Fetch nearest upcoming event for the group
+4. Fetch nearest upcoming involved event for the group
 5. Fetch user's children belonging to this group
 6. Return aggregated response for the Hub view
 

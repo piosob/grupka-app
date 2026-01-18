@@ -290,7 +290,7 @@ export class GroupsService {
                 .select(
                     `
 					*,
-					child:children(display_name),
+					child:children!events_child_id_fkey(display_name),
 					guests:event_guests(count)
 				`
                 )
@@ -320,6 +320,10 @@ export class GroupsService {
 
         // Process admin name (now using first_name)
         const adminName = adminProfileData.data?.first_name || 'Administrator';
+
+        if (nextEventData.error) {
+            console.error(`[GroupsService.getGroupDetail] Error fetching nextEvent for group ${groupId}:`, nextEventData.error);
+        }
 
         // Process next event
         let nextEvent: EventListItemDTO | null = null;

@@ -117,8 +117,12 @@ Indeksy są krytyczne dla wydajności polityk RLS, które są sprawdzane przy ka
 
 Dostęp do danych jest ściśle kontrolowany na poziomie bazy danych. Domyślnie wszystkie tabele mają włączone RLS.
 
-- **Izolacja Grup:**
-  Dla tabel `groups`, `children`, `events` - użytkownik widzi rekordy tylko wtedy, gdy istnieje wpis w `group_members` łączący jego `auth.uid()` z danym `group_id`.
+- **Prywatność Wydarzeń:**
+  Dla tabeli `events` użytkownik widzi rekordy (`SELECT`) tylko jeśli:
+    - Jest organizatorem wydarzenia.
+    - Jest rodzicem dziecka, dla którego organizowane jest wydarzenie (`child_id`).
+    - Jest rodzicem dziecka znajdującego się na liście gości (`event_guests`).
+  Zwykłe członkostwo w grupie nie uprawnia do widzenia wszystkich wydarzeń.
 
 - **Ochrona "Niespodzianki" (Tabela `event_comments`):**
     - **INSERT:** Dozwolone dla członków grupy, którzy **NIE** są organizatorem danego wydarzenia.

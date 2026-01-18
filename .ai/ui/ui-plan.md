@@ -463,7 +463,7 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 
 **Kluczowe informacje:**
 
-- Lista wydarzeń (upcoming + past)
+- Lista wydarzeń (upcoming + past), w których użytkownik jest zaangażowany (organizator/gość/rodzic)
 - Dla każdego wydarzenia:
     - Tytuł
     - Data wydarzenia
@@ -2415,7 +2415,7 @@ CTA: Focused textarea (auto-focus)
 
 **Wydarzenia:**
 
-- SELECT: członkowie grupy
+- SELECT: organizator OR rodzic solenizanta OR rodzic gościa
 - INSERT: członkowie grupy
 - UPDATE: tylko organizer (organizer_id = auth.uid())
 - DELETE: tylko organizer
