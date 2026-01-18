@@ -15,7 +15,6 @@ interface GroupHubContainerProps {
 function GroupHubContent({ groupId }: GroupHubContainerProps) {
     const { data: group, isLoading, error } = useGroupDetail(groupId);
 
-    console.log('group', group);
 
     if (isLoading) {
         return (
@@ -42,9 +41,7 @@ function GroupHubContent({ groupId }: GroupHubContainerProps) {
                 <div className="space-y-2">
                     <h2 className="text-2xl font-bold">Wystąpił błąd</h2>
                     <p className="text-muted-foreground">
-                        {error instanceof Error
-                            ? error.message
-                            : 'Nie udało się załadować danych grupy'}
+                     Nie udało się załadować danych grupy
                     </p>
                 </div>
                 <Button asChild variant="outline">

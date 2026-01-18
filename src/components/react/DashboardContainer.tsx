@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Plus, Link as LinkIcon } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Link as LinkIcon, AlertTriangle, X } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../../lib/query-keys';
 import { useGroups } from '../../lib/hooks/useGroups';
@@ -31,12 +31,26 @@ function SkeletonGroupList() {
  * Handles the actual data fetching and rendering.
  * Must be wrapped in a QueryProvider.
  */
-function DashboardContent() {
+interface DashboardContentProps {
+    errorType?: string | null;
+}
+
+function DashboardContent({ errorType }: DashboardContentProps) {
     const queryClient = useQueryClient();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isJoinOpen, setIsJoinOpen] = useState(false);
+    const [showAccessDenied, setShowAccessDenied] = useState(errorType === 'access_denied');
 
     const { data, isLoading, error } = useGroups(20);
+
+    useEffect(() => {
+        if (errorType) {
+            // Clear the error parameter from URL without refreshing
+            const url = new URL(window.location.href);
+            url.searchParams.delete('error');
+            window.history.replaceState({}, '', url.pathname + url.search);
+        }
+    }, [errorType]);
 
     const refreshGroups = () => {
         queryClient.invalidateQueries({ queryKey: queryKeys.groups.lists() });
@@ -84,6 +98,29 @@ function DashboardContent() {
 
     return (
         <div className="space-y-8">
+            {showAccessDenied && (
+                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-2xl p-4 flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="bg-amber-100 dark:bg-amber-900/40 p-2 rounded-xl text-amber-600 dark:text-amber-400">
+                        <AlertTriangle className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1 pt-0.5">
+                        <h3 className="text-sm font-semibold text-amber-900 dark:text-amber-100">
+                            Brak dostępu
+                        </h3>
+                        <p className="text-sm text-amber-700 dark:text-amber-300">
+                            Nie masz uprawnień do przeglądania tej grupy lub grupa nie istnieje. Jeśli
+                            uważasz, że to błąd, skontaktuj się z administratorem grupy.
+                        </p>
+                    </div>
+                    <button
+                        onClick={() => setShowAccessDenied(false)}
+                        className="text-amber-500 hover:text-amber-700 dark:hover:text-amber-300 transition-colors p-1"
+                    >
+                        <X className="w-5 h-5" />
+                    </button>
+                </div>
+            )}
+
             <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Twoje Grupy</h1>
@@ -146,10 +183,10 @@ function DashboardContent() {
  *
  * Wraps the content in QueryProvider to ensure TanStack Query context is available.
  */
-export function DashboardContainer() {
+export function DashboardContainer({ errorType }: { errorType?: string | null }) {
     return (
         <QueryProvider>
-            <DashboardContent />
+            <DashboardContent errorType={errorType} />
         </QueryProvider>
     );
 }

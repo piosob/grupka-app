@@ -40,7 +40,7 @@ function handleCreateGroup(requestBody: unknown) {
 
     // Type-safe data from Zod
     const validData: CreateGroupCommand = result.data;
-    console.log('Valid group name:', validData.name);
+
 
     return { success: true, data: validData };
 }
@@ -54,11 +54,7 @@ function handleCreateChildStrict(requestBody: unknown) {
         // .parse() will throw ZodError if validation fails
         const validData = CreateChildCommandSchema.parse(requestBody);
 
-        // TypeScript knows this is CreateChildCommand
-        console.log('Child name:', validData.displayName);
-        console.log('Bio:', validData.bio); // string | undefined
-        console.log('Birth date:', validData.birthDate); // string | undefined
-
+     
         return { success: true, data: validData };
     } catch (error) {
         // Handle ZodError
@@ -82,11 +78,6 @@ function handleEventsQuery(searchParams: URLSearchParams) {
     }
 
     // All query params are now properly typed
-    console.log('Limit:', result.data.limit); // number (default: 20)
-    console.log('Offset:', result.data.offset); // number (default: 0)
-    console.log('Upcoming:', result.data.upcoming); // boolean | undefined
-    console.log('Sort by:', result.data.sortBy); // "eventDate" | "createdAt" (default: "eventDate")
-    console.log('Sort order:', result.data.sortOrder); // "asc" | "desc" (default: "asc")
 
     return { success: true, data: result.data };
 }
@@ -105,7 +96,7 @@ function handleUpdateGroup(requestBody: unknown) {
 
     // Only provided fields will be present
     if (result.data.name) {
-        console.log('Updating name to:', result.data.name);
+
     }
 
     return { success: true, data: result.data };

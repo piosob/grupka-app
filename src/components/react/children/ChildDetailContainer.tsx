@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Edit2, Trash2, ChevronLeft, Calendar, Info, Loader2, Baby } from 'lucide-react';
+import { Edit2, Trash2, ChevronLeft, Calendar, Info, Loader2, Baby, Users, User } from 'lucide-react';
 import { calculateAge, getInitials, stringToColor } from '@/lib/utils';
 import { DeleteChildDialog } from './DeleteChildDialog';
 import { QueryProvider } from '../providers/QueryProvider';
@@ -29,15 +29,22 @@ function ChildDetailContent({ groupId, childId }: ChildDetailContainerProps) {
         );
     }
 if (childError) {
-    return (
-        <div className="text-center py-16">
-            <h2 className="text-2xl font-bold mb-4">Wystąpił błąd!</h2>
-            <p className="text-muted-foreground">Nie udało się załadować profilu dziecka albo nie masz dostępu do tego profilu</p>
-            <Button className='mt-4' onClick={() => (window.location.href = `/dashboard`)}>
-                Powrót do pulpitu
-            </Button>
-        </div>
-    );
+   return (
+            <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+                <div className="p-4 rounded-full bg-destructive/10 text-destructive">
+                    <User className="w-10 h-10" />
+                </div>
+                <div className="space-y-2">
+                    <h2 className="text-2xl font-bold">Wystąpił błąd</h2>
+                    <p className="text-muted-foreground">
+                      Nie udało się załadować profilu dziecka
+                    </p>
+                </div>
+                <Button asChild variant="outline">
+                    <a href="/dashboard">Wróć do pulpitu</a>
+                </Button>
+            </div>
+        );
 }
     if (!child) {
         return (
