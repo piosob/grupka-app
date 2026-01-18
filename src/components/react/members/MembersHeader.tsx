@@ -1,40 +1,40 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Users } from 'lucide-react';
+import { ArrowLeft, Users } from 'lucide-react';
 
 interface MembersHeaderProps {
     groupId: string;
+    groupName?: string;
     count: number;
 }
 
-export const MembersHeader: React.FC<MembersHeaderProps> = ({ groupId, count }) => {
+export const MembersHeader: React.FC<MembersHeaderProps> = ({ groupId, groupName, count }) => {
     return (
-        <div className="space-y-4 mb-6">
-            <Button
-                variant="ghost"
-                size="sm"
-                className="-ml-2 text-muted-foreground hover:text-primary"
-                onClick={() => (window.location.href = `/groups/${groupId}`)}
-            >
-                <ChevronLeft className="mr-1 h-4 w-4" />
-                Powrót do grupy
-            </Button>
-
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 bg-primary/10 rounded-lg">
-                        <Users className="h-6 w-6 text-primary" />
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
+            <div className="flex items-center gap-3">
+                <Button
+                    asChild
+                    variant="ghost"
+                    size="icon"
+                    className="-ml-2 h-9 w-9 rounded-full text-muted-foreground hover:text-foreground"
+                >
+                    <a href={`/groups/${groupId}`}>
+                        <ArrowLeft className="w-5 h-5" />
+                    </a>
+                </Button>
+                <div>
+                    <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-semibold text-primary uppercase tracking-wider bg-primary/5 px-2 py-0.5 rounded-full">
+                            {groupName || 'Grupa'}
+                        </span>
                     </div>
-                    <div>
-                        <h1 className="text-2xl font-bold tracking-tight">Członkowie</h1>
-                        <p className="text-sm text-muted-foreground">
-                            {count}{' '}
-                            {count === 1 ? 'osoba' : count > 1 && count < 5 ? 'osoby' : 'osób'} w
-                            tej grupie
-                        </p>
-                    </div>
+                    <h1 className="text-3xl font-bold tracking-tight">Członkowie</h1>
+                    <p className="text-muted-foreground">
+                        {count}{' '}
+                        {count === 1 ? 'osoba' : count > 1 && count < 5 ? 'osoby' : 'osób'} w tej grupie
+                    </p>
                 </div>
             </div>
-        </div>
+        </header>
     );
 };

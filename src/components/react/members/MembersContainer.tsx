@@ -142,7 +142,7 @@ function MembersContent({ groupId, currentUserId }: MembersContainerProps) {
 
     return (
         <div className="max-w-2xl mx-auto pb-20">
-            <MembersHeader groupId={groupId} count={totalCount} />
+            <MembersHeader groupId={groupId} groupName={group?.name} count={totalCount} />
 
             <MembersList
                 groupId={groupId}
