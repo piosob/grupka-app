@@ -86,6 +86,37 @@ export class ChildrenService {
     }
 
     /**
+     * Checks if a child with the same display name already exists in a group.
+     * @param groupId - ID of the group
+     * @param displayName - Name to check
+     * @param excludeChildId - Optional child ID to exclude from check (for updates)
+     * @returns True if the name is unique, false otherwise
+     */
+    async isNameUnique(
+        groupId: string,
+        displayName: string,
+        excludeChildId?: string
+    ): Promise<boolean> {
+        let query = this.supabase
+            .from('children')
+            .select('id', { count: 'exact', head: true })
+            .eq('group_id', groupId)
+            .ilike('display_name', displayName.trim());
+
+        if (excludeChildId) {
+            query = query.neq('id', excludeChildId);
+        }
+
+        const { count, error } = await query;
+
+        if (error) {
+            throw new Error(`Failed to check name uniqueness: ${error.message}`);
+        }
+
+        return (count ?? 0) === 0;
+    }
+
+    /**
      * Creates a new child profile in a group.
      *
      * @param groupId - ID of the group
@@ -100,6 +131,14 @@ export class ChildrenService {
     ): Promise<CreateChildResponseDTO> {
         // Verify membership before creating
         await this.checkGroupMembership(parentId, groupId);
+
+        // Check name uniqueness
+        const isUnique = await this.isNameUnique(groupId, command.displayName);
+        if (!isUnique) {
+            throw new Error(
+                `${command.displayName.trim()} już istnieje w grupie. Proszę podaj pierwszą literę nazwiska (np. ${command.displayName.trim()}N) lub inny wyróżnik.`
+            );
+        }
 
         const { data: child, error } = await this.supabase
             .from('children')
@@ -177,7 +216,7 @@ export class ChildrenService {
         // Check ownership first
         const { data: child, error: fetchError } = await this.supabase
             .from('children')
-            .select('parent_id')
+            .select('parent_id, group_id')
             .eq('id', childId)
             .single();
 
@@ -187,6 +226,20 @@ export class ChildrenService {
 
         if (child.parent_id !== userId) {
             throw new ForbiddenError('Only the parent can update the child profile');
+        }
+
+        // Check name uniqueness if name is changing
+        if (command.displayName !== undefined) {
+            const isUnique = await this.isNameUnique(
+                child.group_id,
+                command.displayName,
+                childId
+            );
+            if (!isUnique) {
+                throw new Error(
+                    `${command.displayName.trim()} już istnieje w grupie. Proszę podaj pierwszą literę nazwiska (np. ${command.displayName.trim()}N) lub inny wyróżnik.`
+                );
+            }
         }
 
         const updateData: Partial<Database['public']['Tables']['children']['Update']> = {};

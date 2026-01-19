@@ -1,5 +1,5 @@
 import React from 'react';
-import { useChildDetail } from '@/lib/hooks/useChildren';
+import { useChildDetail, useChildren } from '@/lib/hooks/useChildren';
 import { useGroupDetail } from '@/lib/hooks/useGroupDetail';
 import { ChildForm } from './ChildForm';
 import { Loader2 } from 'lucide-react';
@@ -13,6 +13,7 @@ interface EditChildContainerProps {
 
 function EditChildContent({ groupId, childId }: EditChildContainerProps) {
     const { child, isLoadingChild, updateChild, isUpdatingChild } = useChildDetail(childId);
+    const { children } = useChildren(groupId);
     const { data: group } = useGroupDetail(groupId);
 
     if (isLoadingChild) {
@@ -37,6 +38,8 @@ function EditChildContent({ groupId, childId }: EditChildContainerProps) {
             </div>
         );
     }
+
+    const existingNames = children.map((c) => c.displayName);
 
     const handleSubmit = async (values: any) => {
         try {
@@ -65,6 +68,7 @@ function EditChildContent({ groupId, childId }: EditChildContainerProps) {
                 }}
                 onSubmit={handleSubmit}
                 isLoading={isUpdatingChild}
+                existingNames={existingNames}
             />
         </div>
     );

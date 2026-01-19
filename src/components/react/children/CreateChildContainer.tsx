@@ -10,8 +10,10 @@ interface CreateChildContainerProps {
 }
 
 function CreateChildContent({ groupId }: CreateChildContainerProps) {
-    const { createChild, isCreatingChild } = useChildren(groupId);
+    const { children, createChild, isCreatingChild } = useChildren(groupId);
     const { data: group } = useGroupDetail(groupId);
+
+    const existingNames = children.map((c) => c.displayName);
 
     const handleSubmit = async (values: any) => {
         try {
@@ -35,6 +37,7 @@ function CreateChildContent({ groupId }: CreateChildContainerProps) {
                 submitLabel="Dodaj dziecko"
                 onSubmit={handleSubmit}
                 isLoading={isCreatingChild}
+                existingNames={existingNames}
             />
         </div>
     );
