@@ -70,7 +70,7 @@ export function RegisterForm({
                             id="firstName"
                             name="firstName"
                             type="text"
-                            placeholder="np. Anna"
+                            placeholder="np. Kasia"
                             required
                         />
                         <p className="text-xs text-gray-500">

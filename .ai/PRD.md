@@ -14,7 +14,7 @@ Niech pierwsze wrażenie po wejściu na stronę będzie jasnym wyjaśnieniem cel
 - jak działa asynchroniczna komunikacja (ograniczenie chatowych powiadomień, aktualności zamiast ciągłych wiadomości),
 - główne wartości (tymczasowe kody, ukryte wątki, AI wspierające opisy dzieci).
 
-Poniżej hero proponujemy krótki przegląd „Jak to działa” – trzy kolumny prezentujące: tworzenie bezpiecznej grupy (wymagane logowanie), zapraszanie rodziców przez kod 60 min, oraz akceptowanie sugestii AI przy opisie dziecka. Na tym etapie gość może także zobaczyć przykładową kartę wydarzenia albo poniżej komentarze gości (jako wizualną zapowiedź ukrytego wątku) bez dostępu do danych.
+Poniżej hero proponujemy krótki przegląd „Jak to działa” – trzy kolumny prezentujące: tworzenie bezpiecznej grupy (wymagane logowanie), zapraszanie rodziców przez kod 30 min, oraz akceptowanie sugestii AI przy opisie dziecka. Na tym etapie gość może także zobaczyć przykładową kartę wydarzenia albo poniżej komentarze gości (jako wizualną zapowiedź ukrytego wątku) bez dostępu do danych.
 
 Call to action na stronie głównej musi być czytelny: dwa przyciski (zaloguj / zarejestruj) oraz wyjaśnienie, że tworzenie grupy i zarządzanie członkami wymaga zalogowania. Tekst przy CTA ma za zadanie powiedzieć, że aby utworzyć grupę należy się zalogować lub założyć konto – to zabezpieczenie zgodne z polityką bezpieczeństwa.
 
@@ -42,7 +42,7 @@ Rodzice korzystający z obecnych rozwiązań (np. WhatsApp, Messenger) napotykaj
 
 - **Role w grupie:** Rozróżnienie na Administratora (Twórcę) i Członka.
 - **Kontakt z Adminem:** Adres email Administratora jest dostępny dla członków grupy jako "kanał awaryjny" (domyślnie ukryty, widoczny po kliknięciu).
-- **Kody czasowe:** Dołączanie do grupy wymaga kodu ważnego tylko przez **60 minut**, generowanego na żądanie przez Administratora.
+- **Kody czasowe:** Dołączanie do grupy wymaga kodu ważnego tylko przez **30 minut**, generowanego na żądanie przez Administratora.
 - **Moderacja:** Administrator ma prawo usuwać członków z grupy.
 
 ### 3.3 Profile Dzieci i AI
@@ -65,7 +65,7 @@ Rodzice korzystający z obecnych rozwiązań (np. WhatsApp, Messenger) napotykaj
 
 - Aplikacja webowa zoptymalizowana pod mobile.
 - Uwierzytelnianie email/hasło (Supabase Auth).
-- Zarządzanie członkami grupy (Kick, Invite - 60 min).
+- Zarządzanie członkami grupy (Kick, Invite - 30 min).
 - Edycja profilu wspierana przez OpenRouter (AI).
 - Mechanizm kontaktu z administratorem (reveal email).
 
@@ -118,11 +118,11 @@ Rodzice korzystający z obecnych rozwiązań (np. WhatsApp, Messenger) napotykaj
 
 **ID: US-003**
 **Tytuł:** Generowanie bezpiecznego kodu zaproszenia
-**Opis:** Jako Administrator chcę wygenerować kod zaproszenia ważny tylko przez 60 minut, aby bezpiecznie zaprosić rodziców i zminimalizować ryzyko dostępu osób niepowołanych.
+**Opis:** Jako Administrator chcę wygenerować kod zaproszenia ważny tylko przez 30 minut, aby bezpiecznie zaprosić rodziców i zminimalizować ryzyko dostępu osób niepowołanych.
 **Kryteria akceptacji:**
 
 - Admin ma dostęp do przycisku "Generuj kod".
-- Kod wyświetla się z licznikiem czasu lub godziną wygaśnięcia (60 min).
+- Kod wyświetla się z licznikiem czasu lub godziną wygaśnięcia (30 min).
 - Po upływie czasu kod staje się nieważny.
 
 **ID: US-004**

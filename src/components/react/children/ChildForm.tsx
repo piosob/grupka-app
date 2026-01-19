@@ -38,64 +38,68 @@ const days = Array.from({ length: 31 }, (_, i) => {
     return { value: d, label: (i + 1).toString() };
 });
 
-const childFormSchema = z
-    .object({
-        displayName: z
-            .string()
-            .min(1, 'Imię jest wymagane')
-            .max(50, 'Imię może mieć maksymalnie 50 znaków')
-            .refine((val) => !val.trim().includes(' '), {
-                message: 'Proszę podać tylko imię (bez nazwiska)',
-            }),
-        birthDay: z.string().optional(),
-        birthMonth: z.string().optional(),
-        birthYear: z
-            .string()
-            .optional()
-            .refine(
-                (val) => {
-                    if (!val) return true;
-                    const year = parseInt(val);
-                    const currentYear = new Date().getFullYear();
-                    return year >= 1900 && year <= currentYear;
-                },
-                { message: 'Nieprawidłowy rok' }
-            ),
-        bio: z.string().max(1000, 'Opis może mieć maksymalnie 1000 znaków').optional(),
-    })
-    .refine(
-        (data) => {
-            // Jeśli podano dzień, trzeba podać miesiąc i odwrotnie
-            if ((data.birthDay && !data.birthMonth) || (!data.birthDay && data.birthMonth)) {
-                return false;
+const createChildFormSchema = (existingNames: string[], initialDisplayName?: string) =>
+    z
+        .object({
+            displayName: z
+                .string()
+                .min(1, 'Imię jest wymagane')
+                .max(50, 'Imię może mieć maksymalnie 50 znaków')
+                .refine((val) => !val.trim().includes(' '), {
+                    message: 'Proszę podać tylko imię (bez nazwiska) - nie trzymamy danych o nazwiskach - keep your data safe!',
+                })
+                .refine(
+                    (val) => {
+                        const name = val.trim().toLowerCase();
+                        // If it's the initial name, it's fine (for edits)
+                        if (
+                            initialDisplayName &&
+                            name === initialDisplayName.trim().toLowerCase()
+                        ) {
+                            return true;
+                        }
+                        return !existingNames.some((n) => n.toLowerCase() === name);
+                    },
+                    (val) => ({
+                        message: `${val} już istnieje w grupie. Proszę podaj pierwszą literę nazwiska (np. ${val}N) lub inny wyróżnik.`,
+                    })
+                ),
+            birthDay: z.string().min(1, 'Data urodzenia jest wymagana'),
+            birthMonth: z.string().min(1, 'Data urodzenia jest wymagana'),
+            birthYear: z
+                .string()
+                .optional()
+                .refine(
+                    (val) => {
+                        if (!val) return true;
+                        const year = parseInt(val);
+                        const currentYear = new Date().getFullYear();
+                        return year >= 1900 && year <= currentYear;
+                    },
+                    { message: 'Nieprawidłowy rok' }
+                ),
+            bio: z.string().max(1000, 'Opis może mieć maksymalnie 1000 znaków').optional(),
+        })
+        .refine(
+            (data) => {
+                // Walidacja czy data nie jest z przyszłości (jeśli podano rok)
+                if (data.birthDay && data.birthMonth && data.birthYear) {
+                    const date = new Date(
+                        parseInt(data.birthYear),
+                        parseInt(data.birthMonth) - 1,
+                        parseInt(data.birthDay)
+                    );
+                    return date <= new Date();
+                }
+                return true;
+            },
+            {
+                message: 'Data urodzenia nie może być z przyszłości',
+                path: ['birthYear'],
             }
-            return true;
-        },
-        {
-            message: 'Podaj zarówno dzień jak i miesiąc',
-            path: ['birthDay'],
-        }
-    )
-    .refine(
-        (data) => {
-            // Walidacja czy data nie jest z przyszłości (jeśli podano rok)
-            if (data.birthDay && data.birthMonth && data.birthYear) {
-                const date = new Date(
-                    parseInt(data.birthYear),
-                    parseInt(data.birthMonth) - 1,
-                    parseInt(data.birthDay)
-                );
-                return date <= new Date();
-            }
-            return true;
-        },
-        {
-            message: 'Data urodzenia nie może być z przyszłości',
-            path: ['birthYear'],
-        }
-    );
+        );
 
-type ChildFormValues = z.infer<typeof childFormSchema>;
+type ChildFormValues = z.infer<ReturnType<typeof createChildFormSchema>>;
 
 interface ChildFormProps {
     initialValues?: {
@@ -103,6 +107,7 @@ interface ChildFormProps {
         birthDate: string | null;
         bio: string;
     };
+    existingNames?: string[];
     onSubmit: (values: any) => void;
     isLoading?: boolean;
     title: string;
@@ -111,6 +116,7 @@ interface ChildFormProps {
 
 export const ChildForm: React.FC<ChildFormProps> = ({
     initialValues,
+    existingNames = [],
     onSubmit,
     isLoading = false,
     title,
@@ -129,6 +135,11 @@ export const ChildForm: React.FC<ChildFormProps> = ({
 
     const initialDate = parseInitialDate(initialValues?.birthDate);
 
+    const formSchema = React.useMemo(
+        () => createChildFormSchema(existingNames, initialValues?.displayName),
+        [existingNames, initialValues?.displayName]
+    );
+
     const {
         register,
         handleSubmit,
@@ -136,7 +147,7 @@ export const ChildForm: React.FC<ChildFormProps> = ({
         watch,
         formState: { errors },
     } = useForm<ChildFormValues>({
-        resolver: zodResolver(childFormSchema),
+        resolver: zodResolver(formSchema),
         defaultValues: {
             displayName: initialValues?.displayName || '',
             birthDay: initialDate.day,
@@ -208,7 +219,7 @@ export const ChildForm: React.FC<ChildFormProps> = ({
                     </div>
 
                     <div className="space-y-3">
-                        <Label>Data urodzenia (opcjonalnie)</Label>
+                        <Label>Data urodzenia</Label>
                         <div className="grid grid-cols-[0.8fr_1.4fr_1fr] gap-2">
                             <div className="space-y-1">
                                 <Select
@@ -240,7 +251,7 @@ export const ChildForm: React.FC<ChildFormProps> = ({
                                     <SelectTrigger
                                         className={cn(
                                             'px-2 sm:px-3',
-                                            errors.birthDay && 'border-destructive'
+                                            errors.birthMonth && 'border-destructive'
                                         )}
                                     >
                                         <SelectValue placeholder="Miesiąc" />
@@ -269,14 +280,16 @@ export const ChildForm: React.FC<ChildFormProps> = ({
                                 />
                             </div>
                         </div>
-                        {errors.birthDay ? (
-                            <p className="text-sm text-destructive">{errors.birthDay.message}</p>
+                        {errors.birthDay || errors.birthMonth ? (
+                            <p className="text-sm text-destructive">
+                                {errors.birthDay?.message || errors.birthMonth?.message}
+                            </p>
                         ) : errors.birthYear ? (
                             <p className="text-sm text-destructive">{errors.birthYear.message}</p>
                         ) : (
                             <p className="text-[11px] text-muted-foreground flex items-center gap-1">
                                 <Calendar className="h-3 w-3 shrink-0" />
-                                Podaj tylko dzień i miesiąc, lub także rok.
+                                Podaj dzień i miesiąc, oraz opcjonalnie rok.
                             </p>
                         )}
                     </div>

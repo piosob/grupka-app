@@ -114,7 +114,7 @@
 - **Duży przycisk "Generuj nowy kod"**.
 - **Wyświetlenie kodu**: Karta z kodem (XXX-XXX format), countdown timer (59 min 23 sek), "Kopiuj kod" (haptic feedback), "Udostępnij" (native share API), QR code (opcjonalnie).
 - **Lista aktywnych kodów**: Z czasem wygaśnięcia, opcja usunięcia.
-- **Helper text**: "Kod ważny 60 minut dla bezpieczeństwa".
+- **Helper text**: "Kod ważny 30 minut dla bezpieczeństwa".
 
 #### Dołączanie do Grupy (`/join`)
 
@@ -969,7 +969,7 @@ npx shadcn@latest add button card input textarea dialog sheet toast calendar dro
 
 - **Użycie**: Progress indicators
 - **Lokacje**:
-    - Countdown timer dla kodu zaproszenia (visual progress bar 60 min → 0)
+    - Countdown timer dla kodu zaproszenia (visual progress bar 30 min → 0)
     - Upload progress (jeśli dodamy image upload w przyszłości)
     - Multi-step form progress (opcjonalnie dla onboarding)
 - **Instalacja**: `npx shadcn@latest add progress`

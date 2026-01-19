@@ -33,7 +33,7 @@ _Tymczasowe kody dostępu do grup._
 - `code`: **VARCHAR(10) PRIMARY KEY** – unikalny kod alfanumeryczny.
 - `group_id`: **UUID NOT NULL** – FK -> `groups(id)`, `ON DELETE CASCADE`.
 - `created_by`: **UUID NOT NULL** – FK -> `profiles(id)`, `ON DELETE CASCADE`.
-- `expires_at`: **TIMESTAMPTZ NOT NULL** – czas wygaśnięcia (60 min).
+- `expires_at`: **TIMESTAMPTZ NOT NULL** – czas wygaśnięcia (30 min).
 - `created_at`: **TIMESTAMPTZ NOT NULL** – domyślnie `NOW()`.
 
 **5. children** (Dzieci)

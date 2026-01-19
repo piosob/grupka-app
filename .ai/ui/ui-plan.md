@@ -794,6 +794,7 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 - MainLayout z back button
 - CreateChildForm (React):
     - Input "Nazwa wyświetlana" (required, 1-50 znaków)
+        - **Walidacja unikalności**: Imię musi być unikalne w ramach grupy. Jeśli "Adaś" już istnieje, system pokazuje błąd: "Adaś już istnieje w grupie, proszę podaj pierwszą literę nazwiska np. AdaśN lub inny wyróżnik".
         - Helper text: "Np. 'Staś', 'Staś od Kasi'"
         - No surnames reminder
     - **Pola daty urodzenia (Elastyczne):**
@@ -1322,7 +1323,7 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 
 12. **Generowanie Kodu** (`/groups/:groupId/invite`)
     - Click "Generuj nowy kod"
-    - System: tworzy kod ważny 60 min
+    - System: tworzy kod ważny 30 min
     - Widzi kod: "ABC-123-XY" z countdown: "Wygasa za 59 min"
     - Click "Kopiuj kod"
     - Toast: "Kod skopiowany!"

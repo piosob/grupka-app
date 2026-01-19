@@ -74,7 +74,7 @@ export function CreateGroupDialog({ open, onOpenChange, onSuccess }: CreateGroup
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-bold">Utwórz nową grupę</DialogTitle>
                         <DialogDescription>
-                            Nazwij swoją grupę (np. Klasa 2A, Przedszkole Słoneczko)
+                            Nazwij swoją grupę
                         </DialogDescription>
                     </DialogHeader>
 
@@ -87,7 +87,7 @@ export function CreateGroupDialog({ open, onOpenChange, onSuccess }: CreateGroup
                                 id="name"
                                 value={name}
                                 onChange={handleNameChange}
-                                placeholder="np. Zerówka pod dębem"
+                                placeholder="np. Pszczółki"
                                 className="h-12 text-lg rounded-xl"
                                 disabled={isLoading}
                                 autoFocus

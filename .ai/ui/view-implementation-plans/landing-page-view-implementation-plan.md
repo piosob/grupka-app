@@ -40,7 +40,7 @@ Widok jest przypisany do ścieżki `/` i renderowany w trybie SSR/Astro jako sta
 
 ### HowItWorksTimeline
 
-- Opis komponentu: trzy kroki obrazujące „Jak to działa” (bezpieczeństwo grupy/logowanie, kod 60 min, AI magic wand).
+- Opis komponentu: trzy kroki obrazujące „Jak to działa” (bezpieczeństwo grupy/logowanie, kod 30 min, AI magic wand).
 - Główne elementy: `<ol>` lub flex layout z numerem/ikonką, `h4`, `p`.
 - Obsługiwane interakcje: brak.
 - Obsługiwana walidacja: dokładnie trzy wpisy; logika powinna obsłużyć brak danych (wyświetla placeholdery).

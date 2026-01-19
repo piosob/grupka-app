@@ -120,7 +120,7 @@ Integracja odbywa się poprzez `ChildrenService` oraz `AiService` (frontendowe w
     - Lista/Szczegóły: Widoczne dla wszystkich członków grupy.
     - Edycja/Usuwanie: Przycisk widoczny i akcja dozwolona tylko dla `parentId === currentUserId`.
 - **Walidacja pól:**
-    - `displayName`: Musi być unikalne w skali grupy (opcjonalnie, zalecane) i nie zawierać nazwisk.
+    - `displayName`: **Musi być unikalne w skali grupy.** Jeśli imię już istnieje, system wymusza dodanie wyróżnika (np. pierwszej litery nazwiska). Brak nazwisk w polu (walidacja frontendowa + hint).
     - `bio`: Max 1000 znaków (licznik w UI).
 - **AI Rate Limit:** Jeśli API zwróci 429, UI pokazuje toast z informacją o wyczerpaniu limitu godzinnego (10 użyć).
 
