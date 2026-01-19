@@ -131,7 +131,14 @@ export const EventHero = ({ event, onDelete, isDeleting = false }: EventHeroProp
                         <p className="text-xs text-primary/60 font-medium uppercase tracking-wider">
                             Solenizant
                         </p>
-                        <p className="font-semibold">{event.childName}</p>
+                        <div className="flex flex-col">
+                            <p className="font-semibold text-lg">{event.childName}</p>
+                            {event.childBio && (
+                                <p className="text-sm text-muted-foreground mt-0.5 italic">
+                                    {event.childBio}
+                                </p>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
