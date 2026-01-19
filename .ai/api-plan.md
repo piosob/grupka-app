@@ -1039,7 +1039,7 @@ export async function onRequest({ request, locals }, next) {
 | ------------- | ------------------------------------------------------ |
 | `displayName` | Required, 1-50 characters                              |
 | `bio`         | Optional, max 1000 characters                          |
-| `birthDate`   | Optional, valid date (YYYY-MM-DD), must be in the past |
+| `birthDate`   | Optional, valid date (YYYY-MM-DD), must be in the past. If year is unknown, use 1000 as sentinel year (e.g. 1000-05-15). |
 
 #### Events
 

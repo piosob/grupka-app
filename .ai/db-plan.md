@@ -44,7 +44,7 @@ _Profile dzieci przypisane do konkretnej grupy._
 - `parent_id`: **UUID NOT NULL** – FK -> `profiles(id)`, `ON DELETE CASCADE` (rodzic).
 - `display_name`: **VARCHAR(50) NOT NULL** – imię/przydomek (np. "Krzyś").
 - `bio`: **VARCHAR(1000)** – opis zainteresowań (wspierany przez AI).
-- `birth_date`: **DATE** – data urodzin (opcjonalnie, format YYYY-MM-DD).
+- `birth_date`: **DATE** – data urodzin (opcjonalnie, format YYYY-MM-DD). Jeśli rok jest nieznany (użytkownik podał tylko DD.MM), stosujemy rok `1000` jako sentinel value (np. `1000-05-15`).
 - `created_at`: **TIMESTAMPTZ NOT NULL** – domyślnie `NOW()`.
 
 **6. events** (Wydarzenia)

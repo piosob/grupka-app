@@ -13,6 +13,9 @@ export function calculateAge(birthDate: string | null): string | null {
     if (!birthDate) return null;
 
     const birth = new Date(birthDate);
+    // Sentinel year 1000 means year is unknown
+    if (birth.getFullYear() <= 1000) return null;
+
     const now = new Date();
 
     let years = now.getFullYear() - birth.getFullYear();
@@ -25,6 +28,23 @@ export function calculateAge(birthDate: string | null): string | null {
     if (years === 1) return '1 rok';
     if (years >= 2 && years <= 4) return `${years} lata`;
     return `${years} lat`;
+}
+
+/**
+ * Formats birth date for display.
+ * If the year is 1000 (sentinel for unknown year), it returns only DD.MM.
+ * Otherwise returns full date DD.MM.YYYY.
+ */
+export function formatBirthDate(birthDate: string | null): string | null {
+    if (!birthDate) return null;
+
+    const [year, month, day] = birthDate.split('-');
+
+    if (year === '1000') {
+        return `${day}.${month}`;
+    }
+
+    return `${day}.${month}.${year}`;
 }
 
 /**

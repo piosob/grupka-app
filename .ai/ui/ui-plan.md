@@ -796,8 +796,9 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
     - Input "Nazwa wyświetlana" (required, 1-50 znaków)
         - Helper text: "Np. 'Staś', 'Staś od Kasi'"
         - No surnames reminder
-    - Input type="date" "Data urodzenia" (optional)
-        - Helper text: "Opcjonalne - ułatwi organizację urodzin"
+    - **Pola daty urodzenia (Elastyczne):**
+        - Trzy pola obok siebie: Dzień (1-31), Miesiąc (lista wyboru), Rok (optional)
+        - Helper text: "Podaj tylko dzień i miesiąc, abyśmy przypomnieli o urodzinach, lub pełną datę, aby system obliczył wiek dziecka."
     - **MagicWand textarea section:**
         - Label "Co lubi Twoje dziecko?" (optional)
         - Textarea (max 1000 znaków, auto-resize)

@@ -47,7 +47,7 @@ export const useChildren = (groupId: string, params: Partial<PaginationParams> =
     });
 
     // Create child mutation
-    const { mutate: createChild, isPending: isCreatingChild } = useMutation({
+    const { mutateAsync: createChild, isPending: isCreatingChild } = useMutation({
         mutationFn: async (command: CreateChildCommand) => {
             const response = await fetch(`/api/groups/${groupId}/children`, {
                 method: 'POST',
@@ -110,7 +110,7 @@ export const useChildDetail = (childId: string) => {
     });
 
     // Update child mutation
-    const { mutate: updateChild, isPending: isUpdatingChild } = useMutation({
+    const { mutateAsync: updateChild, isPending: isUpdatingChild } = useMutation({
         mutationFn: async (command: UpdateChildCommand) => {
             const response = await fetch(`/api/children/${childId}`, {
                 method: 'PATCH',
@@ -140,7 +140,7 @@ export const useChildDetail = (childId: string) => {
     });
 
     // Delete child mutation
-    const { mutate: deleteChild, isPending: isDeletingChild } = useMutation({
+    const { mutateAsync: deleteChild, isPending: isDeletingChild } = useMutation({
         mutationFn: async () => {
             const response = await fetch(`/api/children/${childId}`, {
                 method: 'DELETE',

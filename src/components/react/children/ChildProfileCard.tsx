@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Edit2, ChevronRight, User } from 'lucide-react';
-import { calculateAge, cn, getInitials, stringToColor } from '@/lib/utils';
+import { calculateAge, cn, getInitials, stringToColor, formatBirthDate } from '@/lib/utils';
 
 interface ChildProfileCardProps {
     child: ChildListItemDTO;
@@ -14,6 +14,7 @@ interface ChildProfileCardProps {
 
 export const ChildProfileCard: React.FC<ChildProfileCardProps> = ({ child, groupId }) => {
     const age = calculateAge(child.birthDate);
+    const formattedBirthDate = formatBirthDate(child.birthDate);
     const initials = getInitials(child.displayName);
     const avatarColor = stringToColor(child.displayName);
 
@@ -46,7 +47,10 @@ export const ChildProfileCard: React.FC<ChildProfileCardProps> = ({ child, group
                     </div>
 
                     <div className="flex flex-col text-sm text-muted-foreground">
-                        <span>{age ? `${age}` : 'Wiek nieznany'}</span>
+                        <span>{age ? age : 'Wiek nieznany'}</span>
+                        <span>
+                            {(formattedBirthDate ? `Urodziny: ${formattedBirthDate}` : 'Wiek nieznany')}
+                        </span>
                         {child.isOwner && (
                             <span className="flex items-center gap-1 text-[11px] opacity-70">
                                 <User className="h-3 w-3" />

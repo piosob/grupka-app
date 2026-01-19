@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Edit2, Trash2, ChevronLeft, Calendar, Info, Loader2, Baby, Users, User } from 'lucide-react';
-import { calculateAge, getInitials, stringToColor } from '@/lib/utils';
+import { calculateAge, getInitials, stringToColor, formatBirthDate } from '@/lib/utils';
 import { DeleteChildDialog } from './DeleteChildDialog';
 import { QueryProvider } from '../providers/QueryProvider';
 
@@ -118,7 +118,7 @@ if (childError) {
                                 {child.birthDate && (
                                     <span className="flex items-center gap-1.5">
                                         <Calendar className="h-4 w-4" />
-                                        {new Date(child.birthDate).toLocaleDateString('pl-PL')}
+                                        {formatBirthDate(child.birthDate)}
                                     </span>
                                 )}
                             </div>

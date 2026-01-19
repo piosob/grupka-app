@@ -50,12 +50,18 @@ Widok jest zorganizowany w hierarchię komponentów React, osadzonych w layoutac
 - **Opis:** Wspólny formularz dla tworzenia i edycji profilu dziecka.
 - **Główne elementy:**
     - `Input` (Display Name) - wymagany.
-    - `Input` (Birth Date) - type="date".
+    - **Pola daty urodzenia (Elastyczne):**
+        - Trzy pola: Dzień (Select), Miesiąc (Select), Rok (Input).
+        - Logika: Dzień i Miesiąc są wymagane wzajemnie. Rok jest opcjonalny.
+        - Sentinel Year: Jeśli rok nie zostanie podany, zapisujemy datę z rokiem `1000` (np. `1000-05-15`).
     - `MagicWandSection` (Bio textarea + przycisk AI).
 - **Obsługiwana walidacja:**
     - `displayName`: 1-50 znaków, brak nazwisk (walidacja frontendowa + hint).
     - `bio`: max 1000 znaków.
-    - `birthDate`: format YYYY-MM-DD, data nie może być z przyszłości.
+    - `birthDate`:
+        - Jeśli podano dzień, wymagany jest miesiąc (i odwrotnie).
+        - Rok jest opcjonalny (1900 - rok bieżący).
+        - Pełna data nie może być z przyszłości.
 - **Typy:** `CreateChildCommand` | `UpdateChildCommand`.
 
 ### MagicWandSection

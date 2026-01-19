@@ -10,5 +10,14 @@
     },
 
     // ESLint walidacja
-    "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "astro"]
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+        "astro"
+    ],
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    }
 }

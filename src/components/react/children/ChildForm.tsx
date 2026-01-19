@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'astro/zod';
@@ -6,32 +7,103 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Wand2, Info } from 'lucide-react';
+import { Loader2, Wand2, Info, Calendar } from 'lucide-react';
 import { useAi } from '@/lib/hooks/useAi';
 import { cn } from '@/lib/utils';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
-const childFormSchema = z.object({
-    displayName: z
-        .string()
-        .min(1, 'Imię jest wymagane')
-        .max(50, 'Imię może mieć maksymalnie 50 znaków')
-        .refine((val) => !val.trim().includes(' '), {
-            message: 'Proszę podać tylko imię (bez nazwiska)',
-        }),
-    birthDate: z
-        .string()
-        .optional()
-        .refine((val) => !val || new Date(val) <= new Date(), {
-            message: 'Data urodzenia nie może być z przyszłości',
-        }),
-    bio: z.string().max(1000, 'Opis może mieć maksymalnie 1000 znaków').optional(),
+const months = [
+    { value: '01', label: 'Styczeń' },
+    { value: '02', label: 'Luty' },
+    { value: '03', label: 'Marzec' },
+    { value: '04', label: 'Kwiecień' },
+    { value: '05', label: 'Maj' },
+    { value: '06', label: 'Czerwiec' },
+    { value: '07', label: 'Lipiec' },
+    { value: '08', label: 'Sierpień' },
+    { value: '09', label: 'Wrzesień' },
+    { value: '10', label: 'Październik' },
+    { value: '11', label: 'Listopad' },
+    { value: '12', label: 'Grudzień' },
+];
+
+const days = Array.from({ length: 31 }, (_, i) => {
+    const d = (i + 1).toString().padStart(2, '0');
+    return { value: d, label: (i + 1).toString() };
 });
+
+const childFormSchema = z
+    .object({
+        displayName: z
+            .string()
+            .min(1, 'Imię jest wymagane')
+            .max(50, 'Imię może mieć maksymalnie 50 znaków')
+            .refine((val) => !val.trim().includes(' '), {
+                message: 'Proszę podać tylko imię (bez nazwiska)',
+            }),
+        birthDay: z.string().optional(),
+        birthMonth: z.string().optional(),
+        birthYear: z
+            .string()
+            .optional()
+            .refine(
+                (val) => {
+                    if (!val) return true;
+                    const year = parseInt(val);
+                    const currentYear = new Date().getFullYear();
+                    return year >= 1900 && year <= currentYear;
+                },
+                { message: 'Nieprawidłowy rok' }
+            ),
+        bio: z.string().max(1000, 'Opis może mieć maksymalnie 1000 znaków').optional(),
+    })
+    .refine(
+        (data) => {
+            // Jeśli podano dzień, trzeba podać miesiąc i odwrotnie
+            if ((data.birthDay && !data.birthMonth) || (!data.birthDay && data.birthMonth)) {
+                return false;
+            }
+            return true;
+        },
+        {
+            message: 'Podaj zarówno dzień jak i miesiąc',
+            path: ['birthDay'],
+        }
+    )
+    .refine(
+        (data) => {
+            // Walidacja czy data nie jest z przyszłości (jeśli podano rok)
+            if (data.birthDay && data.birthMonth && data.birthYear) {
+                const date = new Date(
+                    parseInt(data.birthYear),
+                    parseInt(data.birthMonth) - 1,
+                    parseInt(data.birthDay)
+                );
+                return date <= new Date();
+            }
+            return true;
+        },
+        {
+            message: 'Data urodzenia nie może być z przyszłości',
+            path: ['birthYear'],
+        }
+    );
 
 type ChildFormValues = z.infer<typeof childFormSchema>;
 
 interface ChildFormProps {
-    initialValues?: Partial<ChildFormValues>;
-    onSubmit: (values: ChildFormValues) => void;
+    initialValues?: {
+        displayName: string;
+        birthDate: string | null;
+        bio: string;
+    };
+    onSubmit: (values: any) => void;
     isLoading?: boolean;
     title: string;
     submitLabel: string;
@@ -44,6 +116,19 @@ export const ChildForm: React.FC<ChildFormProps> = ({
     title,
     submitLabel,
 }) => {
+    // Parse initial date string (YYYY-MM-DD)
+    const parseInitialDate = (dateStr: string | null | undefined) => {
+        if (!dateStr) return { day: '', month: '', year: '' };
+        const [y, m, d] = dateStr.split('-');
+        return {
+            day: d,
+            month: m,
+            year: y === '1000' ? '' : y,
+        };
+    };
+
+    const initialDate = parseInitialDate(initialValues?.birthDate);
+
     const {
         register,
         handleSubmit,
@@ -54,7 +139,9 @@ export const ChildForm: React.FC<ChildFormProps> = ({
         resolver: zodResolver(childFormSchema),
         defaultValues: {
             displayName: initialValues?.displayName || '',
-            birthDate: initialValues?.birthDate || '',
+            birthDay: initialDate.day,
+            birthMonth: initialDate.month,
+            birthYear: initialDate.year,
             bio: initialValues?.bio || '',
         },
     });
@@ -62,6 +149,22 @@ export const ChildForm: React.FC<ChildFormProps> = ({
     const { generateBio, isGeneratingBio } = useAi();
     const bioValue = watch('bio');
     const displayNameValue = watch('displayName');
+    const birthMonthValue = watch('birthMonth');
+    const birthDayValue = watch('birthDay');
+
+    const handleInternalSubmit = (data: ChildFormValues) => {
+        let birthDate = null;
+        if (data.birthDay && data.birthMonth) {
+            const year = data.birthYear || '1000';
+            birthDate = `${year}-${data.birthMonth}-${data.birthDay}`;
+        }
+
+        onSubmit({
+            displayName: data.displayName,
+            bio: data.bio,
+            birthDate,
+        });
+    };
 
     const handleMagicWand = async () => {
         if (!bioValue || bioValue.trim().length < 3) return;
@@ -84,7 +187,7 @@ export const ChildForm: React.FC<ChildFormProps> = ({
             <CardHeader>
                 <CardTitle>{title}</CardTitle>
             </CardHeader>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(handleInternalSubmit)}>
                 <CardContent className="space-y-6">
                     <div className="space-y-2">
                         <Label htmlFor="displayName">Imię dziecka</Label>
@@ -104,56 +207,123 @@ export const ChildForm: React.FC<ChildFormProps> = ({
                         )}
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="birthDate">Data urodzenia (opcjonalnie)</Label>
-                        <Input
-                            id="birthDate"
-                            type="date"
-                            {...register('birthDate')}
-                            className={cn(errors.birthDate && 'border-destructive')}
-                        />
-                        {errors.birthDate && (
-                            <p className="text-sm text-destructive">{errors.birthDate.message}</p>
+                    <div className="space-y-3">
+                        <Label>Data urodzenia (opcjonalnie)</Label>
+                        <div className="grid grid-cols-[0.8fr_1.4fr_1fr] gap-2">
+                            <div className="space-y-1">
+                                <Select
+                                    value={birthDayValue}
+                                    onValueChange={(val) => setValue('birthDay', val)}
+                                >
+                                    <SelectTrigger
+                                        className={cn(
+                                            'px-2 sm:px-3',
+                                            errors.birthDay && 'border-destructive'
+                                        )}
+                                    >
+                                        <SelectValue placeholder="Dzień" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {days.map((d) => (
+                                            <SelectItem key={d.value} value={d.value}>
+                                                {d.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-1">
+                                <Select
+                                    value={birthMonthValue}
+                                    onValueChange={(val) => setValue('birthMonth', val)}
+                                >
+                                    <SelectTrigger
+                                        className={cn(
+                                            'px-2 sm:px-3',
+                                            errors.birthDay && 'border-destructive'
+                                        )}
+                                    >
+                                        <SelectValue placeholder="Miesiąc" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {months.map((m) => (
+                                            <SelectItem key={m.value} value={m.value}>
+                                                {m.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-1">
+                                <Input
+                                    placeholder="Rok"
+                                    type="number"
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
+                                    maxLength={4}
+                                    {...register('birthYear')}
+                                    className={cn(
+                                        'px-2 sm:px-3',
+                                        errors.birthYear && 'border-destructive'
+                                    )}
+                                />
+                            </div>
+                        </div>
+                        {errors.birthDay ? (
+                            <p className="text-sm text-destructive">{errors.birthDay.message}</p>
+                        ) : errors.birthYear ? (
+                            <p className="text-sm text-destructive">{errors.birthYear.message}</p>
+                        ) : (
+                            <p className="text-[11px] text-muted-foreground flex items-center gap-1">
+                                <Calendar className="h-3 w-3 shrink-0" />
+                                Podaj tylko dzień i miesiąc, lub także rok.
+                            </p>
                         )}
                     </div>
 
                     <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                            <Label htmlFor="bio">O dziecku (zainteresowania, prezenty)</Label>
+                        <div className="flex items-center justify-between gap-2">
+                            <Label htmlFor="bio" className="truncate">
+                                O dziecku (zainteresowania, prezenty)
+                            </Label>
                             <Button
                                 type="button"
                                 variant="outline"
                                 size="sm"
                                 onClick={handleMagicWand}
                                 disabled={isGeneratingBio || !bioValue || bioValue.length < 3}
-                                className="h-8 gap-1.5 text-xs font-medium border-primary/20 hover:bg-primary/5"
+                                className="h-8 gap-1.5 text-[11px] sm:text-xs font-medium border-primary/20 hover:bg-primary/5 shrink-0"
                             >
                                 {isGeneratingBio ? (
                                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
                                 ) : (
                                     <Wand2 className="h-3.5 w-3.5" />
                                 )}
-                                Magic Wand
+                                <span className="hidden sm:inline">Magic Wand</span>
+                                <span className="sm:hidden">AI 🪄</span>
                             </Button>
                         </div>
                         <Textarea
                             id="bio"
-                            placeholder="Wpisz kilka słów o dziecku (np. co lubi, czym się interesuje) i użyj Magic Wand, aby stworzyć piękny opis!"
+                            placeholder="Wpisz kilka słów o dziecku (np. co lubi, czym się interesuje) i użyj Magic Wand!"
                             rows={6}
                             {...register('bio')}
-                            className={cn('resize-none', errors.bio && 'border-destructive')}
+                            className={cn(
+                                'resize-none min-h-[120px]',
+                                errors.bio && 'border-destructive'
+                            )}
                         />
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-start gap-4">
                             {errors.bio ? (
                                 <p className="text-sm text-destructive">{errors.bio.message}</p>
                             ) : (
-                                <p className="text-[11px] text-muted-foreground">
+                                <p className="text-[11px] text-muted-foreground leading-tight">
                                     Ten opis będzie widoczny dla innych rodziców w grupie.
                                 </p>
                             )}
                             <span
                                 className={cn(
-                                    'text-[10px]',
+                                    'text-[10px] tabular-nums shrink-0 mt-0.5',
                                     (bioValue?.length || 0) > 900
                                         ? 'text-orange-500'
                                         : 'text-muted-foreground'
@@ -164,16 +334,17 @@ export const ChildForm: React.FC<ChildFormProps> = ({
                         </div>
                     </div>
                 </CardContent>
-                <CardFooter className="flex justify-end gap-3 pt-2">
+                <CardFooter className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-2">
                     <Button
                         type="button"
                         variant="ghost"
                         onClick={() => window.history.back()}
                         disabled={isLoading}
+                        className="w-full sm:w-auto"
                     >
                         Anuluj
                     </Button>
-                    <Button type="submit" disabled={isLoading}>
+                    <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         {submitLabel}
                     </Button>
