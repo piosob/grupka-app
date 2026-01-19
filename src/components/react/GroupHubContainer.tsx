@@ -41,7 +41,7 @@ function GroupHubContent({ groupId }: GroupHubContainerProps) {
                 <div className="space-y-2">
                     <h2 className="text-2xl font-bold">Wystąpił błąd</h2>
                     <p className="text-muted-foreground">
-                     Nie udało się załadować danych grupy
+                        Nie udało się załadować danych grupy
                     </p>
                 </div>
                 <Button asChild variant="outline">
@@ -58,25 +58,27 @@ function GroupHubContent({ groupId }: GroupHubContainerProps) {
             {/* Header Section */}
             <div className="space-y-6">
                 <div className="flex flex-col gap-4">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
                         <Button
                             asChild
                             variant="ghost"
                             size="icon"
-                            className="-ml-2 h-8 w-8 text-muted-foreground hover:text-foreground"
+                            className="-ml-2 h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
                         >
                             <a href="/dashboard">
                                 <ArrowLeft className="w-4 h-4" />
                             </a>
                         </Button>
-                        <h1 className="text-3xl font-bold tracking-tight">{group.name}</h1>
+                        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight truncate">
+                            {group.name}
+                        </h1>
                         {isAdmin && (
                             <Badge
                                 variant="secondary"
-                                className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 gap-1 border-none ml-2"
+                                className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 gap-1 border-none shrink-0"
                             >
                                 <Crown className="w-3.5 h-3.5" />
-                                Admin
+                                <span className="hidden sm:inline">Admin</span>
                             </Badge>
                         )}
                     </div>
@@ -131,17 +133,17 @@ function GroupHubContent({ groupId }: GroupHubContainerProps) {
                         <Badge variant="outline">Tylko dla administratora</Badge>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <Button asChild variant="outline" className="h-16 flex flex-col gap-1">
-                            <a href={`/groups/${groupId}/invite`}>
-                                <UserPlus className="w-5 h-5" />
-                                <span>Zaproś osoby</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <Button asChild variant="outline" className="h-16 flex flex-row sm:flex-col items-center justify-start sm:justify-center gap-3 sm:gap-1 px-4 sm:px-2">
+                            <a href={`/groups/${groupId}/invite`} className="flex items-center sm:flex-col gap-3 sm:gap-1 w-full">
+                                <UserPlus className="w-5 h-5 shrink-0" />
+                                <span className="font-semibold">Zaproś osoby</span>
                             </a>
                         </Button>
-                        <Button asChild variant="outline" className="h-16 flex flex-col gap-1">
-                            <a href={`/groups/${groupId}/settings`}>
-                                <Settings className="w-5 h-5" />
-                                <span>Ustawienia</span>
+                        <Button asChild variant="outline" className="h-16 flex flex-row sm:flex-col items-center justify-start sm:justify-center gap-3 sm:gap-1 px-4 sm:px-2">
+                            <a href={`/groups/${groupId}/settings`} className="flex items-center sm:flex-col gap-3 sm:gap-1 w-full">
+                                <Settings className="w-5 h-5 shrink-0" />
+                                <span className="font-semibold">Ustawienia</span>
                             </a>
                         </Button>
                     </div>

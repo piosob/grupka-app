@@ -78,7 +78,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
             );
         }
 
-        if (error.message === 'Already a member of this group') {
+        if (error.message === 'Jesteś już członkiem tej grupy') {
             return new Response(
                 JSON.stringify({ error: { code: 'CONFLICT', message: error.message } }),
                 { status: 409, headers: { 'Content-Type': 'application/json' } }

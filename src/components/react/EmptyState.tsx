@@ -20,10 +20,10 @@ export function EmptyState({ onCreateGroup, onJoinGroup }: EmptyStateProps) {
                 swojej klasy lub dołącz do istniejącej.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto px-4">
                 <Button
                     onClick={onCreateGroup}
-                    className="rounded-full px-8 h-12 text-base font-semibold"
+                    className="w-full sm:w-auto rounded-full px-8 h-12 text-base font-semibold"
                 >
                     <Plus className="mr-2 h-5 w-5" />
                     Utwórz grupę
@@ -31,7 +31,7 @@ export function EmptyState({ onCreateGroup, onJoinGroup }: EmptyStateProps) {
                 <Button
                     onClick={onJoinGroup}
                     variant="outline"
-                    className="rounded-full px-8 h-12 text-base font-semibold"
+                    className="w-full sm:w-auto rounded-full px-8 h-12 text-base font-semibold"
                 >
                     <LinkIcon className="mr-2 h-5 w-5" />
                     Dołącz do grupy

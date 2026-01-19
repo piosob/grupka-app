@@ -66,11 +66,14 @@ function DashboardContent({ errorType }: DashboardContentProps) {
     if (isLoading) {
         return (
             <div className="space-y-8">
-                <div className="flex justify-between items-center">
-                    <Skeleton className="h-10 w-48 rounded-lg" />
-                    <div className="flex gap-2">
-                        <Skeleton className="h-10 w-10 sm:w-32 rounded-full" />
-                        <Skeleton className="h-10 w-10 sm:w-32 rounded-full" />
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div className="space-y-2">
+                        <Skeleton className="h-10 w-48 rounded-lg" />
+                        <Skeleton className="h-5 w-64 rounded-lg" />
+                    </div>
+                    <div className="flex gap-2 w-full md:w-auto">
+                        <Skeleton className="h-10 flex-1 md:w-32 rounded-full" />
+                        <Skeleton className="h-10 flex-1 md:w-32 rounded-full" />
                     </div>
                 </div>
                 <SkeletonGroupList />
@@ -121,27 +124,27 @@ function DashboardContent({ errorType }: DashboardContentProps) {
                 </div>
             )}
 
-            <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Twoje Grupy</h1>
-                    <p className="text-muted-foreground">
+                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Twoje Grupy</h1>
+                    <p className="text-sm sm:text-base text-muted-foreground">
                         Zarządzaj wydarzeniami i prezentami w swoich grupach.
                     </p>
                 </div>
 
                 {groups.length > 0 && (
-                    <div className="flex gap-2 w-full sm:w-auto">
+                    <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
                         <Button
                             onClick={() => setIsJoinOpen(true)}
                             variant="outline"
-                            className="flex-1 sm:flex-none rounded-full cursor-pointer"
+                            className="w-full sm:w-auto rounded-full cursor-pointer"
                         >
                             <LinkIcon className="w-4 h-4 mr-1.5" />
-                            Dołącz do istniejącej grupy
+                            Dołącz do grupy
                         </Button>
                         <Button
                             onClick={() => setIsCreateOpen(true)}
-                            className="flex-1 sm:flex-none rounded-full cursor-pointer"
+                            className="w-full sm:w-auto rounded-full cursor-pointer"
                         >
                             <Plus className="w-4 h-4 mr-1.5" />
                             Utwórz nową grupę

@@ -8,9 +8,10 @@ import { UserNav } from '../components/react/UserNav';
 interface Props {
     title: string;
     groupId?: string; // for group context pages
+    fullWidth?: boolean;
 }
 
-const { title, groupId } = Astro.props;
+const { title, groupId, fullWidth = false } = Astro.props;
 const user = Astro.locals.user;
 
 ---
@@ -42,7 +43,7 @@ const user = Astro.locals.user;
             </header>
 
             <!-- Main Content -->
-            <main class="flex-1 container mx-auto py-6">
+            <main class={`flex-1 ${fullWidth ? '' : 'container mx-auto px-4 py-6'}`}>
                 <slot />
             </main>
 

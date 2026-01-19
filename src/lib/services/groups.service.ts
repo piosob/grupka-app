@@ -898,7 +898,7 @@ export class GroupsService {
             .single();
 
         if (existingMember) {
-            throw new Error('Already a member of this group');
+            throw new Error('Jesteś już członkiem tej grupy');
         }
 
         // 3. Join the group

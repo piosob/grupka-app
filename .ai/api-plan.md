@@ -402,7 +402,7 @@ Join a group using an invite code.
 - `400 Bad Request` - Invalid code format
 - `401 Unauthorized` - Invalid or missing token
 - `404 Not Found` - Invalid or expired invite code
-- `409 Conflict` - Already a member of this group
+- `409 Conflict` - Jesteś już członkiem tej grupy
 
 ---
 

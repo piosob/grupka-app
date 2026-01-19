@@ -14,10 +14,8 @@ const error = Astro.url.searchParams.get('error');
 ---
 
 <MainLayout title="Panel - Twoje grupy">
-    <div class="container mx-auto px-4 py-8">
-        <div class="max-w-4xl mx-auto">
-            <DashboardContainer errorType={error} client:load />
-        </div>
+    <div class="max-w-4xl mx-auto">
+        <DashboardContainer errorType={error} client:load />
     </div>
 </MainLayout>
 
