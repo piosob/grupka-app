@@ -1,0 +1,16 @@
+node_modules
+dist
+.git
+.gitignore
+.vscode
+.ai
+.cursor
+README.md
+Dockerfile
+.dockerignore
+npm-debug.log
+# Ignorujemy lokalne pliki ze zmiennymi - zostaną ustawione w panelu DigitalOcean
+.env
+.env.local
+.env.development
+.env.production
