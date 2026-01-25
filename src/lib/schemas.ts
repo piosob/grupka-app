@@ -165,7 +165,7 @@ export type AdminContactDTO = z.infer<typeof AdminContactDTOSchema>;
  * Used in: POST /api/groups/:groupId/invites (response)
  */
 export const GroupInviteDTOSchema = z.object({
-    code: z.string().max(10),
+    code: z.string().max(50),
     groupId: z.string().uuid(),
     expiresAt: z.string().datetime(),
     createdAt: z.string().datetime(),
@@ -178,7 +178,7 @@ export type GroupInviteDTO = z.infer<typeof GroupInviteDTOSchema>;
  * Used in: GET /api/groups/:groupId/invites
  */
 export const GroupInviteListItemDTOSchema = z.object({
-    code: z.string().max(10),
+    code: z.string().max(50),
     expiresAt: z.string().datetime(),
     createdAt: z.string().datetime(),
 });
@@ -190,7 +190,7 @@ export type GroupInviteListItemDTO = z.infer<typeof GroupInviteListItemDTOSchema
  * Used in: POST /api/invites/join
  */
 export const JoinGroupCommandSchema = z.object({
-    code: z.string().max(10),
+    code: z.string().max(50),
 });
 
 export type JoinGroupCommand = z.infer<typeof JoinGroupCommandSchema>;

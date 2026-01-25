@@ -57,7 +57,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
                 JSON.stringify({
                     error: {
                         code: 'VALIDATION_ERROR',
-                        message: 'Validation failed',
+                        message: 'Nieprawidłowy format kodu',
                         details: error.errors.map((e) => ({
                             field: e.path.join('.'),
                             message: e.message,
@@ -73,7 +73,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
             error.message === 'Invite code has expired'
         ) {
             return new Response(
-                JSON.stringify({ error: { code: 'NOT_FOUND', message: error.message } }),
+                JSON.stringify({ error: { code: 'NOT_FOUND', message: 'Nieprawidłowy lub wygasły kod zaproszenia' } }),
                 { status: 404, headers: { 'Content-Type': 'application/json' } }
             );
         }

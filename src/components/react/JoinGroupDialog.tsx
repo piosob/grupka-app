@@ -34,8 +34,8 @@ export function JoinGroupDialog({ open, onOpenChange, onSuccess }: JoinGroupDial
         e.preventDefault();
 
         const cleanCode = code.trim().toUpperCase();
-        if (cleanCode.length < 8) {
-            setError('Kod musi mieć co najmniej 8 znaków');
+        if (!cleanCode) {
+            setError('Kod zaproszenia jest wymagany');
             return;
         }
 
@@ -81,7 +81,7 @@ export function JoinGroupDialog({ open, onOpenChange, onSuccess }: JoinGroupDial
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-bold">Dołącz do grupy</DialogTitle>
                         <DialogDescription>
-                            Wprowadź 8-znakowy kod otrzymany od administratora grupy.
+                            Wprowadź kod otrzymany od administratora grupy.
                         </DialogDescription>
                     </DialogHeader>
 
@@ -94,12 +94,12 @@ export function JoinGroupDialog({ open, onOpenChange, onSuccess }: JoinGroupDial
                                 id="code"
                                 value={code}
                                 onChange={handleInputChange}
-                                placeholder="NP. X7Y2Z9W4"
+                                placeholder="NP. AB12CD34"
                                 className={cn(
                                     getInputClasses(error),
                                     "h-14 text-2xl font-mono text-center tracking-[0.5em] uppercase"
                                 )}
-                                maxLength={10}
+                                maxLength={20}
                                 disabled={isLoading}
                                 autoFocus
                             />
