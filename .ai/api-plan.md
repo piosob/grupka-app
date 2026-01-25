@@ -102,6 +102,7 @@ Create a new group. The creator automatically becomes an admin.
 
 - `400 Bad Request` - Validation failed
 - `401 Unauthorized` - Invalid or missing token
+- `409 Conflict` - Masz już utworzoną grupę o tej nazwie
 
 ---
 
@@ -1068,9 +1069,11 @@ export async function onRequest({ request, locals }, next) {
 
 #### Group Creation (US-002)
 
-1. Create group record with `created_by = auth.uid()`
-2. Insert into `group_members` with `role = 'admin'`
-3. Return combined response with group data and role
+1. Check if the current user (`auth.uid()`) has already created a group with the same `name`.
+2. If yes, return `409 Conflict`. 
+3. Create group record with `created_by = auth.uid()`
+4. Insert into `group_members` with `role = 'admin'`
+5. Return combined response with group data and role
 
 #### Invite Code Generation (US-003)
 

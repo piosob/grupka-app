@@ -2,6 +2,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { cn, getInputClasses } from '../../lib/utils';
 
 interface LoginFormProps {
     action: string;
@@ -26,10 +27,13 @@ export function LoginForm({ action, error, inputErrors }: LoginFormProps) {
                             type="email"
                             autoComplete="email"
                             placeholder="twoj@email.pl"
+                            className={cn(getInputClasses(inputErrors?.email))}
                             required
                         />
                         {inputErrors?.email && (
-                            <p className="text-sm text-red-600">{inputErrors.email[0]}</p>
+                            <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
+                                {inputErrors.email[0]}
+                            </p>
                         )}
                     </div>
 
@@ -41,23 +45,23 @@ export function LoginForm({ action, error, inputErrors }: LoginFormProps) {
                             type="password"
                             autoComplete="current-password"
                             placeholder="••••••••"
+                            className={cn(getInputClasses(inputErrors?.password))}
                             required
                         />
                         {inputErrors?.password && (
-                            <p className="text-sm text-red-600">{inputErrors.password[0]}</p>
+                            <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
+                                {inputErrors.password[0]}
+                            </p>
                         )}
                     </div>
 
                     {error && (
-                        <div
-                            className="text-sm text-red-600 bg-red-50 p-3 rounded-md"
-                            role="status"
-                        >
+                        <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
                             {error}
-                        </div>
+                        </p>
                     )}
 
-                    <Button type="submit" className="w-full">
+                    <Button type="submit" className="w-full h-12 rounded-full text-base font-semibold">
                         Zaloguj się
                     </Button>
 

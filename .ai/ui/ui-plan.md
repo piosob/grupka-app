@@ -54,7 +54,6 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 - `/dashboard` - Przegląd wszystkich grup użytkownika
 - `/profile` - Profil użytkownika
 - `/join` - Dołączenie do grupy przez kod
-- `/groups/new` - Utworzenie nowej grupy
 - `/groups/:groupId/*` - Wszystkie widoki w kontekście grupy
 
 **Group context routes** (`/groups/:groupId/`):
@@ -337,7 +336,7 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
     - Ilustracja 🎨
     - Heading "Witaj w Grupce!"
     - Subtext "Utwórz nową grupę lub dołącz do istniejącej"
-    - Button "Utwórz grupę" → `/groups/new`
+    - Button "Utwórz grupę" (otwiera dialog)
     - Button "Dołącz do grupy" → `/join`
 - Skeleton loaders dla loading state
 
@@ -357,9 +356,9 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 
 ---
 
-### 2.7. Tworzenie Grupy
+### 2.7. Tworzenie Grupy (Dialog na Dashboard)
 
-**Ścieżka:** `/groups/new`
+**Lokalizacja:** `/dashboard` (Modal/Dialog)
 
 **Główny cel:**
 
@@ -369,13 +368,12 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 
 **Kluczowe informacje:**
 
-- Formularz tworzenia grupy
+- Formularz tworzenia grupy w oknie dialogowym
 - Prominent info box o privacy emaila
 
 **Kluczowe komponenty:**
 
-- MainLayout
-- CreateGroupForm (React):
+- `CreateGroupDialog` (React):
     - Input "Nazwa grupy" (3-100 znaków)
     - Label + helper text "Możesz zmienić później"
     - Alert (info variant):
@@ -384,10 +382,6 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
     - Button "Anuluj" (secondary)
     - Button "Utwórz grupę" (primary, disabled bez nazwy)
 - Toast success: "Grupa utworzona!"
-- Modal po sukcesie (opcjonalnie):
-    - "Teraz wygeneruj kod zaproszenia aby zaprosić członków"
-    - Button "Wygeneruj kod" → `/groups/:groupId/invite`
-    - Button "Później"
 
 **Względy UX/Dostępność/Bezpieczeństwo:**
 
@@ -395,12 +389,16 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
 - Auto-trim whitespace
 - Transparency o email privacy (GDPR compliance)
 - Transaction: insert group + insert group_member (role=admin)
-- Redirect do `/groups/:groupId/events` po sukcesie
-- Focus na input przy mount
+- Redirect do `/groups/:groupId` po sukcesie p
+- Focus na input przy otwarciu dialogu
 
 **API Endpoints:**
 
 - `POST /api/groups` → CreateGroupCommand → CreateGroupResponseDTO
+
+**Error Handling:**
+
+- `409 Conflict`: "Masz już utworzoną grupę o tej nazwie. Wybierz inną nazwę." (Wyświetlane jako czerwony error tekst pod polem nazwy)
 
 ---
 
@@ -1281,7 +1279,9 @@ Aplikacja wykorzystuje hierarchiczny routing z grupą jako głównym kontekstem:
     - 2 opcje: "Utwórz grupę" / "Dołącz do grupy"
     - Click "Utwórz grupę"
 
-4. **Tworzenie Grupy** (`/groups/new`)
+4. **Tworzenie Grupy** (Dashboard Modal)
+    - Klika przycisk "Utwórz grupę" na dashboardzie.
+    - Otwiera się dialog "Utwórz nową grupę".
     - Wpisuje nazwę grupy: "Przedszkole Słoneczko - Motylki"
     - Czyta info box o ujawnieniu emaila jako admin
     - Click "Utwórz grupę"
@@ -2614,7 +2614,7 @@ CTA: Focused textarea (auto-focus)
 
 **Widoki:**
 
-- 2.7. Tworzenie Grupy (`/groups/new`)
+- 2.7. Tworzenie Grupy (Dashboard Modal)
 
 **Komponenty:**
 

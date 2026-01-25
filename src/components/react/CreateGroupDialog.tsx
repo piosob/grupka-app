@@ -12,11 +12,12 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { toast } from 'sonner';
+import { cn, getInputClasses } from '../../lib/utils';
 
 interface CreateGroupDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onSuccess: () => void;
+    onSuccess: (groupId: string) => void;
 }
 
 export function CreateGroupDialog({ open, onOpenChange, onSuccess }: CreateGroupDialogProps) {
@@ -58,7 +59,7 @@ export function CreateGroupDialog({ open, onOpenChange, onSuccess }: CreateGroup
             toast.success('Grupa została utworzona pomyślnie!');
             setName('');
             onOpenChange(false);
-            onSuccess();
+            onSuccess(data.data.id);
         } catch (err: any) {
             setError(err.message);
             toast.error(err.message);
@@ -88,7 +89,7 @@ export function CreateGroupDialog({ open, onOpenChange, onSuccess }: CreateGroup
                                 value={name}
                                 onChange={handleNameChange}
                                 placeholder="np. Pszczółki"
-                                className="h-12 text-lg rounded-xl"
+                                className={cn(getInputClasses(error))}
                                 disabled={isLoading}
                                 autoFocus
                             />

@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { z } from 'astro/zod';
 import { CreateGroupCommandSchema, PaginationParamsSchema } from '../../../lib/schemas';
 import { createGroupsService } from '../../../lib/services/groups.service';
+import { ConflictError } from '../../../lib/errors';
 
 /**
  * GET /api/groups
@@ -173,6 +174,22 @@ export const POST: APIRoute = async ({ request, locals }) => {
         });
     } catch (error) {
         // === Error Handling ===
+
+        // Handle business logic errors
+        if (error instanceof ConflictError) {
+            return new Response(
+                JSON.stringify({
+                    error: {
+                        code: 'CONFLICT',
+                        message: error.message,
+                    },
+                }),
+                {
+                    status: 409,
+                    headers: { 'Content-Type': 'application/json' },
+                }
+            );
+        }
 
         // Zod validation errors
         if (error instanceof z.ZodError) {

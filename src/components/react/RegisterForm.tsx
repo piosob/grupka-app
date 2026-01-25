@@ -2,6 +2,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { cn, getInputClasses } from '../../lib/utils';
 
 interface RegisterFormProps {
     action: string;
@@ -73,12 +74,15 @@ export function RegisterForm({
                             name="firstName"
                             type="text"
                             placeholder="np. Kasia"
+                            className={cn(getInputClasses(inputErrors?.firstName))}
                             required
                         />
                         {inputErrors?.firstName && (
-                            <p className="text-sm text-red-600">{inputErrors.firstName[0]}</p>
+                            <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
+                                {inputErrors.firstName[0]}
+                            </p>
                         )}
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-muted-foreground">
                             Szanujemy Twoją prywatność. Podaj tylko imię - to wystarczy, by inni
                             rodzice Cię rozpoznali.
                         </p>
@@ -92,10 +96,13 @@ export function RegisterForm({
                             type="email"
                             autoComplete="email"
                             placeholder="twoj@email.pl"
+                            className={cn(getInputClasses(inputErrors?.email))}
                             required
                         />
                         {inputErrors?.email && (
-                            <p className="text-sm text-red-600">{inputErrors.email[0]}</p>
+                            <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
+                                {inputErrors.email[0]}
+                            </p>
                         )}
                     </div>
 
@@ -107,13 +114,16 @@ export function RegisterForm({
                             type="password"
                             autoComplete="new-password"
                             placeholder="••••••••"
+                            className={cn(getInputClasses(inputErrors?.password))}
                             required
                             minLength={8}
                         />
                         {inputErrors?.password && (
-                            <p className="text-sm text-red-600">{inputErrors.password[0]}</p>
+                            <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
+                                {inputErrors.password[0]}
+                            </p>
                         )}
-                        <p className="text-xs text-gray-500">Minimum 8 znaków</p>
+                        <p className="text-xs text-muted-foreground">Minimum 8 znaków</p>
                     </div>
 
                     <div className="space-y-2">
@@ -124,24 +134,27 @@ export function RegisterForm({
                             type="password"
                             autoComplete="new-password"
                             placeholder="••••••••"
+                            className={cn(getInputClasses(inputErrors?.confirmPassword))}
                             required
                             minLength={8}
                         />
                         {inputErrors?.confirmPassword && (
-                            <p className="text-sm text-red-600">{inputErrors.confirmPassword[0]}</p>
+                            <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
+                                {inputErrors.confirmPassword[0]}
+                            </p>
                         )}
                     </div>
 
                     {error && (
                         <div
-                            className="text-sm text-red-600 bg-red-50 p-3 rounded-md"
+                            className="text-sm text-destructive bg-destructive/10 p-3 rounded-2xl border border-destructive/20 animate-in fade-in slide-in-from-top-1"
                             role="status"
                         >
                             {error}
                         </div>
                     )}
 
-                    <Button type="submit" className="w-full">
+                    <Button type="submit" className="w-full h-12 rounded-full text-base font-semibold">
                         Utwórz konto
                     </Button>
 

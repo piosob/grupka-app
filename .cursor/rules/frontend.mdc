@@ -22,6 +22,23 @@ alwaysApply: false
 - Use responsive variants (sm:, md:, lg:, etc.) for adaptive designs
 - Leverage state variants (hover:, focus:, active:, etc.) for interactive elements
 
+#### Form Input Errors
+
+- To ensure consistent input styling across the app, always use the `getInputClasses(error)` helper from `src/lib/utils.ts` inside `cn()`:
+  ```tsx
+  import { cn, getInputClasses } from '@/lib/utils';
+
+  // ...
+  <Input
+      className={cn(
+          getInputClasses(error),
+          "custom-class-if-needed" // optional additional classes
+      )}
+  />
+  ```
+- This helper provides the standard "Grupka" look (h-12, text-lg, rounded-xl) and handles destructive error states.
+- Always display the error message in Polish directly below the input using `text-destructive` color.
+
 ### Guidelines for Accessibility
 
 #### ARIA Best Practices

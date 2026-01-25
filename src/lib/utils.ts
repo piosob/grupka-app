@@ -70,3 +70,14 @@ export function getInitials(name: string): string {
         .toUpperCase()
         .substring(0, 2);
 }
+
+/**
+ * Shared helper for standard "Grupka" input styling.
+ * Returns base classes and error-specific classes if error is present.
+ */
+export function getInputClasses(error: any) {
+    return cn(
+        'h-12 text-lg rounded-xl transition-colors',
+        error && 'border-destructive ring-destructive focus-visible:ring-destructive'
+    );
+}

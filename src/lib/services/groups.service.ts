@@ -95,6 +95,22 @@ export class GroupsService {
         // Sanitize input by trimming whitespace
         const sanitizedName = command.name.trim();
 
+        // Check if the user has already created a group with the same name
+        const { data: existingGroup, error: checkError } = await this.supabase
+            .from('groups')
+            .select('id')
+            .eq('created_by', userId)
+            .eq('name', sanitizedName)
+            .maybeSingle();
+
+        if (checkError) {
+            throw new Error(`Failed to check existing groups: ${checkError.message}`);
+        }
+
+        if (existingGroup) {
+            throw new ConflictError('Masz już utworzoną grupę o tej nazwie. Wybierz inną nazwę.');
+        }
+
         // Step 1: Create the group
         const { data: group, error: groupError } = await this.supabase
             .from('groups')

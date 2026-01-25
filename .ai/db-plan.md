@@ -131,6 +131,9 @@ Dostęp do danych jest ściśle kontrolowany na poziomie bazy danych. Domyślnie
 - **Zarządzanie Dziećmi:**
   Tylko użytkownik będący `parent_id` może edytować (`UPDATE`) lub usuwać (`DELETE`) rekord dziecka. Wszyscy członkowie grupy mogą je widzieć (`SELECT`).
 
+- **Unikalność nazw grup:**
+  Wymóg biznesowy: Jeden użytkownik nie może utworzyć dwóch grup o tej samej nazwie. Weryfikowane w warstwie serwisu przed utworzeniem grupy.
+
 - **Rola Administratora Grupy:**
   Tylko użytkownicy z rolą `'admin'` w tabeli `group_members` mogą edytować ustawienia grupy lub generować nowe kody zaproszeń.
 

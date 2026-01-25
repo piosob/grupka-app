@@ -63,6 +63,11 @@ function DashboardContent({ errorType }: DashboardContentProps) {
         window.location.href = `/groups/${_groupId}`;
     };
 
+    const handleCreateSuccess = (groupId: string) => {
+        refreshGroups();
+        window.location.href = `/groups/${groupId}`;
+    };
+
     if (isLoading) {
         return (
             <div className="space-y-8">
@@ -169,7 +174,7 @@ function DashboardContent({ errorType }: DashboardContentProps) {
             <CreateGroupDialog
                 open={isCreateOpen}
                 onOpenChange={setIsCreateOpen}
-                onSuccess={refreshGroups}
+                onSuccess={handleCreateSuccess}
             />
 
             <JoinGroupDialog

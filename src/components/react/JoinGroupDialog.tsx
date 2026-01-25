@@ -11,6 +11,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { toast } from 'sonner';
+import { cn, getInputClasses } from '../../lib/utils';
 
 interface JoinGroupDialogProps {
     open: boolean;
@@ -94,7 +95,10 @@ export function JoinGroupDialog({ open, onOpenChange, onSuccess }: JoinGroupDial
                                 value={code}
                                 onChange={handleInputChange}
                                 placeholder="NP. X7Y2Z9W4"
-                                className="h-14 text-2xl font-mono text-center tracking-[0.5em] rounded-xl uppercase"
+                                className={cn(
+                                    getInputClasses(error),
+                                    "h-14 text-2xl font-mono text-center tracking-[0.5em] uppercase"
+                                )}
                                 maxLength={10}
                                 disabled={isLoading}
                                 autoFocus
