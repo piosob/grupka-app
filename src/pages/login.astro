@@ -3,7 +3,7 @@ export const prerender = false;
 import AuthLayout from '../layouts/AuthLayout.astro';
 import { LoginForm } from '../components/react/LoginForm';
 import Logo from '../components/astro/Logo.astro';
-import { actions } from 'astro:actions';
+import { actions, isInputError } from 'astro:actions';
 import type { ServerActionResult } from '../types';
 
 // If user is already logged in, middleware will redirect to /dashboard
@@ -11,7 +11,9 @@ const actionResult = Astro.getActionResult(actions.auth.login);
 if (actionResult && !actionResult.error) {
     return Astro.redirect(`/dashboard`);
 }
-const loginError = actionResult?.error?.message;
+
+const inputErrors = isInputError(actionResult?.error) ? actionResult.error.fields : undefined;
+const generalError = !isInputError(actionResult?.error) ? actionResult?.error?.message : undefined;
 ---
 
 <AuthLayout title="Logowanie">
@@ -25,5 +27,5 @@ const loginError = actionResult?.error?.message;
         </p>
     </div>
 
-    <LoginForm action={actions.auth.login} error={loginError} />
+    <LoginForm action={actions.auth.login} error={generalError} inputErrors={inputErrors} />
 </AuthLayout>

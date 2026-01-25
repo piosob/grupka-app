@@ -6,11 +6,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 interface ResetPasswordFormProps {
     action: string;
     error?: string;
+    inputErrors?: Record<string, string[] | undefined>;
     success?: boolean;
     message?: string;
 }
 
-export function ResetPasswordForm({ action, error, success, message }: ResetPasswordFormProps) {
+export function ResetPasswordForm({
+    action,
+    error,
+    inputErrors,
+    success,
+    message,
+}: ResetPasswordFormProps) {
     if (success) {
         return (
             <Card className="w-full max-w-md mx-auto">
@@ -36,7 +43,7 @@ export function ResetPasswordForm({ action, error, success, message }: ResetPass
                 <CardDescription>Wprowadź nowe hasło do swojego konta</CardDescription>
             </CardHeader>
             <CardContent>
-                <form method="POST" action={action} className="space-y-4">
+                <form method="POST" action={action} className="space-y-4" noValidate>
                     <div className="space-y-2">
                         <Label htmlFor="password">Nowe hasło</Label>
                         <Input
@@ -48,6 +55,9 @@ export function ResetPasswordForm({ action, error, success, message }: ResetPass
                             required
                             minLength={8}
                         />
+                        {inputErrors?.password && (
+                            <p className="text-sm text-red-600">{inputErrors.password[0]}</p>
+                        )}
                         <p className="text-xs text-gray-500">Minimum 8 znaków</p>
                     </div>
 
@@ -62,6 +72,9 @@ export function ResetPasswordForm({ action, error, success, message }: ResetPass
                             required
                             minLength={8}
                         />
+                        {inputErrors?.confirmPassword && (
+                            <p className="text-sm text-red-600">{inputErrors.confirmPassword[0]}</p>
+                        )}
                     </div>
 
                     {error && (

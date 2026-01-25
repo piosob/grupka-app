@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 interface RegisterFormProps {
     action: string;
     error?: string;
+    inputErrors?: Record<string, string[] | undefined>;
     success?: boolean;
     needsEmailConfirmation?: boolean;
 }
@@ -13,6 +14,7 @@ interface RegisterFormProps {
 export function RegisterForm({
     action,
     error,
+    inputErrors,
     success,
     needsEmailConfirmation,
 }: RegisterFormProps) {
@@ -63,7 +65,7 @@ export function RegisterForm({
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <form method="POST" action={action} className="space-y-4">
+                <form method="POST" action={action} className="space-y-4" noValidate>
                     <div className="space-y-2">
                         <Label htmlFor="firstName">Imię</Label>
                         <Input
@@ -73,6 +75,9 @@ export function RegisterForm({
                             placeholder="np. Kasia"
                             required
                         />
+                        {inputErrors?.firstName && (
+                            <p className="text-sm text-red-600">{inputErrors.firstName[0]}</p>
+                        )}
                         <p className="text-xs text-gray-500">
                             Szanujemy Twoją prywatność. Podaj tylko imię - to wystarczy, by inni
                             rodzice Cię rozpoznali.
@@ -89,6 +94,9 @@ export function RegisterForm({
                             placeholder="twoj@email.pl"
                             required
                         />
+                        {inputErrors?.email && (
+                            <p className="text-sm text-red-600">{inputErrors.email[0]}</p>
+                        )}
                     </div>
 
                     <div className="space-y-2">
@@ -102,6 +110,9 @@ export function RegisterForm({
                             required
                             minLength={8}
                         />
+                        {inputErrors?.password && (
+                            <p className="text-sm text-red-600">{inputErrors.password[0]}</p>
+                        )}
                         <p className="text-xs text-gray-500">Minimum 8 znaków</p>
                     </div>
 
@@ -116,6 +127,9 @@ export function RegisterForm({
                             required
                             minLength={8}
                         />
+                        {inputErrors?.confirmPassword && (
+                            <p className="text-sm text-red-600">{inputErrors.confirmPassword[0]}</p>
+                        )}
                     </div>
 
                     {error && (

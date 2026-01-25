@@ -6,9 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 interface LoginFormProps {
     action: string;
     error?: string;
+    inputErrors?: Record<string, string[] | undefined>;
 }
 
-export function LoginForm({ action, error }: LoginFormProps) {
+export function LoginForm({ action, error, inputErrors }: LoginFormProps) {
     return (
         <Card className="w-full max-w-md mx-auto">
             <CardHeader>
@@ -16,7 +17,7 @@ export function LoginForm({ action, error }: LoginFormProps) {
                 <CardDescription>Wprowadź swoje dane, aby zalogować się do konta</CardDescription>
             </CardHeader>
             <CardContent>
-                <form method="POST" action={action} className="space-y-4">
+                <form method="POST" action={action} className="space-y-4" noValidate>
                     <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
                         <Input
@@ -27,6 +28,9 @@ export function LoginForm({ action, error }: LoginFormProps) {
                             placeholder="twoj@email.pl"
                             required
                         />
+                        {inputErrors?.email && (
+                            <p className="text-sm text-red-600">{inputErrors.email[0]}</p>
+                        )}
                     </div>
 
                     <div className="space-y-2">
@@ -39,6 +43,9 @@ export function LoginForm({ action, error }: LoginFormProps) {
                             placeholder="••••••••"
                             required
                         />
+                        {inputErrors?.password && (
+                            <p className="text-sm text-red-600">{inputErrors.password[0]}</p>
+                        )}
                     </div>
 
                     {error && (

@@ -6,10 +6,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 interface ForgotPasswordFormProps {
     action: string;
     error?: string;
+    inputErrors?: Record<string, string[] | undefined>;
     successMessage?: string;
 }
 
-export function ForgotPasswordForm({ action, error, successMessage }: ForgotPasswordFormProps) {
+export function ForgotPasswordForm({
+    action,
+    error,
+    inputErrors,
+    successMessage,
+}: ForgotPasswordFormProps) {
     if (successMessage) {
         return (
             <Card className="w-full max-w-md mx-auto">
@@ -44,7 +50,7 @@ export function ForgotPasswordForm({ action, error, successMessage }: ForgotPass
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <form method="POST" action={action} className="space-y-4">
+                <form method="POST" action={action} className="space-y-4" noValidate>
                     <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
                         <Input
@@ -55,6 +61,9 @@ export function ForgotPasswordForm({ action, error, successMessage }: ForgotPass
                             placeholder="twoj@email.pl"
                             required
                         />
+                        {inputErrors?.email && (
+                            <p className="text-sm text-red-600">{inputErrors.email[0]}</p>
+                        )}
                     </div>
 
                     {error && (

@@ -560,8 +560,19 @@ export type EventsQueryParams = z.infer<typeof EventsQueryParamsSchema>;
  * Used in: Astro Action login
  */
 export const LoginCommandSchema = z.object({
-    email: z.string().email('Nieprawidłowy format adresu email'),
-    password: z.string().min(1, 'Hasło jest wymagane'),
+    email: z
+        .string({
+            required_error: 'Email jest wymagany',
+            invalid_type_error: 'Email jest wymagany',
+        })
+        .min(1, 'Email jest wymagany')
+        .email('Nieprawidłowy format adresu email'),
+    password: z
+        .string({
+            required_error: 'Hasło jest wymagane',
+            invalid_type_error: 'Hasło jest wymagane',
+        })
+        .min(1, 'Hasło jest wymagane'),
 });
 
 export type LoginCommand = z.infer<typeof LoginCommandSchema>;
@@ -572,10 +583,31 @@ export type LoginCommand = z.infer<typeof LoginCommandSchema>;
  */
 export const RegisterCommandSchema = z
     .object({
-        firstName: z.string().min(1, 'Imię jest wymagane'),
-        email: z.string().email('Nieprawidłowy format adresu email'),
-        password: z.string().min(8, 'Hasło musi mieć co najmniej 8 znaków'),
-        confirmPassword: z.string().min(8, 'Hasło musi mieć co najmniej 8 znaków'),
+        firstName: z
+            .string({
+                required_error: 'Imię jest wymagane',
+                invalid_type_error: 'Imię jest wymagane',
+            })
+            .min(1, 'Imię jest wymagane'),
+        email: z
+            .string({
+                required_error: 'Email jest wymagany',
+                invalid_type_error: 'Email jest wymagany',
+            })
+            .min(1, 'Email jest wymagany')
+            .email('Nieprawidłowy format adresu email'),
+        password: z
+            .string({
+                required_error: 'Hasło jest wymagane',
+                invalid_type_error: 'Hasło jest wymagane',
+            })
+            .min(8, 'Hasło musi mieć co najmniej 8 znaków'),
+        confirmPassword: z
+            .string({
+                required_error: 'Powtórzenie hasła jest wymagane',
+                invalid_type_error: 'Powtórzenie hasła jest wymagane',
+            })
+            .min(1, 'Powtórzenie hasła jest wymagane'),
     })
     .refine((data) => data.password === data.confirmPassword, {
         message: 'Hasła muszą być identyczne',
@@ -589,7 +621,13 @@ export type RegisterCommand = z.infer<typeof RegisterCommandSchema>;
  * Used in: Astro Action requestPasswordReset
  */
 export const RequestPasswordResetCommandSchema = z.object({
-    email: z.string().email('Nieprawidłowy format adresu email'),
+    email: z
+        .string({
+            required_error: 'Email jest wymagany',
+            invalid_type_error: 'Email jest wymagany',
+        })
+        .min(1, 'Email jest wymagany')
+        .email('Nieprawidłowy format adresu email'),
 });
 
 export type RequestPasswordResetCommand = z.infer<typeof RequestPasswordResetCommandSchema>;
@@ -600,8 +638,18 @@ export type RequestPasswordResetCommand = z.infer<typeof RequestPasswordResetCom
  */
 export const UpdatePasswordCommandSchema = z
     .object({
-        password: z.string().min(8, 'Hasło musi mieć co najmniej 8 znaków'),
-        confirmPassword: z.string().min(8, 'Hasło musi mieć co najmniej 8 znaków'),
+        password: z
+            .string({
+                required_error: 'Hasło jest wymagane',
+                invalid_type_error: 'Hasło jest wymagane',
+            })
+            .min(8, 'Hasło musi mieć co najmniej 8 znaków'),
+        confirmPassword: z
+            .string({
+                required_error: 'Powtórzenie hasła jest wymagane',
+                invalid_type_error: 'Powtórzenie hasła jest wymagane',
+            })
+            .min(1, 'Powtórzenie hasła jest wymagane'),
     })
     .refine((data) => data.password === data.confirmPassword, {
         message: 'Hasła muszą być identyczne',
