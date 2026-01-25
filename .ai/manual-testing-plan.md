@@ -5,7 +5,6 @@ Niniejszy dokument zawiera scenariusze testów manualnych do przeprowadzenia w p
 ## Przygotowanie do testów
 - **Środowisko:** Przeglądarka (najlepiej Chrome/Safari z włączonym trybem responsywnym - iPhone 12/13/14).
 - **Użytkownicy:** Będziesz potrzebować dwóch kont (Użytkownik A i Użytkownik B). Najlepiej użyć dwóch różnych przeglądarek lub okna incognito.
-- **AI:** Do testów Magic Wand wymagane jest skonfigurowane połączenie z OpenRouter (klucz API).
 
 ---
 
@@ -72,17 +71,14 @@ Niniejszy dokument zawiera scenariusze testów manualnych do przeprowadzenia w p
 
 ---
 
-## 4. Profile Dzieci i Magic Wand (US-006, US-013, US-014)
+## 4. Profile Dzieci (US-013, US-014)
 
-### 4.1 Dodawanie dziecka z AI
+### 4.1 Dodawanie dziecka
 1. Przejdź do `/groups/:groupId/children/new`.
 2. Wpisz imię (np. "Staś").
-3. W polu "Co lubi Twoje dziecko?" wpisz hasła: `dinozaury, lego, nie lubi puzzli`.
-4. Kliknij przycisk z różdżką 🪄 (Magic Wand).
-   - **Oczekiwany rezultat:** Po chwili pole tekstowe zostaje zastąpione sformatowaną listą wygenerowaną przez AI.
-5. Edytuj ręcznie wygenerowany tekst (np. dopisz coś).
-6. Wybierz datę urodzenia (Dzień, Miesiąc, Rok - opcjonalnie).
-7. Kliknij "Dodaj dziecko".
+3. W polu "Co lubi Twoje dziecko?" wpisz: `dinozaury, lego, nie lubi puzzli`.
+4. Wybierz datę urodzenia (Dzień, Miesiąc, Rok - opcjonalnie).
+5. Kliknij "Dodaj dziecko".
    - **Oczekiwany rezultat:** Powrót do listy dzieci. Staś jest widoczny z badge'em "Twoje dziecko".
 
 ### 4.2 Unikalność imion
