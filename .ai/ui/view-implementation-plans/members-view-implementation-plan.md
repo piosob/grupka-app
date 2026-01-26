@@ -63,14 +63,14 @@ Większość danych pochodzi bezpośrednio z DTO, ale pomocne będą dodatkowe p
 export interface MemberViewModel extends GroupMemberDTO {
     initials: string;       // Inicjały z firstName
     displayName: string;    // firstName
-    childrenLabel: string;  // "Rodzic: [Lista Dzieci]"
+    childrenLabel: string;  // "Rodzic: [Lista Dzieci]" (tylko dzieci z danej grupy)
     isSelf: boolean;        // Czy to aktualnie zalogowany użytkownik
 }
 ```
 
 ### DTO (istniejące w src/types.ts i src/lib/schemas.ts)
-- `GroupMemberDTO`: `userId`, `firstName`, `role`, `joinedAt`, `childrenNames`.
-- `AdminContactDTO`: `userId`, `email`, `childrenNames`.
+- `GroupMemberDTO`: `userId`, `firstName`, `role`, `joinedAt`, `childrenNames` (przefiltrowane po groupId).
+- `AdminContactDTO`: `userId`, `email`, `childrenNames` (przefiltrowane po groupId).
 
 ## 6. Zarządzanie stanem
 - **Dane serwerowe:** Wykorzystanie TanStack Query poprzez istniejący hook `useMembers(groupId)`.

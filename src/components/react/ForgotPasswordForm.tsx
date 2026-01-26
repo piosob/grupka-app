@@ -30,7 +30,7 @@ export function ForgotPasswordForm({
                         <div className="text-center">
                             <a
                                 href="/login"
-                                className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                                className="text-sm text-blue-400 hover:text-blue-600 hover:underline"
                             >
                                 Powrót do logowania
                             </a>
@@ -82,7 +82,7 @@ export function ForgotPasswordForm({
                     <div className="text-center text-sm">
                         <a
                             href="/login"
-                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                            className="text-blue-400 hover:text-blue-600 hover:underline"
                         >
                             Powrót do logowania
                         </a>

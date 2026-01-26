@@ -68,7 +68,7 @@ export function LoginForm({ action, error, inputErrors }: LoginFormProps) {
                     <div className="text-center text-sm">
                         <a
                             href="/forgot-password"
-                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                            className="text-blue-400 hover:text-blue-600 hover:underline"
                         >
                             Zapomniałeś hasła?
                         </a>
@@ -78,7 +78,7 @@ export function LoginForm({ action, error, inputErrors }: LoginFormProps) {
                         Nie masz konta?{' '}
                         <a
                             href="/register"
-                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                            className="text-blue-400 hover:text-blue-600 hover:underline"
                         >
                             Zarejestruj się
                         </a>

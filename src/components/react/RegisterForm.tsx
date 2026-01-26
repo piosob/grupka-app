@@ -45,7 +45,7 @@ export function RegisterForm({
                             Możesz teraz{' '}
                             <a
                                 href="/login"
-                                className="text-blue-600 hover:text-blue-800 hover:underline"
+                                className="text-blue-400 hover:text-blue-600 hover:underline"
                             >
                                 przejść do logowania
                             </a>
@@ -162,7 +162,7 @@ export function RegisterForm({
                         Masz już konto?{' '}
                         <a
                             href="/login"
-                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                            className="text-blue-400 hover:text-blue-600 hover:underline"
                         >
                             Zaloguj się
                         </a>

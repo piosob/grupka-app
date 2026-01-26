@@ -57,6 +57,7 @@ interface GroupMemberQueryResult {
         first_name: string;
         children: {
             display_name: string;
+            group_id: string;
         }[];
     } | null;
 }
@@ -479,7 +480,8 @@ export class GroupsService {
 				profile:profiles (
 					first_name,
 					children:children (
-						display_name
+						display_name,
+						group_id
 					)
 				)
 			`,
@@ -500,7 +502,10 @@ export class GroupsService {
             firstName: item.profile?.first_name || 'Użytkownik',
             role: item.role,
             joinedAt: item.joined_at,
-            childrenNames: item.profile?.children?.map((c) => c.display_name) || [],
+            childrenNames:
+                item.profile?.children
+                    ?.filter((c) => c.group_id === groupId)
+                    .map((c) => c.display_name) || [],
         }));
 
         return {
