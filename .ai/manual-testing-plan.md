@@ -38,7 +38,7 @@ Niniejszy dokument zawiera scenariusze testów manualnych do przeprowadzenia w p
 4. Kliknij "Utwórz grupę".
    - **Oczekiwany rezultat:** Przekierowanie do Hubu Grupy (`/groups/:groupId`). Widoczna rola "Admin 👑".
 
-### [ ] 2.2 Generowanie kodu zaproszenia
+### [X] 2.2 Generowanie kodu zaproszenia
 1. W Hubie Grupy lub w sekcji "Więcej/Zaproszenia" kliknij "Generuj kod".
    - **Oczekiwany rezultat:** Pojawia się 8-znakowy kod (np. ABC-123-XY).
 2. Sprawdź czy widoczny jest licznik czasu (30 min).

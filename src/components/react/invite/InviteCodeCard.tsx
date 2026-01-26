@@ -20,10 +20,22 @@ export const InviteCodeCard: React.FC<InviteCodeCardProps> = ({
 }) => {
     const { countdownText, countdownColor, isExpired } = useCountdown(invite.expiresAt);
 
+    const [isCopied, setIsCopied] = React.useState(false);
+
+    React.useEffect(() => {
+        if (!isCopied) return;
+
+        const timer = setTimeout(() => {
+            setIsCopied(false);
+        }, 2000);
+
+        return () => clearTimeout(timer);
+    }, [isCopied]);
+
     const handleCopy = async () => {
         try {
             await navigator.clipboard.writeText(invite.code);
-            toast.success('Kod został skopiowany do schowka');
+            setIsCopied(true);
 
             // Haptic feedback
             if (window.navigator.vibrate) {
@@ -38,7 +50,7 @@ export const InviteCodeCard: React.FC<InviteCodeCardProps> = ({
         const shareData = {
             title: 'Zaproszenie do grupy Grupka',
             text: `Hej! Dołącz do naszej grupy w aplikacji Grupka, używając kodu: ${invite.code}`,
-            url: window.location.origin + '/invites/join',
+            url: window.location.origin + '/dashboard',
         };
 
         if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
@@ -75,14 +87,21 @@ export const InviteCodeCard: React.FC<InviteCodeCardProps> = ({
                         </span>
                     </div>
                     <div className="flex gap-2">
-                        <Button
-                            variant="outline"
-                            size="icon-sm"
-                            onClick={handleCopy}
-                            title="Kopiuj kod"
-                        >
-                            <Copy className="size-4" />
-                        </Button>
+                        <div className="relative">
+                            <Button
+                                variant="outline"
+                                size="icon-sm"
+                                onClick={handleCopy}
+                                title="Kopiuj kod"
+                            >
+                                <Copy className="size-4" />
+                            </Button>
+                            {isCopied && (
+                                <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[10px] font-medium px-2 py-1 rounded shadow-md animate-in fade-in slide-in-from-bottom-2 whitespace-nowrap z-10">
+                                    Kod skopiowany
+                                </div>
+                            )}
+                        </div>
                         <Button
                             variant="outline"
                             size="icon-sm"
