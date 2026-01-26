@@ -110,7 +110,6 @@ export const requestPasswordReset = defineAction({
  * Updates user password (requires authenticated session)
  */
 export const updatePassword = defineAction({
-    accept: 'form',
     input: UpdatePasswordCommandSchema,
     handler: async (input, context) => {
         const supabase = context.locals.supabase;

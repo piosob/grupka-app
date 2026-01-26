@@ -11,14 +11,15 @@ import { QueryProvider } from '../providers/QueryProvider';
 
 interface ProfileContainerProps {
     userEmail: string | undefined;
+    firstName?: string;
 }
 
-const ProfileContent: React.FC<ProfileContainerProps> = ({ userEmail }) => {
+const ProfileContent: React.FC<ProfileContainerProps> = ({ userEmail, firstName }) => {
     const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
 
     return (
         <div className="space-y-6 pb-20">
-            <ProfileHeader email={userEmail || ''} />
+            <ProfileHeader email={userEmail || ''} firstName={firstName} />
 
             <Card className="overflow-hidden">
                 <CardContent className="p-0">
@@ -47,10 +48,10 @@ const ProfileContent: React.FC<ProfileContainerProps> = ({ userEmail }) => {
     );
 };
 
-export const ProfileContainer: React.FC<ProfileContainerProps> = ({ userEmail }) => {
+export const ProfileContainer: React.FC<ProfileContainerProps> = ({ userEmail, firstName }) => {
     return (
         <QueryProvider>
-            <ProfileContent userEmail={userEmail} />
+            <ProfileContent userEmail={userEmail} firstName={firstName} />
         </QueryProvider>
     );
 };

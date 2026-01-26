@@ -18,7 +18,8 @@ import {
 export const LogoutSection: React.FC = () => {
     const handleLogout = async () => {
         try {
-            const { error } = await actions.auth.logout(new FormData());
+            const formData = new FormData();
+            const { error } = await actions.auth.logout(formData);
             if (error) {
                 toast.error(error.message);
                 return;

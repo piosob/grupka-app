@@ -7,8 +7,10 @@ const user = Astro.locals.user;
 if (!user) {
     return Astro.redirect('/login');
 }
+
+const firstName = user.user_metadata?.first_name || '';
 ---
 
 <MainLayout title="Mój profil">
-    <ProfileContainer userEmail={user.email} client:load />
+    <ProfileContainer userEmail={user.email} firstName={firstName} client:load />
 </MainLayout>
