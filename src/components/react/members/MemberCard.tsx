@@ -86,6 +86,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                     )}
 
                     {canManage && !member.isSelf && (
+
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon" className="h-8 w-8">

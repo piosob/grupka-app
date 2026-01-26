@@ -160,8 +160,12 @@ function DashboardContent({ errorType }: DashboardContentProps) {
 
             {groups.length === 0 ? (
                 <EmptyState
-                    onCreateGroup={() => setIsCreateOpen(true)}
-                    onJoinGroup={() => setIsJoinOpen(true)}
+                    title="Nie należysz do żadnej grupy"
+                    description="Grupka pomaga rodzicom w organizacji prezentów i wydarzeń. Utwórz nową grupę dla swojej klasy lub dołącz do istniejącej."
+                    onAction={() => setIsCreateOpen(true)}
+                    actionLabel="Utwórz grupę"
+                    onSecondaryAction={() => setIsJoinOpen(true)}
+                    secondaryActionLabel="Dołącz do grupy"
                 />
             ) : (
                 <div className="grid gap-4 sm:grid-cols-2">

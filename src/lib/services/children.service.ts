@@ -22,6 +22,34 @@ export class ChildrenService {
     constructor(private supabase: TypedSupabaseClient) {}
 
     /**
+     * Retrieves all children belonging to the authenticated user.
+     *
+     * @param userId - ID of the authenticated user
+     * @returns List of all children owned by the user
+     */
+    async getMyChildren(userId: string): Promise<ChildListItemDTO[]> {
+        const { data, error } = await this.supabase
+            .from('children')
+            .select('*')
+            .eq('parent_id', userId)
+            .order('display_name', { ascending: true });
+
+        if (error) {
+            throw new Error(`Failed to fetch your children: ${error.message}`);
+        }
+
+        return (data || []).map((item) => ({
+            id: item.id,
+            displayName: item.display_name,
+            bio: item.bio,
+            birthDate: item.birth_date,
+            parentId: item.parent_id,
+            isOwner: true,
+            createdAt: item.created_at,
+        }));
+    }
+
+    /**
      * Verifies if a user is a member of a group.
      * @private
      */

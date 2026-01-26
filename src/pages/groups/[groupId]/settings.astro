@@ -1,0 +1,39 @@
+---
+import MainLayout from '../../../layouts/MainLayout.astro';
+import { SettingsContainer } from '../../../components/react/settings/SettingsContainer';
+
+const { groupId } = Astro.params;
+
+if (!groupId) {
+    return Astro.redirect('/dashboard');
+}
+
+const supabase = Astro.locals.supabase;
+const user = Astro.locals.user;
+
+if (!user) {
+    return Astro.redirect('/login');
+}
+
+// Check if user is admin of this group
+try {
+    const { data: membership, error } = await supabase
+        .from('group_members')
+        .select('role')
+        .eq('group_id', groupId)
+        .eq('user_id', user.id)
+        .single();
+
+    if (error || membership?.role !== 'admin') {
+        // If not admin, redirect to group hub
+        return Astro.redirect(`/groups/${groupId}`);
+    }
+} catch (error) {
+    console.error('Error checking admin status:', error);
+    return Astro.redirect('/dashboard');
+}
+---
+
+<MainLayout title="Ustawienia grupy" groupId={groupId}>
+    <SettingsContainer groupId={groupId} client:load />
+</MainLayout>
