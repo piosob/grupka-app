@@ -4,6 +4,7 @@ import { ClientRouter } from 'astro:transitions';
 import { Toaster } from '../components/ui/sonner';
 import Logo from '@/components/astro/Logo.astro';
 import { UserNav } from '../components/react/UserNav';
+import { MobileMoreMenu } from '../components/react/MobileMoreMenu';
 
 interface Props {
     title: string;
@@ -64,10 +65,9 @@ const user = Astro.locals.user;
                             <span class="text-lg">👥</span>
                             <span>Członkowie</span>
                         </a>
-                        <button class="flex flex-col items-center justify-center text-xs">
-                            <span class="text-lg">⋯</span>
-                            <span>Więcej</span>
-                        </button>
+                        <div class="h-full flex items-center justify-center min-w-[64px]">
+                            <MobileMoreMenu groupId={groupId} client:load />
+                        </div>
                     </nav>
                 </footer>
             )}

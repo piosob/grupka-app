@@ -9,7 +9,7 @@ if (!eventId || !groupId) {
 }
 ---
 
-<MainLayout title="Szczegóły wydarzenia | Grupka">
+<MainLayout title="Szczegóły wydarzenia | Grupka" groupId={groupId}>
     <div class="container max-w-4xl mx-auto px-4 py-8">
         <EventDetailContainer eventId={eventId} client:load />
     </div>
