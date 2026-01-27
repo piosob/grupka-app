@@ -7,8 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Wand2, Info, Calendar } from 'lucide-react';
-import { useAi } from '@/lib/hooks/useAi';
+import { Loader2, Info, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
     Select,
@@ -157,7 +156,6 @@ export const ChildForm: React.FC<ChildFormProps> = ({
         },
     });
 
-    const { generateBio, isGeneratingBio } = useAi();
     const bioValue = watch('bio');
     const displayNameValue = watch('displayName');
     const birthMonthValue = watch('birthMonth');
@@ -175,22 +173,6 @@ export const ChildForm: React.FC<ChildFormProps> = ({
             bio: data.bio,
             birthDate,
         });
-    };
-
-    const handleMagicWand = async () => {
-        if (!bioValue || bioValue.trim().length < 3) return;
-
-        try {
-            const result = await generateBio({
-                notes: bioValue,
-                childDisplayName: displayNameValue,
-            });
-            if (result.generatedBio) {
-                setValue('bio', result.generatedBio, { shouldDirty: true });
-            }
-        } catch (error) {
-            // Error is handled by the hook (toast)
-        }
     };
 
     return (
@@ -299,26 +281,10 @@ export const ChildForm: React.FC<ChildFormProps> = ({
                             <Label htmlFor="bio" className="truncate">
                                 O dziecku (zainteresowania, prezenty)
                             </Label>
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={handleMagicWand}
-                                disabled={isGeneratingBio || !bioValue || bioValue.length < 3}
-                                className="h-8 gap-1.5 text-[11px] sm:text-xs font-medium border-primary/20 hover:bg-primary/5 shrink-0"
-                            >
-                                {isGeneratingBio ? (
-                                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                ) : (
-                                    <Wand2 className="h-3.5 w-3.5" />
-                                )}
-                                <span className="hidden sm:inline">Magic Wand</span>
-                                <span className="sm:hidden">AI 🪄</span>
-                            </Button>
                         </div>
                         <Textarea
                             id="bio"
-                            placeholder="Wpisz kilka słów o dziecku (np. co lubi, czym się interesuje) i użyj Magic Wand!"
+                            placeholder="Wpisz kilka słów o dziecku (np. co lubi, czym się interesuje)"
                             rows={6}
                             {...register('bio')}
                             className={cn(
