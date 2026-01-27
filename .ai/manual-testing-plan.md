@@ -50,7 +50,7 @@ Niniejszy dokument zawiera scenariusze testów manualnych do przeprowadzenia w p
 3. Skopiuj kod do schowka przyciskiem "Kopiuj".
     - **Oczekiwany rezultat:** Toast "Kod skopiowany".
 
-### [ ] 2.3 Ustawienia i Usuwanie grupy
+### [X] 2.3 Ustawienia i Usuwanie grupy
 
 1. Przejdź do `/groups/:groupId/settings`.
 2. Zmień nazwę grupy i zapisz.
@@ -62,7 +62,7 @@ Niniejszy dokument zawiera scenariusze testów manualnych do przeprowadzenia w p
 
 ## 3. Zarządzanie Grupami (Członek - Użytkownik B) (US-005, US-018)
 
-### [ ] 3.1 Dołączenie do grupy
+### [X] 3.1 Dołączenie do grupy
 
 1. Zaloguj się jako Użytkownik B (inne okno/przeglądarka).
 2. Przejdź do `/join`.
@@ -70,7 +70,7 @@ Niniejszy dokument zawiera scenariusze testów manualnych do przeprowadzenia w p
 4. Kliknij "Dołącz".
     - **Oczekiwany rezultat:** Przekierowanie do Hubu Grupy. Widoczna rola "Członek".
 
-### [ ] 3.2 Kontakt z administratorem
+### [X] 3.2 Kontakt z administratorem
 
 1. Przejdź do `/groups/:groupId/members`.
 2. Znajdź Użytkownika A na liście. Email powinien być ukryty (gwiazdki lub puste).
@@ -81,7 +81,7 @@ Niniejszy dokument zawiera scenariusze testów manualnych do przeprowadzenia w p
 
 ## 4. Profile Dzieci (US-013, US-014)
 
-### [ ] 4.1 Dodawanie dziecka
+### [X] 4.1 Dodawanie dziecka
 
 1. Przejdź do `/groups/:groupId/children/new`.
 2. Wpisz imię (np. "Staś").
@@ -90,7 +90,7 @@ Niniejszy dokument zawiera scenariusze testów manualnych do przeprowadzenia w p
 5. Kliknij "Dodaj dziecko".
     - **Oczekiwany rezultat:** Powrót do listy dzieci. Staś jest widoczny z badge'em "Twoje dziecko".
 
-### [ ] 4.2 Unikalność imion
+### [X] 4.2 Unikalność imion
 
 1. Spróbuj dodać drugie dziecko o tym samym imieniu "Staś" w tej samej grupie.
     - **Oczekiwany rezultat:** Błąd walidacji informujący, że imię musi być unikalne w grupie.
@@ -99,7 +99,7 @@ Niniejszy dokument zawiera scenariusze testów manualnych do przeprowadzenia w p
 
 ## 5. Wydarzenia i Ukryty Wątek (US-007, US-008, US-009)
 
-### [ ] 5.1 Tworzenie wydarzenia (Użytkownik A - Organizator)
+### [X] 5.1 Tworzenie wydarzenia (Użytkownik A - Organizator)
 
 1. Przejdź do `/groups/:groupId/events/new`.
 2. Wypełnij: Tytuł ("Urodziny Stasia"), Data (przyszła), Opis.
@@ -111,7 +111,7 @@ Niniejszy dokument zawiera scenariusze testów manualnych do przeprowadzenia w p
 6. **Kluczowy test prywatności:** Sprawdź czy widzisz sekcję komentarzy.
     - **Oczekiwany rezultat:** Jako organizator **NIE powinieneś** widzieć sekcji komentarzy. Widzisz informację "Komentarze gości są ukryte".
 
-### [ ] 5.2 Komentowanie (Użytkownik B - Gość)
+### [X] 5.2 Komentowanie (Użytkownik B - Gość)
 
 1. Jako Użytkownik B przejdź do `/groups/:groupId/events`.
 2. Otwórz "Urodziny Stasia".
@@ -139,7 +139,7 @@ Niniejszy dokument zawiera scenariusze testów manualnych do przeprowadzenia w p
 
 ## 6. Moderacja (Administrator) (US-004)
 
-### [ ] 6.1 Usuwanie członka
+### [X] 6.1 Usuwanie członka
 
 1. Użytkownik A przechodzi do `/groups/:groupId/members`.
 2. Przy Użytkowniku B klika ikonę menu (trzy kropki) i wybiera "Usuń z grupy".

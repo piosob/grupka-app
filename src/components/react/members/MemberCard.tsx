@@ -76,33 +76,27 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                     {isOwner && !member.isSelf && (
                         <Button
                             variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-muted-foreground hover:text-primary"
+                            size="sm"
+                            className="h-8 px-3 flex items-center gap-2 text-muted-foreground hover:text-primary cursor-pointer"
                             onClick={() => onShowContact(member)}
                             title="Pokaż kontakt"
                         >
                             <Mail className="h-4 w-4" />
+                            <span className="text-xs font-medium">Pokaż kontakt</span>
                         </Button>
                     )}
 
                     {canManage && !member.isSelf && (
-
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
-                                    <MoreVertical className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem
-                                    className="text-destructive focus:text-destructive"
-                                    onClick={() => onDelete(member)}
-                                >
-                                    <UserMinus className="mr-2 h-4 w-4" />
-                                    <span>Usuń z grupy</span>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 px-3 flex items-center gap-2 text-destructive hover:text-destructive cursor-pointer"
+                            title="Usuń z grupy"
+                            onClick={() => onDelete(member)}
+                        >
+                            <UserMinus className="h-4 w-4 mr-2" />
+                            <span className="text-xs font-medium">Usuń</span>
+                        </Button>
                     )}
                 </div>
             </CardContent>
