@@ -1,6 +1,3 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { RegisterCommandSchema, type RegisterCommand } from '../../lib/schemas';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -22,20 +19,6 @@ export function RegisterForm({
     success,
     needsEmailConfirmation,
 }: RegisterFormProps) {
-    const {
-        register,
-        formState: { isValid },
-    } = useForm<RegisterCommand>({
-        resolver: zodResolver(RegisterCommandSchema),
-        mode: 'onChange',
-        defaultValues: {
-            firstName: '',
-            email: '',
-            password: '',
-            confirmPassword: '',
-        },
-    });
-
     if (success) {
         return (
             <Card className="w-full max-w-md mx-auto">
@@ -88,11 +71,11 @@ export function RegisterForm({
                         <Label htmlFor="firstName">Imię</Label>
                         <Input
                             id="firstName"
+                            name="firstName"
                             type="text"
                             placeholder="np. Kasia"
                             className={cn(getInputClasses(inputErrors?.firstName))}
                             required
-                            {...register('firstName')}
                         />
                         {inputErrors?.firstName && (
                             <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
@@ -109,12 +92,12 @@ export function RegisterForm({
                         <Label htmlFor="email">Email</Label>
                         <Input
                             id="email"
+                            name="email"
                             type="email"
                             autoComplete="email"
                             placeholder="twoj@email.pl"
                             className={cn(getInputClasses(inputErrors?.email))}
                             required
-                            {...register('email')}
                         />
                         {inputErrors?.email && (
                             <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
@@ -127,12 +110,12 @@ export function RegisterForm({
                         <Label htmlFor="password">Hasło</Label>
                         <Input
                             id="password"
+                            name="password"
                             type="password"
                             autoComplete="new-password"
                             placeholder="••••••••"
                             className={cn(getInputClasses(inputErrors?.password))}
                             required
-                            {...register('password')}
                         />
                         {inputErrors?.password && (
                             <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
@@ -146,12 +129,12 @@ export function RegisterForm({
                         <Label htmlFor="confirmPassword">Powtórz hasło</Label>
                         <Input
                             id="confirmPassword"
+                            name="confirmPassword"
                             type="password"
                             autoComplete="new-password"
                             placeholder="••••••••"
                             className={cn(getInputClasses(inputErrors?.confirmPassword))}
                             required
-                            {...register('confirmPassword')}
                         />
                         {inputErrors?.confirmPassword && (
                             <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
@@ -172,7 +155,6 @@ export function RegisterForm({
                     <Button
                         type="submit"
                         className="w-full h-12 rounded-full text-base font-semibold"
-                        disabled={!isValid}
                     >
                         Utwórz konto
                     </Button>

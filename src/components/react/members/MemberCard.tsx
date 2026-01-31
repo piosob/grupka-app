@@ -3,13 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { MoreVertical, Mail, UserMinus } from 'lucide-react';
+import { Mail, UserMinus } from 'lucide-react';
 import type { GroupMemberDTO } from '@/types';
 
 export interface MemberViewModel extends GroupMemberDTO {

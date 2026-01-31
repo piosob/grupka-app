@@ -1,6 +1,3 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { LoginCommandSchema, type LoginCommand } from '../../lib/schemas';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -14,18 +11,6 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ action, error, inputErrors }: LoginFormProps) {
-    const {
-        register,
-        formState: { isValid },
-    } = useForm<LoginCommand>({
-        resolver: zodResolver(LoginCommandSchema),
-        mode: 'onChange',
-        defaultValues: {
-            email: '',
-            password: '',
-        },
-    });
-
     return (
         <Card className="w-full max-w-md mx-auto">
             <CardHeader>
@@ -38,12 +23,12 @@ export function LoginForm({ action, error, inputErrors }: LoginFormProps) {
                         <Label htmlFor="email">Email</Label>
                         <Input
                             id="email"
+                            name="email"
                             type="email"
                             autoComplete="email"
                             placeholder="twoj@email.pl"
                             className={cn(getInputClasses(inputErrors?.email))}
                             required
-                            {...register('email')}
                         />
                         {inputErrors?.email && (
                             <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
@@ -56,12 +41,12 @@ export function LoginForm({ action, error, inputErrors }: LoginFormProps) {
                         <Label htmlFor="password">Hasło</Label>
                         <Input
                             id="password"
+                            name="password"
                             type="password"
                             autoComplete="current-password"
                             placeholder="••••••••"
                             className={cn(getInputClasses(inputErrors?.password))}
                             required
-                            {...register('password')}
                         />
                         {inputErrors?.password && (
                             <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
@@ -79,7 +64,6 @@ export function LoginForm({ action, error, inputErrors }: LoginFormProps) {
                     <Button
                         type="submit"
                         className="w-full h-12 rounded-full text-base font-semibold"
-                        disabled={!isValid}
                     >
                         Zaloguj się
                     </Button>
