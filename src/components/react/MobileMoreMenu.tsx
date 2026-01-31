@@ -9,12 +9,11 @@ import {
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { useGroupDetail } from '@/lib/hooks/useGroupDetail';
-import { 
-    UserPlus, 
-    Settings, 
-    User, 
+import {
+    UserPlus,
+    Settings,
+    User,
     LogOut,
-    MoreHorizontal
 } from 'lucide-react';
 
 import { QueryProvider } from './providers/QueryProvider';
@@ -70,16 +69,16 @@ function MobileMoreMenuContent({ groupId }: MobileMoreMenuProps) {
                 <div className="grid gap-3">
                     {isAdmin && (
                         <>
-                            <Button 
-                                variant="outline" 
+                            <Button
+                                variant="outline"
                                 className="w-full justify-start h-14 text-lg rounded-2xl border-primary/20 hover:bg-primary/5 hover:border-primary/40 transition-all"
                                 onClick={() => window.location.href = `/groups/${groupId}/invite`}
                             >
                                 <UserPlus className="mr-3 h-5 w-5 text-primary" />
                                 Generuj kod zaproszenia
                             </Button>
-                            <Button 
-                                variant="outline" 
+                            <Button
+                                variant="outline"
                                 className="w-full justify-start h-14 text-lg rounded-2xl border-primary/20 hover:bg-primary/5 hover:border-primary/40 transition-all"
                                 onClick={() => window.location.href = `/groups/${groupId}/settings`}
                             >
@@ -88,16 +87,16 @@ function MobileMoreMenuContent({ groupId }: MobileMoreMenuProps) {
                             </Button>
                         </>
                     )}
-                    <Button 
-                        variant="ghost" 
+                    <Button
+                        variant="ghost"
                         className="w-full justify-start h-14 text-lg rounded-2xl hover:bg-muted"
                         onClick={() => window.location.href = "/profile"}
                     >
                         <User className="mr-3 h-5 w-5" />
                         Twój profil
                     </Button>
-                    <Button 
-                        variant="ghost" 
+                    <Button
+                        variant="ghost"
                         className="w-full justify-start h-14 text-lg rounded-2xl text-destructive hover:text-destructive hover:bg-destructive/10"
                         onClick={handleLogout}
                         disabled={isLoggingOut}

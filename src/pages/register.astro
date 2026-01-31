@@ -3,13 +3,14 @@ export const prerender = false;
 import AuthLayout from '../layouts/AuthLayout.astro';
 import { RegisterForm } from '../components/react/RegisterForm';
 import Logo from '../components/astro/Logo.astro';
-import { actions, isInputError } from 'astro:actions';
+import { actions } from 'astro:actions';
 
 // If user is already logged in, middleware will redirect to /dashboard
 const actionResult = Astro.getActionResult(actions.auth.register);
 
-const inputErrors = isInputError(actionResult?.error) ? actionResult.error.fields : undefined;
-const generalError = !isInputError(actionResult?.error) ? actionResult?.error?.message : undefined;
+const actionError = actionResult?.error;
+const inputErrors = actionError && 'fields' in actionError ? (actionError as any).fields : undefined;
+const generalError = actionError && !('fields' in actionError) ? actionError.message : undefined;
 
 const successData = actionResult?.data;
 const registerSuccess = Boolean(successData?.success);
