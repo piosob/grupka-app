@@ -1,7 +1,6 @@
 # Supabase
 .branches
 .temp
-migrations/
 config.toml
 
 # dotenvx
