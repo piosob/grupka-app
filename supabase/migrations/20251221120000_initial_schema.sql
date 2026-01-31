@@ -16,7 +16,8 @@
 -- ----------------------------------------------------------------------------
 
 -- enable uuid generation functions
-create extension if not exists "uuid-ossp";
+-- uuid extension no longer needed as we use gen_random_uuid() from pg 13+
+-- create extension if not exists "uuid-ossp";
 
 -- ----------------------------------------------------------------------------
 -- CUSTOM TYPES
@@ -44,7 +45,7 @@ comment on column profiles.email is 'Cached email for quick reads (optional)';
 -- groups: organizational units (tenants)
 -- each group represents a preschool/school class
 create table groups (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     name varchar(100) not null constraint groups_name_min_length check (char_length(name) >= 3),
     created_by uuid references profiles(id) on delete set null,
     created_at timestamptz not null default now()
@@ -84,7 +85,7 @@ comment on column group_invites.expires_at is 'Invitation expiry timestamp';
 -- children: child profiles assigned to specific groups
 -- isolated per group for privacy
 create table children (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     group_id uuid not null references groups(id) on delete cascade,
     parent_id uuid not null references profiles(id) on delete cascade,
     display_name varchar(50) not null,
@@ -100,7 +101,7 @@ comment on column children.birth_date is 'Optional birth date for birthday track
 
 -- events: birthdays or fundraisers organized within groups
 create table events (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     group_id uuid not null references groups(id) on delete cascade,
     organizer_id uuid not null references profiles(id),
     child_id uuid references children(id) on delete cascade,
@@ -128,7 +129,7 @@ comment on table event_guests is 'List of children invited to an event';
 -- event_comments: discussion thread with surprise protection
 -- organizer cannot see comments to preserve gift surprises
 create table event_comments (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     event_id uuid not null references events(id) on delete cascade,
     author_id uuid not null references profiles(id),
     content varchar(2000) not null constraint event_comments_content_not_empty check (char_length(content) >= 1),
@@ -141,7 +142,7 @@ comment on column event_comments.content is 'Comment text, minimum 1 character';
 -- ai_usage_logs: technical logging for AI token consumption
 -- read-only for system admins, insert-only for application
 create table ai_usage_logs (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     user_id uuid references profiles(id) on delete set null,
     operation varchar(50) not null,
     model_used varchar(50) not null,
