@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
-import { z } from 'astro/zod';
 import { UpdateGroupCommandSchema } from '../../../lib/schemas';
 import { createGroupsService } from '../../../lib/services/groups.service';
+import { handleApiError } from '../../../lib/api-utils';
 
 /**
  * GET /api/groups/:groupId
@@ -69,8 +69,6 @@ export const GET: APIRoute = async ({ params, locals }) => {
             headers: { 'Content-Type': 'application/json' },
         });
     } catch (error: any) {
-        // === Error Handling ===
-
         if (error.message === 'Group not found or access denied') {
             return new Response(
                 JSON.stringify({
@@ -85,21 +83,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
                 }
             );
         }
-
-        // Unexpected errors
-        console.error(`[GET /api/groups/${groupId}] Unexpected error:`, error);
-        return new Response(
-            JSON.stringify({
-                error: {
-                    code: 'SERVICE_UNAVAILABLE',
-                    message: 'An unexpected error occurred',
-                },
-            }),
-            {
-                status: 500,
-                headers: { 'Content-Type': 'application/json' },
-            }
-        );
+        return handleApiError(error, `[GET /api/groups/${groupId}]`);
     }
 };
 
@@ -191,27 +175,6 @@ export const PATCH: APIRoute = async ({ request, params, locals }) => {
             headers: { 'Content-Type': 'application/json' },
         });
     } catch (error: any) {
-        // === Error Handling ===
-
-        if (error instanceof z.ZodError) {
-            return new Response(
-                JSON.stringify({
-                    error: {
-                        code: 'VALIDATION_ERROR',
-                        message: 'Validation failed',
-                        details: error.errors.map((e) => ({
-                            field: e.path.join('.'),
-                            message: e.message,
-                        })),
-                    },
-                }),
-                {
-                    status: 400,
-                    headers: { 'Content-Type': 'application/json' },
-                }
-            );
-        }
-
         if (error.message.includes('Forbidden')) {
             return new Response(
                 JSON.stringify({
@@ -226,21 +189,7 @@ export const PATCH: APIRoute = async ({ request, params, locals }) => {
                 }
             );
         }
-
-        // Unexpected errors
-        console.error(`[PATCH /api/groups/${groupId}] Unexpected error:`, error);
-        return new Response(
-            JSON.stringify({
-                error: {
-                    code: 'SERVICE_UNAVAILABLE',
-                    message: 'An unexpected error occurred',
-                },
-            }),
-            {
-                status: 500,
-                headers: { 'Content-Type': 'application/json' },
-            }
-        );
+        return handleApiError(error, `[PATCH /api/groups/${groupId}]`);
     }
 };
 
@@ -303,8 +252,6 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
         // === Happy Path: Success ===
         return new Response(null, { status: 204 });
     } catch (error: any) {
-        // === Error Handling ===
-
         if (error.message.includes('Forbidden')) {
             return new Response(
                 JSON.stringify({
@@ -319,20 +266,6 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
                 }
             );
         }
-
-        // Unexpected errors
-        console.error(`[DELETE /api/groups/${groupId}] Unexpected error:`, error);
-        return new Response(
-            JSON.stringify({
-                error: {
-                    code: 'SERVICE_UNAVAILABLE',
-                    message: 'An unexpected error occurred',
-                },
-            }),
-            {
-                status: 500,
-                headers: { 'Content-Type': 'application/json' },
-            }
-        );
+        return handleApiError(error, `[DELETE /api/groups/${groupId}]`);
     }
 };

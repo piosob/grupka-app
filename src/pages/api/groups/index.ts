@@ -1,8 +1,7 @@
 import type { APIRoute } from 'astro';
-import { z } from 'astro/zod';
 import { CreateGroupCommandSchema, PaginationParamsSchema } from '../../../lib/schemas';
 import { createGroupsService } from '../../../lib/services/groups.service';
-import { ConflictError } from '../../../lib/errors';
+import { handleApiError } from '../../../lib/api-utils';
 
 /**
  * GET /api/groups
@@ -62,42 +61,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
             headers: { 'Content-Type': 'application/json' },
         });
     } catch (error) {
-        // === Error Handling ===
-
-        // Zod validation errors
-        if (error instanceof z.ZodError) {
-            return new Response(
-                JSON.stringify({
-                    error: {
-                        code: 'VALIDATION_ERROR',
-                        message: 'Validation failed',
-                        details: error.errors.map((e) => ({
-                            field: e.path.join('.'),
-                            message: e.message,
-                        })),
-                    },
-                }),
-                {
-                    status: 400,
-                    headers: { 'Content-Type': 'application/json' },
-                }
-            );
-        }
-
-        // Unexpected errors
-        console.error('[GET /api/groups] Unexpected error:', error);
-        return new Response(
-            JSON.stringify({
-                error: {
-                    code: 'SERVICE_UNAVAILABLE',
-                    message: 'An unexpected error occurred',
-                },
-            }),
-            {
-                status: 500,
-                headers: { 'Content-Type': 'application/json' },
-            }
-        );
+        return handleApiError(error, '[GET /api/groups]');
     }
 };
 
@@ -173,57 +137,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
             },
         });
     } catch (error) {
-        // === Error Handling ===
-
-        // Handle business logic errors
-        if (error instanceof ConflictError) {
-            return new Response(
-                JSON.stringify({
-                    error: {
-                        code: 'CONFLICT',
-                        message: error.message,
-                    },
-                }),
-                {
-                    status: 409,
-                    headers: { 'Content-Type': 'application/json' },
-                }
-            );
-        }
-
-        // Zod validation errors
-        if (error instanceof z.ZodError) {
-            return new Response(
-                JSON.stringify({
-                    error: {
-                        code: 'VALIDATION_ERROR',
-                        message: 'Validation failed',
-                        details: error.errors.map((e) => ({
-                            field: e.path.join('.'),
-                            message: e.message,
-                        })),
-                    },
-                }),
-                {
-                    status: 400,
-                    headers: { 'Content-Type': 'application/json' },
-                }
-            );
-        }
-
-        // Unexpected errors
-        console.error('[POST /api/groups] Unexpected error:', error);
-        return new Response(
-            JSON.stringify({
-                error: {
-                    code: 'SERVICE_UNAVAILABLE',
-                    message: 'An unexpected error occurred',
-                },
-            }),
-            {
-                status: 500,
-                headers: { 'Content-Type': 'application/json' },
-            }
-        );
+        return handleApiError(error, '[POST /api/groups]');
     }
 };

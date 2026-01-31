@@ -6,13 +6,14 @@ import { NotFoundError, ForbiddenError, ValidationError, ConflictError } from '.
  * Maps business errors and validation errors to appropriate HTTP responses.
  */
 export function handleApiError(error: unknown, context: string): Response {
-    if (error instanceof z.ZodError) {
+    if (error && typeof error === 'object' && ((z?.ZodError && error instanceof z.ZodError) || (error as any).name === 'ZodError')) {
+        const zodError = error as z.ZodError;
         return new Response(
             JSON.stringify({
                 error: {
                     code: 'VALIDATION_ERROR',
                     message: 'Validation failed',
-                    details: error.errors.map((e) => ({
+                    details: zodError.errors.map((e) => ({
                         field: e.path.join('.'),
                         message: e.message,
                     })),
@@ -71,7 +72,10 @@ export function handleApiError(error: unknown, context: string): Response {
     }
 
     // Unexpected errors
-    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+    const errorMessage =
+        error instanceof Error || (error && typeof error === 'object' && 'message' in error)
+            ? (error as any).message
+            : 'An unexpected error occurred';
     console.error(`${context} Unexpected error:`, error);
 
     return new Response(

@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
-import { z } from 'astro/zod';
 import { PaginationParamsSchema } from '../../../../lib/schemas';
 import { createGroupsService } from '../../../../lib/services/groups.service';
+import { handleApiError } from '../../../../lib/api-utils';
 
 /**
  * GET /api/groups/:groupId/members
@@ -82,27 +82,6 @@ export const GET: APIRoute = async ({ request, params, locals }) => {
             headers: { 'Content-Type': 'application/json' },
         });
     } catch (error: any) {
-        // === Error Handling ===
-
-        if (error instanceof z.ZodError) {
-            return new Response(
-                JSON.stringify({
-                    error: {
-                        code: 'VALIDATION_ERROR',
-                        message: 'Validation failed',
-                        details: error.errors.map((e) => ({
-                            field: e.path.join('.'),
-                            message: e.message,
-                        })),
-                    },
-                }),
-                {
-                    status: 400,
-                    headers: { 'Content-Type': 'application/json' },
-                }
-            );
-        }
-
         if (error.message === 'Access denied or group not found') {
             return new Response(
                 JSON.stringify({
@@ -117,20 +96,6 @@ export const GET: APIRoute = async ({ request, params, locals }) => {
                 }
             );
         }
-
-        // Unexpected errors
-        console.error(`[GET /api/groups/${groupId}/members] Unexpected error:`, error);
-        return new Response(
-            JSON.stringify({
-                error: {
-                    code: 'SERVICE_UNAVAILABLE',
-                    message: 'An unexpected error occurred',
-                },
-            }),
-            {
-                status: 500,
-                headers: { 'Content-Type': 'application/json' },
-            }
-        );
+        return handleApiError(error, `[GET /api/groups/${groupId}/members]`);
     }
 };

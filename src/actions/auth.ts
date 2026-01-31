@@ -1,4 +1,4 @@
-import { defineAction } from 'astro:actions';
+import { defineAction, ActionError } from 'astro:actions';
 import { z } from 'astro/zod';
 import {
     LoginCommandSchema,
@@ -24,7 +24,10 @@ export const login = defineAction({
         const result = await authService.login(input.email, input.password);
 
         if (!result.success) {
-            throw new Error(result.error || 'Nie udało się zalogować');
+            throw new ActionError({
+                code: 'UNAUTHORIZED',
+                message: result.error || 'Nie udało się zalogować',
+            });
         }
 
         return {
@@ -48,7 +51,10 @@ export const register = defineAction({
         const result = await authService.register(input.email, input.password, input.firstName);
 
         if (!result.success) {
-            throw new Error(result.error || 'Nie udało się utworzyć konta');
+            throw new ActionError({
+                code: 'BAD_REQUEST',
+                message: result.error || 'Nie udało się utworzyć konta',
+            });
         }
 
         return {
@@ -71,7 +77,10 @@ export const logout = defineAction({
 
         const result = await authService.logout();
         if (!result.success) {
-            throw new Error(result.error || 'Nie udało się wylogować');
+            throw new ActionError({
+                code: 'INTERNAL_SERVER_ERROR',
+                message: result.error || 'Nie udało się wylogować',
+            });
         }
 
         return {
@@ -94,7 +103,10 @@ export const requestPasswordReset = defineAction({
         const result = await authService.requestPasswordReset(input.email);
 
         if (!result.success) {
-            throw new Error(result.error || 'Nie udało się wysłać linku resetującego');
+            throw new ActionError({
+                code: 'BAD_REQUEST',
+                message: result.error || 'Nie udało się wysłać linku resetującego',
+            });
         }
 
         return {
@@ -118,13 +130,19 @@ export const updatePassword = defineAction({
         // Verify user is authenticated
         const user = await authService.getCurrentUser();
         if (!user) {
-            throw new Error('Musisz być zalogowany, aby zmienić hasło');
+            throw new ActionError({
+                code: 'UNAUTHORIZED',
+                message: 'Musisz być zalogowany, aby zmienić hasło',
+            });
         }
 
         const result = await authService.updatePassword(input.password);
 
         if (!result.success) {
-            throw new Error(result.error || 'Nie udało się zmienić hasła');
+            throw new ActionError({
+                code: 'BAD_REQUEST',
+                message: result.error || 'Nie udało się zmienić hasła',
+            });
         }
 
         return {

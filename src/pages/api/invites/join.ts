@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
-import { z } from 'astro/zod';
 import { JoinGroupCommandSchema } from '../../../lib/schemas';
 import { createGroupsService } from '../../../lib/services/groups.service';
+import { handleApiError } from '../../../lib/api-utils';
 
 /**
  * POST /api/invites/join
@@ -52,28 +52,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
             headers: { 'Content-Type': 'application/json' },
         });
     } catch (error: any) {
-        if (error instanceof z.ZodError) {
-            return new Response(
-                JSON.stringify({
-                    error: {
-                        code: 'VALIDATION_ERROR',
-                        message: 'Nieprawidłowy format kodu',
-                        details: error.errors.map((e) => ({
-                            field: e.path.join('.'),
-                            message: e.message,
-                        })),
-                    },
-                }),
-                { status: 400, headers: { 'Content-Type': 'application/json' } }
-            );
-        }
-
         if (
             error.message === 'Invalid or expired invite code' ||
             error.message === 'Invite code has expired'
         ) {
             return new Response(
-                JSON.stringify({ error: { code: 'NOT_FOUND', message: 'Nieprawidłowy lub wygasły kod zaproszenia' } }),
+                JSON.stringify({
+                    error: {
+                        code: 'NOT_FOUND',
+                        message: 'Nieprawidłowy lub wygasły kod zaproszenia',
+                    },
+                }),
                 { status: 404, headers: { 'Content-Type': 'application/json' } }
             );
         }
@@ -85,10 +74,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
             );
         }
 
-        console.error('[POST /api/invites/join] Unexpected error:', error);
-        return new Response(
-            JSON.stringify({ error: { code: 'SERVICE_UNAVAILABLE', message: error.message } }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
-        );
+        return handleApiError(error, '[POST /api/invites/join]');
     }
 };
