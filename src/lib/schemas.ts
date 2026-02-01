@@ -557,77 +557,57 @@ export type EventsQueryParams = z.infer<typeof EventsQueryParamsSchema>;
 
 /**
  * Login command schema
- * Used in: Astro Action login
- * Note: Astro Actions transforms empty form inputs into null, so we preprocess to convert null to empty string
+ * Used in: /api/auth/login
  */
 export const LoginCommandSchema = z.object({
-    email: z.preprocess(
-        (val) => (val === null ? '' : val),
-        z
-            .string({
-                required_error: 'Email jest wymagany',
-                invalid_type_error: 'Email jest wymagany',
-            })
-            .min(1, 'Email jest wymagany')
-            .email('Nieprawidłowy format adresu email')
-    ),
-    password: z.preprocess(
-        (val) => (val === null ? '' : val),
-        z
-            .string({
-                required_error: 'Hasło jest wymagane',
-                invalid_type_error: 'Hasło jest wymagane',
-            })
-            .min(1, 'Hasło jest wymagane')
-    ),
+    email: z
+        .string({
+            required_error: 'Email jest wymagany',
+            invalid_type_error: 'Email jest wymagany',
+        })
+        .min(1, 'Email jest wymagany')
+        .email('Nieprawidłowy format adresu email'),
+    password: z
+        .string({
+            required_error: 'Hasło jest wymagane',
+            invalid_type_error: 'Hasło jest wymagane',
+        })
+        .min(1, 'Hasło jest wymagane'),
 });
 
 export type LoginCommand = z.infer<typeof LoginCommandSchema>;
 
 /**
  * Register command schema
- * Used in: Astro Action register
- * Note: Astro Actions transforms empty form inputs into null, so we preprocess to convert null to empty string
+ * Used in: /api/auth/register
  */
 export const RegisterCommandSchema = z
     .object({
-        firstName: z.preprocess(
-            (val) => (val === null ? '' : val),
-            z
-                .string({
-                    required_error: 'Imię jest wymagane',
-                    invalid_type_error: 'Imię jest wymagane',
-                })
-                .min(1, 'Imię jest wymagane')
-        ),
-        email: z.preprocess(
-            (val) => (val === null ? '' : val),
-            z
-                .string({
-                    required_error: 'Email jest wymagany',
-                    invalid_type_error: 'Email jest wymagany',
-                })
-                .min(1, 'Email jest wymagany')
-                .email('Nieprawidłowy format adresu email')
-        ),
-        password: z.preprocess(
-            (val) => (val === null ? '' : val),
-            z
-                .string({
-                    required_error: 'Hasło jest wymagane',
-                    invalid_type_error: 'Hasło jest wymagane',
-                })
-                .min(8, 'Hasło musi mieć co najmniej 8 znaków')
-        ),
-        confirmPassword: z.preprocess(
-            (val) => (val === null ? '' : val),
-            z
-                .string({
-                    required_error: 'Powtórzenie hasła jest wymagane',
-                    invalid_type_error: 'Powtórzenie hasła jest wymagane',
-                })
-                .min(1, 'Powtórzenie hasła jest wymagane')
-        ),
+        firstName: z
+            .string({
+                required_error: 'Imię jest wymagane',
+                invalid_type_error: 'Imię jest wymagane',
+            })
+            .min(1, 'Imię jest wymagane'),
+        email: z
+            .string({
+                required_error: 'Email jest wymagany',
+                invalid_type_error: 'Email jest wymagany',
+            })
+            .min(1, 'Email jest wymagany')
+            .email('Nieprawidłowy format adresu email'),
+        password: z
+            .string({
+                required_error: 'Hasło jest wymagane',
+                invalid_type_error: 'Hasło jest wymagane',
+            })
+            .min(8, 'Hasło musi mieć co najmniej 8 znaków'),
+        confirmPassword: z
+            .string({
+                required_error: 'Powtórzenie hasła jest wymagane',
+                invalid_type_error: 'Powtórzenie hasła jest wymagane',
+            })
+            .min(1, 'Powtórzenie hasła jest wymagane'),
     })
     .refine((data) => data.password === data.confirmPassword, {
         message: 'Hasła muszą być identyczne',
@@ -638,49 +618,38 @@ export type RegisterCommand = z.infer<typeof RegisterCommandSchema>;
 
 /**
  * Request password reset command schema
- * Used in: Astro Action requestPasswordReset
- * Note: Astro Actions transforms empty form inputs into null, so we preprocess to convert null to empty string
+ * Used in: /api/auth/request-password-reset
  */
 export const RequestPasswordResetCommandSchema = z.object({
-    email: z.preprocess(
-        (val) => (val === null ? '' : val),
-        z
-            .string({
-                required_error: 'Email jest wymagany',
-                invalid_type_error: 'Email jest wymagany',
-            })
-            .min(1, 'Email jest wymagany')
-            .email('Nieprawidłowy format adresu email')
-    ),
+    email: z
+        .string({
+            required_error: 'Email jest wymagany',
+            invalid_type_error: 'Email jest wymagany',
+        })
+        .min(1, 'Email jest wymagany')
+        .email('Nieprawidłowy format adresu email'),
 });
 
 export type RequestPasswordResetCommand = z.infer<typeof RequestPasswordResetCommandSchema>;
 
 /**
  * Update password command schema
- * Used in: Astro Action updatePassword
- * Note: Astro Actions transforms empty form inputs into null, so we preprocess to convert null to empty string
+ * Used in: /api/auth/update-password
  */
 export const UpdatePasswordCommandSchema = z
     .object({
-        password: z.preprocess(
-            (val) => (val === null ? '' : val),
-            z
-                .string({
-                    required_error: 'Hasło jest wymagane',
-                    invalid_type_error: 'Hasło jest wymagane',
-                })
-                .min(8, 'Hasło musi mieć co najmniej 8 znaków')
-        ),
-        confirmPassword: z.preprocess(
-            (val) => (val === null ? '' : val),
-            z
-                .string({
-                    required_error: 'Powtórzenie hasła jest wymagane',
-                    invalid_type_error: 'Powtórzenie hasła jest wymagane',
-                })
-                .min(1, 'Powtórzenie hasła jest wymagane')
-        ),
+        password: z
+            .string({
+                required_error: 'Hasło jest wymagane',
+                invalid_type_error: 'Hasło jest wymagane',
+            })
+            .min(8, 'Hasło musi mieć co najmniej 8 znaków'),
+        confirmPassword: z
+            .string({
+                required_error: 'Powtórzenie hasła jest wymagane',
+                invalid_type_error: 'Powtórzenie hasła jest wymagane',
+            })
+            .min(1, 'Powtórzenie hasła jest wymagane'),
     })
     .refine((data) => data.password === data.confirmPassword, {
         message: 'Hasła muszą być identyczne',

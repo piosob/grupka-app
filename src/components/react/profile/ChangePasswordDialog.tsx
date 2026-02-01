@@ -1,7 +1,6 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { actions } from 'astro:actions';
 import { toast } from 'sonner';
 import { UpdatePasswordCommandSchema, type UpdatePasswordCommand } from '@/lib/schemas';
 import { cn, getInputClasses } from '@/lib/utils';
@@ -41,9 +40,15 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
 
     const onSubmit = async (data: UpdatePasswordCommand) => {
         try {
-            const { error } = await actions.auth.updatePassword(data);
-            if (error) {
-                toast.error(error.message);
+            const response = await fetch('/api/auth/update-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                const result = await response.json();
+                toast.error(result.error?.message || 'Nie udało się zmienić hasła');
                 return;
             }
 
@@ -51,7 +56,8 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
             onOpenChange(false);
             reset();
         } catch (error) {
-            toast.error('Wystąpił nieoczekiwany błąd');
+            toast.error('Wystąpił błąd połączenia z serwerem');
+            console.error('Update password fetch error:', error);
         }
     };
 

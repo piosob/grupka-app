@@ -1,5 +1,4 @@
 import React from 'react';
-import { actions } from 'astro:actions';
 import { LogOut } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -18,17 +17,21 @@ import {
 export const LogoutSection: React.FC = () => {
     const handleLogout = async () => {
         try {
-            const formData = new FormData();
-            const { error } = await actions.auth.logout(formData);
-            if (error) {
-                toast.error(error.message);
+            const response = await fetch('/api/auth/logout', {
+                method: 'POST',
+            });
+
+            if (!response.ok) {
+                const result = await response.json();
+                toast.error(result.error?.message || 'Wystąpił błąd podczas wylogowywania');
                 return;
             }
 
             toast.success('Wylogowano pomyślnie');
             window.location.href = '/';
         } catch (error) {
-            toast.error('Wystąpił błąd podczas wylogowywania');
+            toast.error('Wystąpił błąd połączenia z serwerem');
+            console.error('Logout fetch error:', error);
         }
     };
 

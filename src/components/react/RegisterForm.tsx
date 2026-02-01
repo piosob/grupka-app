@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { actions, isInputError } from 'astro:actions';
 import { navigate } from 'astro:transitions/client';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -31,17 +30,6 @@ export function RegisterForm({
         initialNeedsConfirmation || false
     );
 
-    // Global error handler for debugging
-    if (typeof window !== 'undefined') {
-        (window as any)._lastError = (window as any)._lastError || null;
-        const originalError = window.onerror;
-        window.onerror = function(message, source, lineno, colno, error) {
-            console.error('[Global Error Hook]:', { message, source, lineno, colno, error });
-            if (originalError) return originalError.apply(this, arguments as any);
-            return false;
-        };
-    }
-
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);
@@ -49,41 +37,45 @@ export function RegisterForm({
         setInputErrors(undefined);
 
         const formData = new FormData(e.currentTarget);
-        console.log('[RegisterForm] Calling action: auth.register', {
-            hasActions: !!actions,
-            hasAuthRegister: !!actions.auth?.register,
-        });
-        const { data, error: actionError } = await actions.auth.register(formData);
-
-        console.log('[RegisterForm] Action result:', { 
-            hasData: !!data, 
-            hasError: !!actionError,
-            errorType: typeof actionError,
-            errorName: (actionError as any)?.name 
-        });
-
-        setIsLoading(false);
-
-        if (actionError) {
-            console.log('[RegisterForm] Handling error', {
-                isInputErrorDefined: typeof isInputError === 'function',
+        
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                body: formData,
             });
-            if (isInputError(actionError)) {
-                setInputErrors(actionError.fields);
-            } else {
-                setError(actionError.message);
-            }
-            return;
-        }
 
-        if (data?.success) {
-            if (data.needsEmailConfirmation) {
-                setSuccess(true);
-                setNeedsEmailConfirmation(true);
-            } else {
-                // Jeśli nie wymaga potwierdzenia, przekieruj
-                navigate('/dashboard');
+            const result = await response.json();
+
+            setIsLoading(false);
+
+            if (!response.ok) {
+                if (result.error?.code === 'VALIDATION_ERROR' && result.error?.details) {
+                    // Convert validation errors to input errors format
+                    const fieldErrors: Record<string, string[]> = {};
+                    result.error.details.forEach((detail: { field: string; message: string }) => {
+                        fieldErrors[detail.field] = [detail.message];
+                    });
+                    setInputErrors(fieldErrors);
+                } else {
+                    setError(result.error?.message || 'Nie udało się utworzyć konta');
+                }
+                return;
             }
+
+            const data = result.data;
+            if (data?.success) {
+                if (data.needsEmailConfirmation) {
+                    setSuccess(true);
+                    setNeedsEmailConfirmation(true);
+                } else {
+                    // Jeśli nie wymaga potwierdzenia, przekieruj
+                    navigate('/dashboard');
+                }
+            }
+        } catch (err) {
+            setIsLoading(false);
+            setError('Wystąpił błąd połączenia z serwerem');
+            console.error('Register fetch error:', err);
         }
     };
 

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { actions } from 'astro:actions';
 import { LayoutDashboard } from 'lucide-react';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { Button } from '../ui/button';
@@ -24,11 +23,13 @@ export function UserNav({ userEmail, firstName }: UserNavProps) {
         setIsLoggingOut(true);
 
         try {
-            const formData = new FormData();
-            const { error } = await actions.auth.logout(formData);
+            const response = await fetch('/api/auth/logout', {
+                method: 'POST',
+            });
 
-            if (error) {
-                console.error('Logout error:', error);
+            if (!response.ok) {
+                const result = await response.json();
+                console.error('Logout error:', result.error);
                 setIsLoggingOut(false);
                 return;
             }

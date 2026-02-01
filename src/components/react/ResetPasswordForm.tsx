@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { actions, isInputError } from 'astro:actions';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -33,25 +32,43 @@ export function ResetPasswordForm({
         setInputErrors(undefined);
 
         const formData = new FormData(e.currentTarget);
-        const { data, error: actionError } = await actions.auth.updatePassword({
-            password: formData.get('password') as string,
-            confirmPassword: formData.get('confirmPassword') as string,
-        });
+        const password = formData.get('password') as string;
+        const confirmPassword = formData.get('confirmPassword') as string;
+        
+        try {
+            const response = await fetch('/api/auth/update-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password, confirmPassword }),
+            });
 
-        setIsLoading(false);
+            const result = await response.json();
 
-        if (actionError) {
-            if (isInputError(actionError)) {
-                setInputErrors(actionError.fields);
-            } else {
-                setError(actionError.message);
+            setIsLoading(false);
+
+            if (!response.ok) {
+                if (result.error?.code === 'VALIDATION_ERROR' && result.error?.details) {
+                    // Convert validation errors to input errors format
+                    const fieldErrors: Record<string, string[]> = {};
+                    result.error.details.forEach((detail: { field: string; message: string }) => {
+                        fieldErrors[detail.field] = [detail.message];
+                    });
+                    setInputErrors(fieldErrors);
+                } else {
+                    setError(result.error?.message || 'Nie udało się zmienić hasła');
+                }
+                return;
             }
-            return;
-        }
 
-        if (data?.success) {
-            setSuccess(true);
-            setMessage(data.message);
+            const data = result.data;
+            if (data?.success) {
+                setSuccess(true);
+                setMessage(data.message);
+            }
+        } catch (err) {
+            setIsLoading(false);
+            setError('Wystąpił błąd połączenia z serwerem');
+            console.error('Update password fetch error:', err);
         }
     };
 

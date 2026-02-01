@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { actions, isInputError } from 'astro:actions';
 import { navigate } from 'astro:transitions/client';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -26,22 +25,40 @@ export function LoginForm({ error: initialError, inputErrors: initialInputErrors
         setInputErrors(undefined);
 
         const formData = new FormData(e.currentTarget);
-        const { data, error: actionError } = await actions.auth.login(formData);
+        
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                body: formData,
+            });
 
-        if (actionError) {
-            setIsLoading(false);
-            if (isInputError(actionError)) {
-                setInputErrors(actionError.fields);
-            } else {
-                setError(actionError.message);
+            const result = await response.json();
+
+            if (!response.ok) {
+                setIsLoading(false);
+                if (result.error?.code === 'VALIDATION_ERROR' && result.error?.details) {
+                    // Convert validation errors to input errors format
+                    const fieldErrors: Record<string, string[]> = {};
+                    result.error.details.forEach((detail: { field: string; message: string }) => {
+                        fieldErrors[detail.field] = [detail.message];
+                    });
+                    setInputErrors(fieldErrors);
+                } else {
+                    setError(result.error?.message || 'Nie udało się zalogować');
+                }
+                return;
             }
-            return;
-        }
 
-        if (data?.success) {
-            navigate(data.redirectTo || '/dashboard');
-        } else {
+            const data = result.data;
+            if (data?.success) {
+                navigate(data.redirectTo || '/dashboard');
+            } else {
+                setIsLoading(false);
+            }
+        } catch (err) {
             setIsLoading(false);
+            setError('Wystąpił błąd połączenia z serwerem');
+            console.error('Login fetch error:', err);
         }
     };
 

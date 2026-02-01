@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { actions, isInputError } from 'astro:actions';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -30,21 +29,39 @@ export function ForgotPasswordForm({
         setInputErrors(undefined);
 
         const formData = new FormData(e.currentTarget);
-        const { data, error: actionError } = await actions.auth.requestPasswordReset(formData);
+        
+        try {
+            const response = await fetch('/api/auth/request-password-reset', {
+                method: 'POST',
+                body: formData,
+            });
 
-        setIsLoading(false);
+            const result = await response.json();
 
-        if (actionError) {
-            if (isInputError(actionError)) {
-                setInputErrors(actionError.fields);
-            } else {
-                setError(actionError.message);
+            setIsLoading(false);
+
+            if (!response.ok) {
+                if (result.error?.code === 'VALIDATION_ERROR' && result.error?.details) {
+                    // Convert validation errors to input errors format
+                    const fieldErrors: Record<string, string[]> = {};
+                    result.error.details.forEach((detail: { field: string; message: string }) => {
+                        fieldErrors[detail.field] = [detail.message];
+                    });
+                    setInputErrors(fieldErrors);
+                } else {
+                    setError(result.error?.message || 'Nie udało się wysłać linku resetującego');
+                }
+                return;
             }
-            return;
-        }
 
-        if (data?.success) {
-            setSuccessMessage(data.message);
+            const data = result.data;
+            if (data?.success) {
+                setSuccessMessage(data.message);
+            }
+        } catch (err) {
+            setIsLoading(false);
+            setError('Wystąpił błąd połączenia z serwerem');
+            console.error('Request password reset fetch error:', err);
         }
     };
 
