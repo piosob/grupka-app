@@ -19,7 +19,7 @@ export function handleApiError(error: unknown, context: string): Response {
         errorConstructorName: (error as any)?.constructor?.name
     });
 
-    if (error && typeof error === 'object' && ((z?.ZodError && error instanceof z.ZodError) || (error as any).name === 'ZodError')) {
+    if (error && typeof error === 'object' && ((error as any).name === 'ZodError' || (z.ZodError && error instanceof z.ZodError))) {
         const zodError = error as z.ZodError;
         return new Response(
             JSON.stringify({
