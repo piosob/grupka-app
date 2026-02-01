@@ -4,22 +4,13 @@ import { NotFoundError, ForbiddenError, ValidationError, ConflictError } from '.
 /**
  * Common error handler for API routes.
  * Maps business errors and validation errors to appropriate HTTP responses.
+ * Uses error.code property for reliable error type checking across different
+ * execution contexts (avoids instanceof issues on Vercel).
+ * https://vercel.com/docs/conformance/rules/NO_INSTANCEOF_ERROR
  */
 export function handleApiError(error: unknown, context: string): Response {
-    console.log(`[handleApiError] Context: ${context}`, {
-        hasZod: !!z,
-        hasZodError: !!(z as any)?.ZodError,
-        hasForbiddenError: !!ForbiddenError,
-        hasNotFoundError: !!NotFoundError,
-        hasValidationError: !!ValidationError,
-        hasConflictError: !!ConflictError,
-        errorType: typeof error,
-        errorIsObject: error !== null && typeof error === 'object',
-        errorName: (error as any)?.name,
-        errorConstructorName: (error as any)?.constructor?.name
-    });
-
-    if (error && typeof error === 'object' && ((error as any).name === 'ZodError' || (z.ZodError && error instanceof z.ZodError))) {
+    // Check if it's a ZodError (validation error from schema)
+    if (error && typeof error === 'object' && (error as any).name === 'ZodError') {
         const zodError = error as z.ZodError;
         return new Response(
             JSON.stringify({
@@ -36,57 +27,60 @@ export function handleApiError(error: unknown, context: string): Response {
         );
     }
 
-    if (error instanceof ForbiddenError) {
-        return new Response(
-            JSON.stringify({
-                error: {
-                    code: 'FORBIDDEN',
-                    message: error.message,
-                },
-            }),
-            { status: 403, headers: { 'Content-Type': 'application/json' } }
-        );
-    }
+    // Check for custom business errors by their code property
+    if (error && typeof error === 'object' && 'code' in error) {
+        const err = error as { code: string; message: string };
 
-    if (error instanceof NotFoundError) {
-        return new Response(
-            JSON.stringify({
-                error: {
-                    code: 'NOT_FOUND',
-                    message: error.message,
-                },
-            }),
-            { status: 404, headers: { 'Content-Type': 'application/json' } }
-        );
-    }
+        switch (err.code) {
+            case 'FORBIDDEN':
+                return new Response(
+                    JSON.stringify({
+                        error: {
+                            code: 'FORBIDDEN',
+                            message: err.message,
+                        },
+                    }),
+                    { status: 403, headers: { 'Content-Type': 'application/json' } }
+                );
 
-    if (error instanceof ValidationError) {
-        return new Response(
-            JSON.stringify({
-                error: {
-                    code: 'VALIDATION_ERROR',
-                    message: error.message,
-                },
-            }),
-            { status: 400, headers: { 'Content-Type': 'application/json' } }
-        );
-    }
+            case 'NOT_FOUND':
+                return new Response(
+                    JSON.stringify({
+                        error: {
+                            code: 'NOT_FOUND',
+                            message: err.message,
+                        },
+                    }),
+                    { status: 404, headers: { 'Content-Type': 'application/json' } }
+                );
 
-    if (error instanceof ConflictError) {
-        return new Response(
-            JSON.stringify({
-                error: {
-                    code: 'CONFLICT',
-                    message: error.message,
-                },
-            }),
-            { status: 409, headers: { 'Content-Type': 'application/json' } }
-        );
+            case 'VALIDATION_ERROR':
+                return new Response(
+                    JSON.stringify({
+                        error: {
+                            code: 'VALIDATION_ERROR',
+                            message: err.message,
+                        },
+                    }),
+                    { status: 400, headers: { 'Content-Type': 'application/json' } }
+                );
+
+            case 'CONFLICT':
+                return new Response(
+                    JSON.stringify({
+                        error: {
+                            code: 'CONFLICT',
+                            message: err.message,
+                        },
+                    }),
+                    { status: 409, headers: { 'Content-Type': 'application/json' } }
+                );
+        }
     }
 
     // Unexpected errors
     const errorMessage =
-        error instanceof Error || (error && typeof error === 'object' && 'message' in error)
+        error && typeof error === 'object' && 'message' in error
             ? (error as any).message
             : 'An unexpected error occurred';
     console.error(`${context} Unexpected error:`, error);

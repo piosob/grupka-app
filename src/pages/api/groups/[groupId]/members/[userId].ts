@@ -77,8 +77,10 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
         return new Response(null, { status: 204 });
     } catch (error: any) {
         // === Error Handling ===
+        // Use error.code property for reliable error type checking
+        // (avoids instanceof issues on Vercel serverless functions)
 
-        if (error instanceof ForbiddenError) {
+        if (error?.code === 'FORBIDDEN') {
             return new Response(
                 JSON.stringify({
                     error: {
@@ -93,7 +95,7 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
             );
         }
 
-        if (error instanceof NotFoundError) {
+        if (error?.code === 'NOT_FOUND') {
             return new Response(
                 JSON.stringify({
                     error: {
@@ -108,7 +110,7 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
             );
         }
 
-        if (error instanceof ConflictError) {
+        if (error?.code === 'CONFLICT') {
             return new Response(
                 JSON.stringify({
                     error: {
