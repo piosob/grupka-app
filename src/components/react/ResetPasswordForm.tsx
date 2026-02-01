@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { actions, isInputError } from 'astro:actions';
+import { actions } from 'astro:actions';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -41,8 +41,11 @@ export function ResetPasswordForm({
         setIsLoading(false);
 
         if (actionError) {
-            if (isInputError(actionError)) {
-                setInputErrors(actionError.fields);
+            // Safe check for input error without using isInputError helper which might use instanceof
+            const isInputErr = (actionError as any).type === 'input' || (actionError as any).code === 'BAD_REQUEST';
+            
+            if (isInputErr && (actionError as any).fields) {
+                setInputErrors((actionError as any).fields);
             } else {
                 setError(actionError.message);
             }

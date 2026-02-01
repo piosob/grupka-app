@@ -55,8 +55,8 @@ function EventDetailContent({ eventId }: EventDetailContainerProps) {
             <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
                 <h2 className="text-2xl font-bold">Wystąpił błąd</h2>
                 <p className="text-muted-foreground">
-                    {eventError instanceof Error
-                        ? eventError.message
+                    {eventError && typeof eventError === 'object' && 'message' in eventError
+                        ? (eventError as any).message
                         : 'Nie udało się załadować wydarzenia'}
                 </p>
                 <Button asChild variant="outline" className="rounded-full">

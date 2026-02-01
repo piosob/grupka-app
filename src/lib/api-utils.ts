@@ -8,16 +8,20 @@ import { AppError } from './errors';
 export function handleApiError(error: unknown, context: string): Response {
     // Handle Zod validation errors
     if (error && typeof error === 'object' && (error as any).name === 'ZodError') {
-        const zodError = error as z.ZodError;
+        const zodErrors = (error as any).errors;
+        const details = Array.isArray(zodErrors)
+            ? zodErrors.map((e: any) => ({
+                  field: Array.isArray(e.path) ? e.path.join('.') : 'unknown',
+                  message: e.message || 'Validation error',
+              }))
+            : [];
+
         return new Response(
             JSON.stringify({
                 error: {
                     code: 'VALIDATION_ERROR',
                     message: 'Validation failed',
-                    details: zodError.errors.map((e) => ({
-                        field: e.path.join('.'),
-                        message: e.message,
-                    })),
+                    details,
                 },
             }),
             { status: 400, headers: { 'Content-Type': 'application/json' } }
@@ -54,7 +58,7 @@ export function handleApiError(error: unknown, context: string): Response {
 
     // Handle standard Error and other objects with .message
     const errorMessage =
-        error instanceof Error || (error && typeof error === 'object' && 'message' in error)
+        error && typeof error === 'object' && 'message' in error
             ? (error as any).message
             : 'An unexpected error occurred';
 

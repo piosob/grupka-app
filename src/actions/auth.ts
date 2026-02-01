@@ -17,12 +17,19 @@ import { createAuthService } from '../lib/services/auth.service';
  */
 export const login = defineAction({
     accept: 'form',
-    input: LoginCommandSchema,
     handler: async (input, context) => {
+        const validated = LoginCommandSchema.safeParse(input);
+        if (!validated.success) {
+            throw new ActionError({
+                code: 'BAD_REQUEST',
+                message: 'Nieprawidłowe dane logowania',
+            });
+        }
+        const data = validated.data;
         const supabase = context.locals.supabase;
         const authService = createAuthService(supabase);
 
-        const result = await authService.login(input.email, input.password);
+        const result = await authService.login(data.email, data.password);
 
         if (!result.success) {
             throw new ActionError({
@@ -44,12 +51,19 @@ export const login = defineAction({
  */
 export const register = defineAction({
     accept: 'form',
-    input: RegisterCommandSchema,
     handler: async (input, context) => {
+        const validated = RegisterCommandSchema.safeParse(input);
+        if (!validated.success) {
+            throw new ActionError({
+                code: 'BAD_REQUEST',
+                message: 'Nieprawidłowe dane rejestracji',
+            });
+        }
+        const data = validated.data;
         const supabase = context.locals.supabase;
         const authService = createAuthService(supabase);
 
-        const result = await authService.register(input.email, input.password, input.firstName);
+        const result = await authService.register(data.email, data.password, data.firstName);
 
         if (!result.success) {
             throw new ActionError({
@@ -96,12 +110,19 @@ export const logout = defineAction({
  */
 export const requestPasswordReset = defineAction({
     accept: 'form',
-    input: RequestPasswordResetCommandSchema,
     handler: async (input, context) => {
+        const validated = RequestPasswordResetCommandSchema.safeParse(input);
+        if (!validated.success) {
+            throw new ActionError({
+                code: 'BAD_REQUEST',
+                message: 'Nieprawidłowy adres email',
+            });
+        }
+        const data = validated.data;
         const supabase = context.locals.supabase;
         const authService = createAuthService(supabase);
 
-        const result = await authService.requestPasswordReset(input.email);
+        const result = await authService.requestPasswordReset(data.email);
 
         if (!result.success) {
             throw new ActionError({
@@ -123,8 +144,15 @@ export const requestPasswordReset = defineAction({
  * Updates user password (requires authenticated session)
  */
 export const updatePassword = defineAction({
-    input: UpdatePasswordCommandSchema,
     handler: async (input, context) => {
+        const validated = UpdatePasswordCommandSchema.safeParse(input);
+        if (!validated.success) {
+            throw new ActionError({
+                code: 'BAD_REQUEST',
+                message: 'Nieprawidłowe hasło',
+            });
+        }
+        const data = validated.data;
         const supabase = context.locals.supabase;
         const authService = createAuthService(supabase);
 
@@ -137,7 +165,7 @@ export const updatePassword = defineAction({
             });
         }
 
-        const result = await authService.updatePassword(input.password);
+        const result = await authService.updatePassword(data.password);
 
         if (!result.success) {
             throw new ActionError({

@@ -49,7 +49,7 @@ const SettingsContent: React.FC<SettingsContainerProps> = ({ groupId }) => {
             <div className="py-10">
                 <EmptyState
                     title="Błąd ładowania"
-                    description={error instanceof Error ? error.message : 'Wystąpił błąd podczas ładowania ustawień.'}
+                    description={error && typeof error === 'object' && 'message' in error ? (error as any).message : 'Wystąpił błąd podczas ładowania ustawień.'}
                     icon={ShieldAlert}
                     actionLabel="Wróć do grupy"
                     onAction={() => window.location.href = `/groups/${groupId}`}
