@@ -5,6 +5,7 @@ import { Button } from '../ui/button';
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -65,8 +66,11 @@ export function AdminContactCard({ adminName, groupId }: AdminContactCardProps) 
                     <DialogContent className="sm:max-w-md">
                         <DialogHeader>
                             <DialogTitle>Kontakt do administratora</DialogTitle>
+                            <DialogDescription>
+                                Informacje kontaktowe administratora grupy oraz jego dzieci.
+                            </DialogDescription>
                         </DialogHeader>
-                        
+
                         <div className="space-y-6 py-4">
                             {isLoading ? (
                                 <div className="flex flex-col items-center justify-center py-8 gap-3">
@@ -76,9 +80,9 @@ export function AdminContactCard({ adminName, groupId }: AdminContactCardProps) 
                             ) : error ? (
                                 <div className="text-center py-4">
                                     <p className="text-sm text-destructive">{error}</p>
-                                    <Button 
-                                        variant="link" 
-                                        size="sm" 
+                                    <Button
+                                        variant="link"
+                                        size="sm"
                                         onClick={fetchAdminContact}
                                         className="mt-2"
                                     >
@@ -91,8 +95,8 @@ export function AdminContactCard({ adminName, groupId }: AdminContactCardProps) 
                                         <Mail className="w-5 h-5 text-primary mt-0.5" />
                                         <div className="space-y-1">
                                             <p className="text-sm font-medium">Adres e-mail</p>
-                                            <a 
-                                                href={`mailto:${contact.email}`} 
+                                            <a
+                                                href={`mailto:${contact.email}`}
                                                 className="text-sm text-primary hover:underline font-semibold break-all"
                                             >
                                                 {contact.email}
@@ -109,9 +113,9 @@ export function AdminContactCard({ adminName, groupId }: AdminContactCardProps) 
                                             </p>
                                         </div>
                                     </div>
-                                    
+
                                     <p className="text-[11px] text-muted-foreground text-center px-4">
-                                        Używaj danych kontaktowych tylko w ważnych sprawach dotyczących grupy. 
+                                        Używaj danych kontaktowych tylko w ważnych sprawach dotyczących grupy.
                                         Szanuj prywatność innych rodziców.
                                     </p>
                                 </>
