@@ -55,6 +55,9 @@ Current solutions like WhatsApp and Messenger suffer from:
     - Multi-language SDK (Backend-as-a-Service)
     - Built-in user authentication
     - Open source (can be self-hosted)
+- **API Architecture** - Standard Astro API Routes (REST endpoints)
+    - ⚠️ **Note:** Astro Actions were removed due to `instanceof` errors in Vercel serverless environment
+    - All authentication and business logic uses conventional API Routes for production reliability
 
 ### AI Integration (Planned/Nice-to-have)
 

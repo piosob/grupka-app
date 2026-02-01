@@ -16,11 +16,27 @@
 
 ---
 
+## ⚠️ Important: No Astro Actions
+
+**Decision: This project does NOT use Astro Actions for authentication or any other endpoints.**
+
+**Reason:** Astro Actions were initially implemented but removed due to a critical bug when deploying to Vercel serverless functions. The issue manifested as `"Right-hand side of 'instanceof' is not an object"` error caused by JavaScript realm differences between local development and Vercel's production environment. This bug affected error handling and validation in Astro Actions.
+
+**Solution:** All functionality has been migrated to standard Astro API Routes (REST endpoints), which provide:
+- Consistent behavior between local and production environments
+- Reliable error handling using custom error classes with `.code` property
+- Full compatibility with Vercel serverless functions
+- Better alignment with the rest of the project's architecture (16+ existing API Routes)
+
+**See:** `.ai/migration-plan-astro-actions-to-api-routes.md` for complete migration documentation.
+
+---
+
 ## 2. Endpoints
 
 ### 2.1 Authentication
 
-Authentication is handled by Supabase Auth SDK on the client side. The API uses JWT tokens from Supabase for authorization. Profile creation is automatic via database trigger on `auth.users` insert.
+Authentication endpoints are implemented as standard API Routes (not Astro Actions). The API uses JWT tokens from Supabase for authorization. Profile creation is automatic via database trigger on `auth.users` insert.
 
 **Registration:**
 Client must provide `first_name` in the `options.data` object during `signUp`. This metadata is used by the trigger to populate the `profiles` table.
