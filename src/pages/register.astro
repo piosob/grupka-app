@@ -3,23 +3,8 @@ export const prerender = false;
 import AuthLayout from '../layouts/AuthLayout.astro';
 import { RegisterForm } from '../components/react/RegisterForm';
 import Logo from '../components/astro/Logo.astro';
-import { actions } from 'astro:actions';
 
 // If user is already logged in, middleware will redirect to /dashboard
-const actionResult = Astro.getActionResult(actions.auth.register);
-
-const actionError = actionResult?.error;
-const inputErrors =
-    actionError && 'fields' in actionError ? (actionError as any).fields : undefined;
-const generalError = actionError && !('fields' in actionError) ? actionError.message : undefined;
-
-const successData = actionResult?.data;
-const registerSuccess = Boolean(successData?.success);
-const needsEmailConfirmation = Boolean(successData?.needsEmailConfirmation);
-
-if (registerSuccess && !needsEmailConfirmation) {
-    return Astro.redirect('/dashboard');
-}
 ---
 
 <AuthLayout title="Rejestracja">
@@ -33,11 +18,5 @@ if (registerSuccess && !needsEmailConfirmation) {
         </p>
     </div>
 
-    <RegisterForm
-        action={actions.auth.register}
-        error={generalError}
-        inputErrors={inputErrors}
-        success={registerSuccess}
-        needsEmailConfirmation={needsEmailConfirmation}
-    />
+    <RegisterForm client:load />
 </AuthLayout>

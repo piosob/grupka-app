@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { actions, isInputError } from 'astro:actions';
+import { navigate } from 'astro:transitions/client';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -5,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { cn, getInputClasses } from '../../lib/utils';
 
 interface RegisterFormProps {
-    action: string;
+    // Te propsy mogą zostać dla initial state, ale będziemy zarządzać nimi też lokalnie
     error?: string;
     inputErrors?: Record<string, string[] | undefined>;
     success?: boolean;
@@ -13,12 +16,52 @@ interface RegisterFormProps {
 }
 
 export function RegisterForm({
-    action,
-    error,
-    inputErrors,
-    success,
-    needsEmailConfirmation,
+    error: initialError,
+    inputErrors: initialInputErrors,
+    success: initialSuccess,
+    needsEmailConfirmation: initialNeedsConfirmation,
 }: RegisterFormProps) {
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | undefined>(initialError);
+    const [inputErrors, setInputErrors] = useState<Record<string, string[] | undefined> | undefined>(
+        initialInputErrors
+    );
+    const [success, setSuccess] = useState(initialSuccess || false);
+    const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(
+        initialNeedsConfirmation || false
+    );
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError(undefined);
+        setInputErrors(undefined);
+
+        const formData = new FormData(e.currentTarget);
+        const { data, error: actionError } = await actions.auth.register(formData);
+
+        setIsLoading(false);
+
+        if (actionError) {
+            if (isInputError(actionError)) {
+                setInputErrors(actionError.fields);
+            } else {
+                setError(actionError.message);
+            }
+            return;
+        }
+
+        if (data?.success) {
+            if (data.needsEmailConfirmation) {
+                setSuccess(true);
+                setNeedsEmailConfirmation(true);
+            } else {
+                // Jeśli nie wymaga potwierdzenia, przekieruj
+                navigate('/dashboard');
+            }
+        }
+    };
+
     if (success) {
         return (
             <Card className="w-full max-w-md mx-auto">
@@ -66,7 +109,7 @@ export function RegisterForm({
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <form method="POST" action={action} className="space-y-4" noValidate>
+                <form onSubmit={handleSubmit} className="space-y-4" noValidate>
                     <div className="space-y-2">
                         <Label htmlFor="firstName">Imię</Label>
                         <Input
@@ -155,8 +198,9 @@ export function RegisterForm({
                     <Button
                         type="submit"
                         className="w-full h-12 rounded-full text-base font-semibold"
+                        disabled={isLoading}
                     >
-                        Utwórz konto
+                        {isLoading ? 'Tworzenie konta...' : 'Utwórz konto'}
                     </Button>
 
                     <div className="text-center text-sm text-gray-600">

@@ -1,21 +1,53 @@
+import { useState } from 'react';
+import { actions, isInputError } from 'astro:actions';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 
 interface ForgotPasswordFormProps {
-    action: string;
     error?: string;
     inputErrors?: Record<string, string[] | undefined>;
     successMessage?: string;
 }
 
 export function ForgotPasswordForm({
-    action,
-    error,
-    inputErrors,
-    successMessage,
+    error: initialError,
+    inputErrors: initialInputErrors,
+    successMessage: initialSuccessMessage,
 }: ForgotPasswordFormProps) {
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | undefined>(initialError);
+    const [inputErrors, setInputErrors] = useState<Record<string, string[] | undefined> | undefined>(
+        initialInputErrors
+    );
+    const [successMessage, setSuccessMessage] = useState<string | undefined>(initialSuccessMessage);
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError(undefined);
+        setInputErrors(undefined);
+
+        const formData = new FormData(e.currentTarget);
+        const { data, error: actionError } = await actions.auth.requestPasswordReset(formData);
+
+        setIsLoading(false);
+
+        if (actionError) {
+            if (isInputError(actionError)) {
+                setInputErrors(actionError.fields);
+            } else {
+                setError(actionError.message);
+            }
+            return;
+        }
+
+        if (data?.success) {
+            setSuccessMessage(data.message);
+        }
+    };
+
     if (successMessage) {
         return (
             <Card className="w-full max-w-md mx-auto">
@@ -50,7 +82,7 @@ export function ForgotPasswordForm({
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <form method="POST" action={action} className="space-y-4" noValidate>
+                <form onSubmit={handleSubmit} className="space-y-4" noValidate>
                     <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
                         <Input
@@ -75,8 +107,8 @@ export function ForgotPasswordForm({
                         </div>
                     )}
 
-                    <Button type="submit" className="w-full">
-                        Wyślij link resetujący
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                        {isLoading ? 'Wysyłanie...' : 'Wyślij link resetujący'}
                     </Button>
 
                     <div className="text-center text-sm">

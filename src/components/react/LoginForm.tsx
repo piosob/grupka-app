@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { actions, isInputError } from 'astro:actions';
+import { navigate } from 'astro:transitions/client';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -5,12 +8,43 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { cn, getInputClasses } from '../../lib/utils';
 
 interface LoginFormProps {
-    action: string;
     error?: string;
     inputErrors?: Record<string, string[] | undefined>;
 }
 
-export function LoginForm({ action, error, inputErrors }: LoginFormProps) {
+export function LoginForm({ error: initialError, inputErrors: initialInputErrors }: LoginFormProps) {
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | undefined>(initialError);
+    const [inputErrors, setInputErrors] = useState<Record<string, string[] | undefined> | undefined>(
+        initialInputErrors
+    );
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError(undefined);
+        setInputErrors(undefined);
+
+        const formData = new FormData(e.currentTarget);
+        const { data, error: actionError } = await actions.auth.login(formData);
+
+        if (actionError) {
+            setIsLoading(false);
+            if (isInputError(actionError)) {
+                setInputErrors(actionError.fields);
+            } else {
+                setError(actionError.message);
+            }
+            return;
+        }
+
+        if (data?.success) {
+            navigate(data.redirectTo || '/dashboard');
+        } else {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <Card className="w-full max-w-md mx-auto">
             <CardHeader>
@@ -18,7 +52,7 @@ export function LoginForm({ action, error, inputErrors }: LoginFormProps) {
                 <CardDescription>Wprowadź swoje dane, aby zalogować się do konta</CardDescription>
             </CardHeader>
             <CardContent>
-                <form method="POST" action={action} className="space-y-4" noValidate>
+                <form onSubmit={handleSubmit} className="space-y-4" noValidate>
                     <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
                         <Input
@@ -64,8 +98,9 @@ export function LoginForm({ action, error, inputErrors }: LoginFormProps) {
                     <Button
                         type="submit"
                         className="w-full h-12 rounded-full text-base font-semibold"
+                        disabled={isLoading}
                     >
-                        Zaloguj się
+                        {isLoading ? 'Logowanie...' : 'Zaloguj się'}
                     </Button>
 
                     <div className="text-center text-sm">
