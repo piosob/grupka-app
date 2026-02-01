@@ -6,6 +6,19 @@ import { NotFoundError, ForbiddenError, ValidationError, ConflictError } from '.
  * Maps business errors and validation errors to appropriate HTTP responses.
  */
 export function handleApiError(error: unknown, context: string): Response {
+    console.log(`[handleApiError] Context: ${context}`, {
+        hasZod: !!z,
+        hasZodError: !!(z as any)?.ZodError,
+        hasForbiddenError: !!ForbiddenError,
+        hasNotFoundError: !!NotFoundError,
+        hasValidationError: !!ValidationError,
+        hasConflictError: !!ConflictError,
+        errorType: typeof error,
+        errorIsObject: error !== null && typeof error === 'object',
+        errorName: (error as any)?.name,
+        errorConstructorName: (error as any)?.constructor?.name
+    });
+
     if (error && typeof error === 'object' && ((z?.ZodError && error instanceof z.ZodError) || (error as any).name === 'ZodError')) {
         const zodError = error as z.ZodError;
         return new Response(
