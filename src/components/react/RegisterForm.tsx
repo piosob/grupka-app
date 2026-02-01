@@ -89,8 +89,7 @@ export function RegisterForm({
                             <p className="font-semibold mb-2">Rejestracja zakończona sukcesem!</p>
                             {needsEmailConfirmation ? (
                                 <p>
-                                    Sprawdź swoją skrzynkę email i kliknij w link aktywacyjny, aby
-                                    potwierdzić swoje konto.
+                                    Sprawdź swoją skrzynkę email szukając wysłanego emaila od <strong>Supabase Auth</strong> (sprawdź również folder spam) i kliknij w link aktywacyjny, aby potwierdzić swoje konto.
                                 </p>
                             ) : (
                                 <p className="text-sm text-gray-600">
@@ -111,7 +110,7 @@ export function RegisterForm({
                         </p>
                     </div>
                 </CardContent>
-            </Card>
+            </Card >
         );
     }
 

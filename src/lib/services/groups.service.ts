@@ -266,7 +266,10 @@ export class GroupsService {
         const { data: guestEntries } = await this.supabase
             .from('event_guests')
             .select('event_id')
-            .in('child_id', myChildrenIds.length > 0 ? myChildrenIds : ['00000000-0000-0000-0000-000000000000']);
+            .in(
+                'child_id',
+                myChildrenIds.length > 0 ? myChildrenIds : ['00000000-0000-0000-0000-000000000000']
+            );
         const invitedEventIds = guestEntries?.map((ge) => ge.event_id) || [];
 
         // 4. Involvement filter for events
@@ -288,11 +291,7 @@ export class GroupsService {
             upcomingEventsCountData,
         ] = await Promise.all([
             // Fetch admin's profile (first_name)
-            this.supabase
-                .from('profiles')
-                .select('first_name')
-                .eq('id', group.created_by)
-                .single(),
+            this.supabase.from('profiles').select('first_name').eq('id', group.created_by).single(),
 
             // Fetch admin's children names in this group
             this.supabase
@@ -339,7 +338,10 @@ export class GroupsService {
         const adminName = adminProfileData.data?.first_name || 'Administrator';
 
         if (nextEventData.error) {
-            console.error(`[GroupsService.getGroupDetail] Error fetching nextEvent for group ${groupId}:`, nextEventData.error);
+            console.error(
+                `[GroupsService.getGroupDetail] Error fetching nextEvent for group ${groupId}:`,
+                nextEventData.error
+            );
         }
 
         // Process next event
@@ -893,9 +895,11 @@ export class GroupsService {
         const { code } = command;
 
         // 1. Look up code and check expiration
+        // Note: We don't fetch groups(name) here because RLS prevents non-members
+        // from viewing group details. We'll fetch it after joining.
         const { data: invite, error: inviteError } = await this.supabase
             .from('group_invites')
-            .select('group_id, expires_at, groups(name)')
+            .select('group_id, expires_at')
             .eq('code', code)
             .single();
 
@@ -908,7 +912,6 @@ export class GroupsService {
         }
 
         const groupId = invite.group_id;
-        const groupName = (invite as unknown as { groups: { name: string } }).groups.name;
 
         // 2. Check if already a member
         const { data: existingMember } = await this.supabase
@@ -923,25 +926,44 @@ export class GroupsService {
         }
 
         // 3. Join the group
-        const { data: membership, error: joinError } = await this.supabase
+        // We do NOT use .select() here because it triggers a RETURNING clause
+        // which can fail due to RLS policies not yet seeing the new row.
+        const { error: joinError } = await this.supabase.from('group_members').insert({
+            group_id: groupId,
+            user_id: userId,
+            role: 'member',
+        });
+
+        if (joinError) {
+            throw new Error(`Failed to join group: ${joinError.message}`);
+        }
+
+        // 4. Fetch membership and group data now that the user is a member
+        // RLS will now allow viewing both group_members and groups because membership exists.
+        const { data: membershipData, error: fetchError } = await this.supabase
             .from('group_members')
-            .insert({
-                group_id: groupId,
-                user_id: userId,
-                role: 'member',
-            })
-            .select('joined_at, role')
+            .select(
+                `
+                joined_at,
+                role,
+                group:groups(name)
+            `
+            )
+            .eq('group_id', groupId)
+            .eq('user_id', userId)
             .single();
 
-        if (joinError || !membership) {
-            throw new Error(`Failed to join group: ${joinError?.message}`);
+        if (fetchError || !membershipData) {
+            throw new Error('Nie udało się pobrać danych grupy po dołączeniu');
         }
+
+        const groupName = (membershipData as any).group?.name || 'Grupa';
 
         return {
             groupId,
             groupName,
-            role: membership.role as 'admin' | 'member',
-            joinedAt: membership.joined_at,
+            role: membershipData.role as 'admin' | 'member',
+            joinedAt: membershipData.joined_at,
         };
     }
 }
