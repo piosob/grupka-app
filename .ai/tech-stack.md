@@ -21,10 +21,10 @@ AI - Komunikacja z modelami przez usługę Openrouter.ai:
 
 Testowanie:
 
-- Vitest do testów jednostkowych i integracyjnych
-- Playwright do testów E2E i responsywności
+- Vitest do testów jednostkowych i integracyjnych (w tym testy behawioralne z perspektywy użytkownika)
+- Playwright (Planowane w Release 2.0 dla testów E2E)
 
 CI/CD i Hosting:
 
-- Github Actions do tworzenia pipeline’ów CI/CD
-- DigitalOcean do hostowania aplikacji za pośrednictwem obrazu docker
+- Github Actions do tworzenia pipeline’ów CI/CD (Testy + Build)
+- Vercel do hostowania aplikacji (Continuous Deployment)

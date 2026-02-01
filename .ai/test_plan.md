@@ -39,10 +39,11 @@ Zakres obejmuje wszystkie funkcjonalności zdefiniowane w MVP:
 - Testowanie reguł RLS bezpośrednio na bazie danych przy użyciu **Vitest**.
 - Middleware Astro – weryfikacja autoryzacji i przekierowań.
 
-### 3.3. Testy E2E (End-to-End)
+### 3.3. Testy E2E (End-to-End) - ODROCZONE (Release 2.0)
 
 - Pełne ścieżki użytkownika (User Flows) przy użyciu **Playwright**.
 - Testowanie na różnych szerokościach ekranu (viewporty mobilne).
+- _Uwaga: W obecnej fazie MVP weryfikacja z perspektywy użytkownika odbywa się za pomocą testów integracyjnych w Vitest + React Testing Library._
 
 ### 3.4. Testy Wydajnościowe i UX
 
@@ -85,7 +86,7 @@ Zakres obejmuje wszystkie funkcjonalności zdefiniowane w MVP:
 - **jsdom**: Środowisko uruchomieniowe udające przeglądarkę w Node.js, niezbędne do renderowania komponentów React w testach Vitest.
 - **React Testing Library**: Biblioteka do testowania komponentów UI (skupienie na dostępności i interakcjach).
 - **@testing-library/jest-dom**: Zbiór niestandardowych matcherów dla Vitest, które pozwalają na pisanie bardziej czytelnych asercji dotyczących stanu DOM (np. `.toBeInTheDocument()`).
-- **Playwright**: Do testów E2E i weryfikacji responsywności na różnych urządzeniach mobilnych.
+- **Playwright**: (Odroczone do v2.0) Do przyszłych testów E2E i weryfikacji responsywności na różnych urządzeniach mobilnych.
 - **Lighthouse**: Do audytów wydajności i dostępności.
 - **Postman/Thunder Client**: Do ręcznego testowania endpointów API.
 
@@ -93,12 +94,12 @@ Zakres obejmuje wszystkie funkcjonalności zdefiniowane w MVP:
 
 1. **Faza 1:** Testy jednostkowe schematów i utilsów (w trakcie dewelopmentu).
 2. **Faza 2:** Testy integracyjne middleware i RLS (po implementacji kluczowych tabel).
-3. **Faza 3:** Testy E2E głównych ścieżek (przed mergem do `master`).
+3. **Faza 3:** Testy E2E głównych ścieżek (Planowane w Release 2.0).
 4. **Faza 4:** Audyt wydajnościowy (przed release MVP).
 
 ## 8. Kryteria akceptacji testów
 
-- 100% krytycznych testów E2E (logowanie, dołączanie do grupy, tworzenie wydarzeń) przechodzi pomyślnie.
+- 100% krytycznych testów integracyjnych Vitest (logowanie, dołączanie do grupy, widoczność kontaktu) przechodzi pomyślnie w pipeline CI/CD.
 - Brak błędów bezpieczeństwa (RLS) umożliwiających nieautoryzowany dostęp do danych.
 - Wynik Lighthouse Performance > 90 na urządzeniach mobilnych.
 - Wszystkie zgłoszone błędy o priorytecie "Blocker" i "Critical" są naprawione.
@@ -106,7 +107,7 @@ Zakres obejmuje wszystkie funkcjonalności zdefiniowane w MVP:
 ## 9. Role i odpowiedzialności
 
 - **Deweloperzy:** Pisanie testów jednostkowych i naprawianie błędów.
-- **QA Engineer:** Tworzenie scenariuszy E2E, automatyzacja w Playwright, audyty wydajności.
+- **QA Engineer:** (Release 2.0) Tworzenie scenariuszy E2E, automatyzacja w Playwright, audyty wydajności.
 - **Product Owner:** Weryfikacja zgodności z PRD i akceptacja wyników testów.
 
 ## 10. Procedury raportowania błędów

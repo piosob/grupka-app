@@ -26,7 +26,7 @@ A mobile-first server-side rendering web application designed to help parents se
 - **Administrator Role**: Admin contact via email with reveal-on-click functionality
 - **Hidden Guest Threads**: Private comment sections for event guests (invisible to organizers via Row Level Security)
 - **Privacy-Focused**: Minimal personal data collection (no names), asynchronous communication model
-- **Future Roadmap**: AI Assistant (Magic Wand), gift list automation, and enhanced personalized suggestions (Planned for next release)
+- **Future Roadmap**: AI Assistant (Magic Wand), gift list automation, and E2E testing (Planned for next release)
 
 ### Problem Solved
 
@@ -65,13 +65,13 @@ Current solutions like WhatsApp and Messenger suffer from:
 
 ### Testing
 
-- **Vitest** - Unit and integration testing
-- **Playwright** - End-to-end testing and mobile responsiveness verification
+- **Vitest** - Unit and integration testing (including behavioral user-perspective tests)
+- **Playwright** - (Planned for v2.0) End-to-end testing and mobile responsiveness verification
 
 ### CI/CD & Hosting
 
-- **GitHub Actions** - CI/CD pipelines
-- **DigitalOcean** - Application hosting via Docker containers
+- **GitHub Actions** - CI/CD pipeline (Tests & Build verification)
+- **Vercel** - Production hosting and Continuous Deployment
 
 ## 🚀 Getting Started Locally
 
@@ -168,7 +168,7 @@ This project is currently in active development as a Minimum Viable Product. Cor
 ### Success Metrics
 
 - **Mobile Performance**: Lighthouse Score > 90 for Performance and Accessibility
-- **Security**: 100% blocked organizer access to hidden threads in automated tests
+- **Security**: 100% blocked organizer access to hidden threads in automated Vitest tests
 - **Group Security**: Average number of generated codes per group
 - **User Retention**: Percentage of users returning within 30 days
 - **Future AI Metric**: Percentage of child profiles saved after using Magic Wand feature (next release)
@@ -204,12 +204,12 @@ This project is proprietary software, but it utilizes several open-source packag
 
 #### Development Dependencies
 
-| Package                         | License    |
-| :------------------------------ | :--------- |
-| `typescript`, `@types/*`        | MIT        |
-| `eslint`, `eslint-plugin-*`     | MIT        |
-| `prettier`, `prettier-plugin-*` | MIT        |
-| `@playwright/test`              | Apache-2.0 |
-| `tw-animate-css`                | MIT        |
+| Package                         | License |
+| :------------------------------ | :------ |
+| `typescript`, `@types/*`        | MIT     |
+| `eslint`, `eslint-plugin-*`     | MIT     |
+| `prettier`, `prettier-plugin-*` | MIT     |
+| `vitest`                        | MIT     |
+| `tw-animate-css`                | MIT     |
 
 All other trademarks and copyrights are the property of their respective owners.
