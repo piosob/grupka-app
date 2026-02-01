@@ -7,7 +7,7 @@ import type {
     PaginationParams,
 } from '@/lib/schemas';
 import type { PaginatedResponse, EventCommentQueryResult } from '@/types';
-import { ForbiddenError, NotFoundError } from '@/lib/errors';
+import { AppError } from '@/lib/errors';
 
 export type TypedSupabaseClient = SupabaseClient<Database>;
 
@@ -42,7 +42,7 @@ export class EventCommentsService {
             .single();
 
         if (error || !data) {
-            throw new NotFoundError('Event does not exist');
+            throw new AppError('NOT_FOUND', 'Event does not exist');
         }
 
         return data;
@@ -63,12 +63,12 @@ export class EventCommentsService {
         // 2. Verify membership
         const isMember = await this.isUserGroupMember(event.group_id, userId);
         if (!isMember) {
-            throw new ForbiddenError('Not a member of this group');
+            throw new AppError('FORBIDDEN', 'Not a member of this group');
         }
 
         // 3. Surprise Protection: Organizer cannot see comments
         if (event.organizer_id === userId) {
-            throw new ForbiddenError('Organizers cannot view the hidden thread');
+            throw new AppError('FORBIDDEN', 'Organizers cannot view the hidden thread');
         }
 
         // 4. Fetch comments with author children names (filtered by group)
@@ -146,12 +146,12 @@ export class EventCommentsService {
         // 2. Verify membership
         const isMember = await this.isUserGroupMember(event.group_id, userId);
         if (!isMember) {
-            throw new ForbiddenError('Not a member of this group');
+            throw new AppError('FORBIDDEN', 'Not a member of this group');
         }
 
         // 3. Surprise Protection: Organizer cannot add comments
         if (event.organizer_id === userId) {
-            throw new ForbiddenError('Organizers cannot add comments to the hidden thread');
+            throw new AppError('FORBIDDEN', 'Organizers cannot add comments to the hidden thread');
         }
 
         // 4. Insert comment
@@ -211,12 +211,12 @@ export class EventCommentsService {
             .single();
 
         if (fetchError || !comment) {
-            throw new NotFoundError('Comment does not exist');
+            throw new AppError('NOT_FOUND', 'Comment does not exist');
         }
 
         // 2. Verify ownership
         if (comment.author_id !== userId) {
-            throw new ForbiddenError('You can only delete your own comments');
+            throw new AppError('FORBIDDEN', 'You can only delete your own comments');
         }
 
         // 3. Delete comment
@@ -246,12 +246,12 @@ export class EventCommentsService {
         // 2. Verify membership
         const isMember = await this.isUserGroupMember(event.group_id, userId);
         if (!isMember) {
-            throw new ForbiddenError('Not a member of this group');
+            throw new AppError('FORBIDDEN', 'Not a member of this group');
         }
 
         // 3. Surprise Protection: Organizer cannot pin comments
         if (event.organizer_id === userId) {
-            throw new ForbiddenError('Organizers cannot pin comments in the hidden thread');
+            throw new AppError('FORBIDDEN', 'Organizers cannot pin comments in the hidden thread');
         }
 
         // 4. Update comment

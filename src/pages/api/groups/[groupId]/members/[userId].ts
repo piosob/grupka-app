@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { z } from 'astro/zod';
 import { createGroupsService } from '../../../../../lib/services/groups.service';
-import { NotFoundError, ForbiddenError, ConflictError } from '../../../../../lib/errors';
+import { handleApiError } from '../../../../../lib/api-utils';
 
 export const prerender = false;
 
@@ -47,6 +47,8 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
         );
     }
 
+    const context = `[DELETE /api/groups/${groupId}/members/${targetUserId}]`;
+
     try {
         // === GUARD: Authentication ===
         const {
@@ -76,69 +78,6 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
         // === Happy Path: Success ===
         return new Response(null, { status: 204 });
     } catch (error: any) {
-        // === Error Handling ===
-
-        if (error instanceof ForbiddenError) {
-            return new Response(
-                JSON.stringify({
-                    error: {
-                        code: 'FORBIDDEN',
-                        message: error.message,
-                    },
-                }),
-                {
-                    status: 403,
-                    headers: { 'Content-Type': 'application/json' },
-                }
-            );
-        }
-
-        if (error instanceof NotFoundError) {
-            return new Response(
-                JSON.stringify({
-                    error: {
-                        code: 'NOT_FOUND',
-                        message: error.message,
-                    },
-                }),
-                {
-                    status: 404,
-                    headers: { 'Content-Type': 'application/json' },
-                }
-            );
-        }
-
-        if (error instanceof ConflictError) {
-            return new Response(
-                JSON.stringify({
-                    error: {
-                        code: 'CONFLICT',
-                        message: error.message,
-                    },
-                }),
-                {
-                    status: 409,
-                    headers: { 'Content-Type': 'application/json' },
-                }
-            );
-        }
-
-        // Unexpected errors
-        console.error(
-            `[DELETE /api/groups/${groupId}/members/${targetUserId}] Unexpected error:`,
-            error
-        );
-        return new Response(
-            JSON.stringify({
-                error: {
-                    code: 'SERVICE_UNAVAILABLE',
-                    message: 'An unexpected error occurred',
-                },
-            }),
-            {
-                status: 500,
-                headers: { 'Content-Type': 'application/json' },
-            }
-        );
+        return handleApiError(error, context);
     }
 };

@@ -10,7 +10,7 @@ import type {
     PaginationParams,
 } from '../schemas';
 import type { PaginatedResponse } from '../../types';
-import { NotFoundError, ForbiddenError } from '../errors';
+import { AppError } from '../errors';
 
 type TypedSupabaseClient = SupabaseClient<Database>;
 
@@ -62,7 +62,7 @@ export class ChildrenService {
             .maybeSingle();
 
         if (error || !data) {
-            throw new ForbiddenError('You must be a member of this group to access its children');
+            throw new AppError('FORBIDDEN', 'You must be a member of this group to access its children');
         }
     }
 
@@ -210,7 +210,7 @@ export class ChildrenService {
             .single();
 
         if (error || !child) {
-            throw new NotFoundError('Child not found');
+            throw new AppError('NOT_FOUND', 'Child not found');
         }
 
         // Verify user is a member of the child's group
@@ -249,11 +249,11 @@ export class ChildrenService {
             .single();
 
         if (fetchError || !child) {
-            throw new NotFoundError('Child not found');
+            throw new AppError('NOT_FOUND', 'Child not found');
         }
 
         if (child.parent_id !== userId) {
-            throw new ForbiddenError('Only the parent can update the child profile');
+            throw new AppError('FORBIDDEN', 'Only the parent can update the child profile');
         }
 
         // Check name uniqueness if name is changing
@@ -310,11 +310,11 @@ export class ChildrenService {
             .single();
 
         if (fetchError || !child) {
-            throw new NotFoundError('Child not found');
+            throw new AppError('NOT_FOUND', 'Child not found');
         }
 
         if (child.parent_id !== userId) {
-            throw new ForbiddenError('Only the parent can delete the child profile');
+            throw new AppError('FORBIDDEN', 'Only the parent can delete the child profile');
         }
 
         const { error: deleteError } = await this.supabase

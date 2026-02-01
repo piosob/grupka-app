@@ -11,7 +11,7 @@ import type {
     EventGuestDTO,
 } from '../schemas';
 import type { PaginatedResponse, EventEntity } from '../../types';
-import { NotFoundError, ForbiddenError, ValidationError } from '../errors';
+import { AppError } from '../errors';
 
 export type TypedSupabaseClient = SupabaseClient<Database>;
 
@@ -71,7 +71,7 @@ export class EventsService {
         }
 
         if (data.length !== guestChildIds.length) {
-            throw new ValidationError('One or more children are not in this group');
+            throw new AppError('VALIDATION_ERROR', 'One or more children are not in this group');
         }
     }
 
@@ -94,7 +94,7 @@ export class EventsService {
         // 1. Verify membership
         const isMember = await this.isUserGroupMember(groupId, userId);
         if (!isMember) {
-            throw new ForbiddenError('Not a member of this group');
+            throw new AppError('FORBIDDEN', 'Not a member of this group');
         }
 
         // 2. Double Safety: Get IDs of children belonging to the user in this group
@@ -189,7 +189,7 @@ export class EventsService {
         // 1. Verify membership
         const isMember = await this.isUserGroupMember(groupId, userId);
         if (!isMember) {
-            throw new ForbiddenError('Not a member of this group');
+            throw new AppError('FORBIDDEN', 'Not a member of this group');
         }
 
         // 2. Validate childId if provided
@@ -201,7 +201,7 @@ export class EventsService {
                 .eq('group_id', groupId);
 
             if (error || count === 0) {
-                throw new ValidationError('Child not in this group OR Child does not exist');
+                throw new AppError('VALIDATION_ERROR', 'Child not in this group OR Child does not exist');
             }
         }
 
@@ -280,7 +280,7 @@ export class EventsService {
             .single();
 
         if (error || !data) {
-            throw new NotFoundError('Event does not exist');
+            throw new AppError('NOT_FOUND', 'Event does not exist');
         }
 
         const event = data as any;
@@ -288,7 +288,7 @@ export class EventsService {
         // Verify membership (RLS should have caught this, but extra check)
         const isMember = await this.isUserGroupMember(event.group_id, userId);
         if (!isMember) {
-            throw new ForbiddenError('Not a member of this group');
+            throw new AppError('FORBIDDEN', 'Not a member of this group');
         }
 
         // Double Safety: Verify if user is organizer, parent of birthday child, or parent of a guest
@@ -318,7 +318,7 @@ export class EventsService {
         }
 
         if (!isOrganizer && !isParentOfBirthdayChild && !isParentOfGuest) {
-            throw new ForbiddenError('Access denied: You are not involved in this event');
+            throw new AppError('FORBIDDEN', 'Access denied: You are not involved in this event');
         }
 
         const guests: EventGuestDTO[] = (event.event_guests || []).map((eg: any) => ({
@@ -360,11 +360,11 @@ export class EventsService {
             .single();
 
         if (fetchError || !event) {
-            throw new NotFoundError('Event does not exist');
+            throw new AppError('NOT_FOUND', 'Event does not exist');
         }
 
         if (event.organizer_id !== userId) {
-            throw new ForbiddenError('Not the organizer of this event');
+            throw new AppError('FORBIDDEN', 'Not the organizer of this event');
         }
 
         // 2. Validate guests if provided
@@ -439,11 +439,11 @@ export class EventsService {
             .single();
 
         if (fetchError || !event) {
-            throw new NotFoundError('Event does not exist');
+            throw new AppError('NOT_FOUND', 'Event does not exist');
         }
 
         if (event.organizer_id !== userId) {
-            throw new ForbiddenError('Not the organizer of this event');
+            throw new AppError('FORBIDDEN', 'Not the organizer of this event');
         }
 
         // 2. Delete event (cascade will handle event_guests and event_comments)

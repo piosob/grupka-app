@@ -19,7 +19,7 @@ import type {
 } from '../schemas';
 import type { GroupEntity, EventEntity, ChildEntity, PaginatedResponse } from '../../types';
 
-import { NotFoundError, ForbiddenError, ConflictError } from '../errors';
+import { AppError } from '../errors';
 
 type TypedSupabaseClient = SupabaseClient<Database>;
 
@@ -109,7 +109,7 @@ export class GroupsService {
         }
 
         if (existingGroup) {
-            throw new ConflictError('Masz już utworzoną grupę o tej nazwie. Wybierz inną nazwę.');
+            throw new AppError('CONFLICT', 'Masz już utworzoną grupę o tej nazwie. Wybierz inną nazwę.');
         }
 
         // Step 1: Create the group
@@ -246,7 +246,7 @@ export class GroupsService {
             .single();
 
         if (membershipError || !membership) {
-            throw new Error('Group not found or access denied');
+            throw new AppError('NOT_FOUND', 'Group not found or access denied');
         }
 
         // Cast joined data to our helper interface
@@ -675,11 +675,11 @@ export class GroupsService {
         const target = members?.find((m) => m.user_id === targetUserId);
 
         if (!requester) {
-            throw new ForbiddenError('Access denied or group not found');
+            throw new AppError('FORBIDDEN', 'Access denied or group not found');
         }
 
         if (!target) {
-            throw new NotFoundError('Target user is not a member of this group');
+            throw new AppError('NOT_FOUND', 'Target user is not a member of this group');
         }
 
         // 2. Permission check: requester is admin OR requester is removing themselves
@@ -687,7 +687,7 @@ export class GroupsService {
         const isSelf = requesterId === targetUserId;
 
         if (!isAdmin && !isSelf) {
-            throw new ForbiddenError('Only admins can remove other members');
+            throw new AppError('FORBIDDEN', 'Only admins can remove other members');
         }
 
         // 3. Prevent removing the last admin
@@ -703,7 +703,7 @@ export class GroupsService {
             }
 
             if (count === 1) {
-                throw new ConflictError('Cannot remove the last administrator of the group');
+                throw new AppError('CONFLICT', 'Cannot remove the last administrator of the group');
             }
         }
 

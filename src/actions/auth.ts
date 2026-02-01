@@ -1,11 +1,6 @@
 import { defineAction, ActionError } from 'astro:actions';
 import { z } from 'astro/zod';
 
-console.log('[actions/auth.ts] Module loading', {
-    hasActionError: !!ActionError,
-    hasZod: !!z,
-});
-
 import {
     LoginCommandSchema,
     RegisterCommandSchema,
@@ -24,10 +19,6 @@ export const login = defineAction({
     accept: 'form',
     input: LoginCommandSchema,
     handler: async (input, context) => {
-        console.log('[action: login] Handler started', {
-            hasActionError: !!ActionError,
-            email: input.email,
-        });
         const supabase = context.locals.supabase;
         const authService = createAuthService(supabase);
 
@@ -55,10 +46,6 @@ export const register = defineAction({
     accept: 'form',
     input: RegisterCommandSchema,
     handler: async (input, context) => {
-        console.log('[action: register] Handler started', {
-            hasActionError: !!ActionError,
-            input: { ...input, password: '***' },
-        });
         const supabase = context.locals.supabase;
         const authService = createAuthService(supabase);
 

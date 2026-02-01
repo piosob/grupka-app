@@ -31,17 +31,6 @@ export function RegisterForm({
         initialNeedsConfirmation || false
     );
 
-    // Global error handler for debugging
-    if (typeof window !== 'undefined') {
-        (window as any)._lastError = (window as any)._lastError || null;
-        const originalError = window.onerror;
-        window.onerror = function(message, source, lineno, colno, error) {
-            console.error('[Global Error Hook]:', { message, source, lineno, colno, error });
-            if (originalError) return originalError.apply(this, arguments as any);
-            return false;
-        };
-    }
-
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);
@@ -49,25 +38,11 @@ export function RegisterForm({
         setInputErrors(undefined);
 
         const formData = new FormData(e.currentTarget);
-        console.log('[RegisterForm] Calling action: auth.register', {
-            hasActions: !!actions,
-            hasAuthRegister: !!actions.auth?.register,
-        });
         const { data, error: actionError } = await actions.auth.register(formData);
-
-        console.log('[RegisterForm] Action result:', { 
-            hasData: !!data, 
-            hasError: !!actionError,
-            errorType: typeof actionError,
-            errorName: (actionError as any)?.name 
-        });
 
         setIsLoading(false);
 
         if (actionError) {
-            console.log('[RegisterForm] Handling error', {
-                isInputErrorDefined: typeof isInputError === 'function',
-            });
             if (isInputError(actionError)) {
                 setInputErrors(actionError.fields);
             } else {

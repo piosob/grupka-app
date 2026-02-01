@@ -2,30 +2,38 @@
  * Custom error types for business logic and API responses.
  */
 
-export class NotFoundError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = 'NotFoundError';
-    }
-}
+export type ErrorCode =
+    | 'UNAUTHORIZED'
+    | 'FORBIDDEN'
+    | 'NOT_FOUND'
+    | 'VALIDATION_ERROR'
+    | 'CONFLICT'
+    | 'RATE_LIMITED'
+    | 'SERVICE_UNAVAILABLE';
 
-export class ForbiddenError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = 'ForbiddenError';
-    }
-}
+export class AppError extends Error {
+    public readonly code: ErrorCode;
 
-export class ValidationError extends Error {
-    constructor(message: string) {
+    constructor(code: ErrorCode, message: string) {
         super(message);
-        this.name = 'ValidationError';
-    }
-}
+        this.name = 'AppError';
+        this.code = code;
 
-export class ConflictError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = 'ConflictError';
+        // Maintain proper stack trace for where our error was thrown (only available on V8)
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, AppError);
+        }
+    }
+
+    /**
+     * Helper to check if an unknown error is an AppError with a specific code
+     */
+    static isCode(error: unknown, code: ErrorCode): boolean {
+        return (
+            error !== null &&
+            typeof error === 'object' &&
+            (error as any).name === 'AppError' &&
+            (error as any).code === code
+        );
     }
 }
