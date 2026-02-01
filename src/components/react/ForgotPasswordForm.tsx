@@ -1,35 +1,43 @@
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { RequestPasswordResetCommandSchema, type RequestPasswordResetCommand } from '../../lib/schemas';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { cn, getInputClasses } from '../../lib/utils';
 
 interface ForgotPasswordFormProps {
     error?: string;
-    inputErrors?: Record<string, string[] | undefined>;
     successMessage?: string;
 }
 
 export function ForgotPasswordForm({
     error: initialError,
-    inputErrors: initialInputErrors,
     successMessage: initialSuccessMessage,
 }: ForgotPasswordFormProps) {
-    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | undefined>(initialError);
-    const [inputErrors, setInputErrors] = useState<Record<string, string[] | undefined> | undefined>(
-        initialInputErrors
-    );
     const [successMessage, setSuccessMessage] = useState<string | undefined>(initialSuccessMessage);
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setError(undefined);
-        setInputErrors(undefined);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors: fieldErrors, isValid, isSubmitting },
+    } = useForm<RequestPasswordResetCommand>({
+        resolver: zodResolver(RequestPasswordResetCommandSchema),
+        mode: 'onBlur',
+        defaultValues: {
+            email: '',
+        },
+    });
 
-        const formData = new FormData(e.currentTarget);
-        
+    const onSubmit = async (data: RequestPasswordResetCommand) => {
+        setError(undefined);
+
+        const formData = new FormData();
+        formData.append('email', data.email);
+
         try {
             const response = await fetch('/api/auth/request-password-reset', {
                 method: 'POST',
@@ -38,28 +46,15 @@ export function ForgotPasswordForm({
 
             const result = await response.json();
 
-            setIsLoading(false);
-
             if (!response.ok) {
-                if (result.error?.code === 'VALIDATION_ERROR' && result.error?.details) {
-                    // Convert validation errors to input errors format
-                    const fieldErrors: Record<string, string[]> = {};
-                    result.error.details.forEach((detail: { field: string; message: string }) => {
-                        fieldErrors[detail.field] = [detail.message];
-                    });
-                    setInputErrors(fieldErrors);
-                } else {
-                    setError(result.error?.message || 'Nie udało się wysłać linku resetującego');
-                }
+                setError(result.error?.message || 'Nie udało się wysłać linku resetującego');
                 return;
             }
 
-            const data = result.data;
-            if (data?.success) {
-                setSuccessMessage(data.message);
+            if (result.data?.success) {
+                setSuccessMessage(result.data.message);
             }
         } catch (err) {
-            setIsLoading(false);
             setError('Wystąpił błąd połączenia z serwerem');
             console.error('Request password reset fetch error:', err);
         }
@@ -99,33 +94,39 @@ export function ForgotPasswordForm({
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
                     <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
                         <Input
                             id="email"
-                            name="email"
                             type="email"
                             autoComplete="email"
                             placeholder="twoj@email.pl"
-                            required
+                            className={cn(getInputClasses(fieldErrors.email))}
+                            {...register('email')}
                         />
-                        {inputErrors?.email && (
-                            <p className="text-sm text-red-600">{inputErrors.email[0]}</p>
+                        {fieldErrors.email && (
+                            <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
+                                {fieldErrors.email.message}
+                            </p>
                         )}
                     </div>
 
                     {error && (
                         <div
-                            className="text-sm text-red-600 bg-red-50 p-3 rounded-md"
+                            className="text-sm text-destructive bg-destructive/10 p-3 rounded-2xl border border-destructive/20 animate-in fade-in slide-in-from-top-1"
                             role="status"
                         >
                             {error}
                         </div>
                     )}
 
-                    <Button type="submit" className="w-full" disabled={isLoading}>
-                        {isLoading ? 'Wysyłanie...' : 'Wyślij link resetujący'}
+                    <Button
+                        type="submit"
+                        className="w-full h-12 rounded-full text-base font-semibold"
+                        disabled={!isValid || isSubmitting}
+                    >
+                        {isSubmitting ? 'Wysyłanie...' : 'Wyślij link resetujący'}
                     </Button>
 
                     <div className="text-center text-sm">

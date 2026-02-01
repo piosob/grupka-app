@@ -17,7 +17,7 @@ export function handleApiError(error: unknown, context: string): Response {
                 error: {
                     code: 'VALIDATION_ERROR',
                     message: 'Validation failed',
-                    details: zodError.errors.map((e) => ({
+                    details: zodError.issues.map((e) => ({
                         field: e.path.join('.'),
                         message: e.message,
                     })),

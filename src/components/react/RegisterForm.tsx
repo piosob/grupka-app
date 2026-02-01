@@ -1,5 +1,8 @@
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { navigate } from 'astro:transitions/client';
+import { RegisterCommandSchema, type RegisterCommand } from '../../lib/schemas';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -7,37 +10,46 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { cn, getInputClasses } from '../../lib/utils';
 
 interface RegisterFormProps {
-    // Te propsy mogą zostać dla initial state, ale będziemy zarządzać nimi też lokalnie
     error?: string;
-    inputErrors?: Record<string, string[] | undefined>;
     success?: boolean;
     needsEmailConfirmation?: boolean;
 }
 
 export function RegisterForm({
     error: initialError,
-    inputErrors: initialInputErrors,
     success: initialSuccess,
     needsEmailConfirmation: initialNeedsConfirmation,
 }: RegisterFormProps) {
-    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | undefined>(initialError);
-    const [inputErrors, setInputErrors] = useState<Record<string, string[] | undefined> | undefined>(
-        initialInputErrors
-    );
     const [success, setSuccess] = useState(initialSuccess || false);
     const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(
         initialNeedsConfirmation || false
     );
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setError(undefined);
-        setInputErrors(undefined);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors: fieldErrors, isValid, isSubmitting },
+    } = useForm<RegisterCommand>({
+        resolver: zodResolver(RegisterCommandSchema),
+        mode: 'onBlur',
+        defaultValues: {
+            firstName: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+        },
+    });
 
-        const formData = new FormData(e.currentTarget);
-        
+    const onSubmit = async (data: RegisterCommand) => {
+        setError(undefined);
+
+        const formData = new FormData();
+        formData.append('firstName', data.firstName);
+        formData.append('email', data.email);
+        formData.append('password', data.password);
+        formData.append('confirmPassword', data.confirmPassword);
+
         try {
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
@@ -46,34 +58,20 @@ export function RegisterForm({
 
             const result = await response.json();
 
-            setIsLoading(false);
-
             if (!response.ok) {
-                if (result.error?.code === 'VALIDATION_ERROR' && result.error?.details) {
-                    // Convert validation errors to input errors format
-                    const fieldErrors: Record<string, string[]> = {};
-                    result.error.details.forEach((detail: { field: string; message: string }) => {
-                        fieldErrors[detail.field] = [detail.message];
-                    });
-                    setInputErrors(fieldErrors);
-                } else {
-                    setError(result.error?.message || 'Nie udało się utworzyć konta');
-                }
+                setError(result.error?.message || 'Nie udało się utworzyć konta');
                 return;
             }
 
-            const data = result.data;
-            if (data?.success) {
-                if (data.needsEmailConfirmation) {
+            if (result.data?.success) {
+                if (result.data.needsEmailConfirmation) {
                     setSuccess(true);
                     setNeedsEmailConfirmation(true);
                 } else {
-                    // Jeśli nie wymaga potwierdzenia, przekieruj
                     navigate('/dashboard');
                 }
             }
         } catch (err) {
-            setIsLoading(false);
             setError('Wystąpił błąd połączenia z serwerem');
             console.error('Register fetch error:', err);
         }
@@ -126,20 +124,19 @@ export function RegisterForm({
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
                     <div className="space-y-2">
                         <Label htmlFor="firstName">Imię</Label>
                         <Input
                             id="firstName"
-                            name="firstName"
                             type="text"
                             placeholder="np. Kasia"
-                            className={cn(getInputClasses(inputErrors?.firstName))}
-                            required
+                            className={cn(getInputClasses(fieldErrors.firstName))}
+                            {...register('firstName')}
                         />
-                        {inputErrors?.firstName && (
+                        {fieldErrors.firstName && (
                             <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
-                                {inputErrors.firstName[0]}
+                                {fieldErrors.firstName.message}
                             </p>
                         )}
                         <p className="text-xs text-muted-foreground">
@@ -152,16 +149,15 @@ export function RegisterForm({
                         <Label htmlFor="email">Email</Label>
                         <Input
                             id="email"
-                            name="email"
                             type="email"
                             autoComplete="email"
                             placeholder="twoj@email.pl"
-                            className={cn(getInputClasses(inputErrors?.email))}
-                            required
+                            className={cn(getInputClasses(fieldErrors.email))}
+                            {...register('email')}
                         />
-                        {inputErrors?.email && (
+                        {fieldErrors.email && (
                             <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
-                                {inputErrors.email[0]}
+                                {fieldErrors.email.message}
                             </p>
                         )}
                     </div>
@@ -170,16 +166,15 @@ export function RegisterForm({
                         <Label htmlFor="password">Hasło</Label>
                         <Input
                             id="password"
-                            name="password"
                             type="password"
                             autoComplete="new-password"
                             placeholder="••••••••"
-                            className={cn(getInputClasses(inputErrors?.password))}
-                            required
+                            className={cn(getInputClasses(fieldErrors.password))}
+                            {...register('password')}
                         />
-                        {inputErrors?.password && (
+                        {fieldErrors.password && (
                             <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
-                                {inputErrors.password[0]}
+                                {fieldErrors.password.message}
                             </p>
                         )}
                         <p className="text-xs text-muted-foreground">Minimum 8 znaków</p>
@@ -189,16 +184,15 @@ export function RegisterForm({
                         <Label htmlFor="confirmPassword">Powtórz hasło</Label>
                         <Input
                             id="confirmPassword"
-                            name="confirmPassword"
                             type="password"
                             autoComplete="new-password"
                             placeholder="••••••••"
-                            className={cn(getInputClasses(inputErrors?.confirmPassword))}
-                            required
+                            className={cn(getInputClasses(fieldErrors.confirmPassword))}
+                            {...register('confirmPassword')}
                         />
-                        {inputErrors?.confirmPassword && (
+                        {fieldErrors.confirmPassword && (
                             <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
-                                {inputErrors.confirmPassword[0]}
+                                {fieldErrors.confirmPassword.message}
                             </p>
                         )}
                     </div>
@@ -215,9 +209,9 @@ export function RegisterForm({
                     <Button
                         type="submit"
                         className="w-full h-12 rounded-full text-base font-semibold"
-                        disabled={isLoading}
+                        disabled={!isValid || isSubmitting}
                     >
-                        {isLoading ? 'Tworzenie konta...' : 'Utwórz konto'}
+                        {isSubmitting ? 'Tworzenie konta...' : 'Utwórz konto'}
                     </Button>
 
                     <div className="text-center text-sm text-gray-600">

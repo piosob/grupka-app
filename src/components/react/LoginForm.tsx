@@ -1,5 +1,8 @@
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { navigate } from 'astro:transitions/client';
+import { LoginCommandSchema, type LoginCommand } from '../../lib/schemas';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -8,24 +11,31 @@ import { cn, getInputClasses } from '../../lib/utils';
 
 interface LoginFormProps {
     error?: string;
-    inputErrors?: Record<string, string[] | undefined>;
 }
 
-export function LoginForm({ error: initialError, inputErrors: initialInputErrors }: LoginFormProps) {
-    const [isLoading, setIsLoading] = useState(false);
+export function LoginForm({ error: initialError }: LoginFormProps) {
     const [error, setError] = useState<string | undefined>(initialError);
-    const [inputErrors, setInputErrors] = useState<Record<string, string[] | undefined> | undefined>(
-        initialInputErrors
-    );
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setIsLoading(true);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors: fieldErrors, isValid, isSubmitting },
+    } = useForm<LoginCommand>({
+        resolver: zodResolver(LoginCommandSchema),
+        mode: 'onBlur',
+        defaultValues: {
+            email: '',
+            password: '',
+        },
+    });
+
+    const onSubmit = async (data: LoginCommand) => {
         setError(undefined);
-        setInputErrors(undefined);
 
-        const formData = new FormData(e.currentTarget);
-        
+        const formData = new FormData();
+        formData.append('email', data.email);
+        formData.append('password', data.password);
+
         try {
             const response = await fetch('/api/auth/login', {
                 method: 'POST',
@@ -35,28 +45,14 @@ export function LoginForm({ error: initialError, inputErrors: initialInputErrors
             const result = await response.json();
 
             if (!response.ok) {
-                setIsLoading(false);
-                if (result.error?.code === 'VALIDATION_ERROR' && result.error?.details) {
-                    // Convert validation errors to input errors format
-                    const fieldErrors: Record<string, string[]> = {};
-                    result.error.details.forEach((detail: { field: string; message: string }) => {
-                        fieldErrors[detail.field] = [detail.message];
-                    });
-                    setInputErrors(fieldErrors);
-                } else {
-                    setError(result.error?.message || 'Nie udało się zalogować');
-                }
+                setError(result.error?.message || 'Nie udało się zalogować');
                 return;
             }
 
-            const data = result.data;
-            if (data?.success) {
-                navigate(data.redirectTo || '/dashboard');
-            } else {
-                setIsLoading(false);
+            if (result.data?.success) {
+                navigate(result.data.redirectTo || '/dashboard');
             }
         } catch (err) {
-            setIsLoading(false);
             setError('Wystąpił błąd połączenia z serwerem');
             console.error('Login fetch error:', err);
         }
@@ -69,21 +65,20 @@ export function LoginForm({ error: initialError, inputErrors: initialInputErrors
                 <CardDescription>Wprowadź swoje dane, aby zalogować się do konta</CardDescription>
             </CardHeader>
             <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
                     <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
                         <Input
                             id="email"
-                            name="email"
                             type="email"
                             autoComplete="email"
                             placeholder="twoj@email.pl"
-                            className={cn(getInputClasses(inputErrors?.email))}
-                            required
+                            className={cn(getInputClasses(fieldErrors.email))}
+                            {...register('email')}
                         />
-                        {inputErrors?.email && (
+                        {fieldErrors.email && (
                             <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
-                                {inputErrors.email[0]}
+                                {fieldErrors.email.message}
                             </p>
                         )}
                     </div>
@@ -92,16 +87,15 @@ export function LoginForm({ error: initialError, inputErrors: initialInputErrors
                         <Label htmlFor="password">Hasło</Label>
                         <Input
                             id="password"
-                            name="password"
                             type="password"
                             autoComplete="current-password"
                             placeholder="••••••••"
-                            className={cn(getInputClasses(inputErrors?.password))}
-                            required
+                            className={cn(getInputClasses(fieldErrors.password))}
+                            {...register('password')}
                         />
-                        {inputErrors?.password && (
+                        {fieldErrors.password && (
                             <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
-                                {inputErrors.password[0]}
+                                {fieldErrors.password.message}
                             </p>
                         )}
                     </div>
@@ -115,9 +109,9 @@ export function LoginForm({ error: initialError, inputErrors: initialInputErrors
                     <Button
                         type="submit"
                         className="w-full h-12 rounded-full text-base font-semibold"
-                        disabled={isLoading}
+                        disabled={!isValid || isSubmitting}
                     >
-                        {isLoading ? 'Logowanie...' : 'Zaloguj się'}
+                        {isSubmitting ? 'Logowanie...' : 'Zaloguj się'}
                     </Button>
 
                     <div className="text-center text-sm">

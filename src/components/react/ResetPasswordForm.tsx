@@ -1,72 +1,63 @@
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { UpdatePasswordCommandSchema, type UpdatePasswordCommand } from '../../lib/schemas';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { cn, getInputClasses } from '../../lib/utils';
 
 interface ResetPasswordFormProps {
     error?: string;
-    inputErrors?: Record<string, string[] | undefined>;
     success?: boolean;
     message?: string;
 }
 
 export function ResetPasswordForm({
     error: initialError,
-    inputErrors: initialInputErrors,
     success: initialSuccess,
     message: initialMessage,
 }: ResetPasswordFormProps) {
-    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | undefined>(initialError);
-    const [inputErrors, setInputErrors] = useState<Record<string, string[] | undefined> | undefined>(
-        initialInputErrors
-    );
     const [success, setSuccess] = useState(initialSuccess || false);
     const [message, setMessage] = useState<string | undefined>(initialMessage);
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setError(undefined);
-        setInputErrors(undefined);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors: fieldErrors, isValid, isSubmitting },
+    } = useForm<UpdatePasswordCommand>({
+        resolver: zodResolver(UpdatePasswordCommandSchema),
+        mode: 'onBlur',
+        defaultValues: {
+            password: '',
+            confirmPassword: '',
+        },
+    });
 
-        const formData = new FormData(e.currentTarget);
-        const password = formData.get('password') as string;
-        const confirmPassword = formData.get('confirmPassword') as string;
-        
+    const onSubmit = async (data: UpdatePasswordCommand) => {
+        setError(undefined);
+
         try {
             const response = await fetch('/api/auth/update-password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password, confirmPassword }),
+                body: JSON.stringify(data),
             });
 
             const result = await response.json();
 
-            setIsLoading(false);
-
             if (!response.ok) {
-                if (result.error?.code === 'VALIDATION_ERROR' && result.error?.details) {
-                    // Convert validation errors to input errors format
-                    const fieldErrors: Record<string, string[]> = {};
-                    result.error.details.forEach((detail: { field: string; message: string }) => {
-                        fieldErrors[detail.field] = [detail.message];
-                    });
-                    setInputErrors(fieldErrors);
-                } else {
-                    setError(result.error?.message || 'Nie udało się zmienić hasła');
-                }
+                setError(result.error?.message || 'Nie udało się zmienić hasła');
                 return;
             }
 
-            const data = result.data;
-            if (data?.success) {
+            if (result.data?.success) {
                 setSuccess(true);
-                setMessage(data.message);
+                setMessage(result.data.message);
             }
         } catch (err) {
-            setIsLoading(false);
             setError('Wystąpił błąd połączenia z serwerem');
             console.error('Update password fetch error:', err);
         }
@@ -84,6 +75,14 @@ export function ResetPasswordForm({
                             <p>{message ?? 'Twoje hasło zostało pomyślnie zmienione.'}</p>
                             <p className="mt-2">Możesz wrócić do logowania, gdy będziesz gotowy.</p>
                         </div>
+                        <div className="text-center">
+                            <a
+                                href="/login"
+                                className="text-sm text-blue-400 hover:text-blue-600 hover:underline"
+                            >
+                                Powrót do logowania
+                            </a>
+                        </div>
                     </div>
                 </CardContent>
             </Card>
@@ -97,51 +96,57 @@ export function ResetPasswordForm({
                 <CardDescription>Wprowadź nowe hasło do swojego konta</CardDescription>
             </CardHeader>
             <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
                     <div className="space-y-2">
                         <Label htmlFor="password">Nowe hasło</Label>
                         <Input
                             id="password"
-                            name="password"
                             type="password"
                             autoComplete="new-password"
                             placeholder="••••••••"
-                            required
-                            minLength={8}
+                            className={cn(getInputClasses(fieldErrors.password))}
+                            {...register('password')}
                         />
-                        {inputErrors?.password && (
-                            <p className="text-sm text-red-600">{inputErrors.password[0]}</p>
+                        {fieldErrors.password && (
+                            <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
+                                {fieldErrors.password.message}
+                            </p>
                         )}
-                        <p className="text-xs text-gray-500">Minimum 8 znaków</p>
+                        <p className="text-xs text-muted-foreground">Minimum 8 znaków</p>
                     </div>
 
                     <div className="space-y-2">
                         <Label htmlFor="confirmPassword">Powtórz nowe hasło</Label>
                         <Input
                             id="confirmPassword"
-                            name="confirmPassword"
                             type="password"
                             autoComplete="new-password"
                             placeholder="••••••••"
-                            required
-                            minLength={8}
+                            className={cn(getInputClasses(fieldErrors.confirmPassword))}
+                            {...register('confirmPassword')}
                         />
-                        {inputErrors?.confirmPassword && (
-                            <p className="text-sm text-red-600">{inputErrors.confirmPassword[0]}</p>
+                        {fieldErrors.confirmPassword && (
+                            <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
+                                {fieldErrors.confirmPassword.message}
+                            </p>
                         )}
                     </div>
 
                     {error && (
                         <div
-                            className="text-sm text-red-600 bg-red-50 p-3 rounded-md"
+                            className="text-sm text-destructive bg-destructive/10 p-3 rounded-2xl border border-destructive/20 animate-in fade-in slide-in-from-top-1"
                             role="status"
                         >
                             {error}
                         </div>
                     )}
 
-                    <Button type="submit" className="w-full" disabled={isLoading}>
-                        {isLoading ? 'Zmienianie...' : 'Zmień hasło'}
+                    <Button
+                        type="submit"
+                        className="w-full h-12 rounded-full text-base font-semibold"
+                        disabled={!isValid || isSubmitting}
+                    >
+                        {isSubmitting ? 'Zmienianie...' : 'Zmień hasło'}
                     </Button>
                 </form>
             </CardContent>
