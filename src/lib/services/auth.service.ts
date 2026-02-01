@@ -208,6 +208,9 @@ export class AuthService {
      * Translate Supabase auth errors to user-friendly Polish messages
      */
     private translateAuthError(error: string): string {
+        // Log original error for debugging on server/client
+        console.error('[Supabase Auth Error]:', error);
+
         const errorMap: Record<string, string> = {
             'Invalid login credentials': 'Nieprawidłowy email lub hasło',
             'Email not confirmed': 'Email nie został potwierdzony',
