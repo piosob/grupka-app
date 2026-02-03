@@ -10,7 +10,8 @@
         "format": "prettier --write .",
         "check": "eslint . --quiet",
         "test": "vitest",
-        "test:ui": "vitest --ui"
+        "test:ui": "vitest --ui",
+        "test:verbose": "vitest run --reporter verbose"
     },
     "dependencies": {
         "@astrojs/node": "^9.5.1",
